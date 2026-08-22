@@ -1,11 +1,42 @@
 # The Shape of Money
 
 An interactive 3D view of every US Treasury yield curve since 1990, with the
-Fed funds target rate along the front edge and the Federal Reserve's balance
-sheet on the back wall.
+Fed funds target along the front edge, a choice of series on the back wall,
+recessions falling across the surface as shade, and the Fed's QE and QT
+programmes marked on the floor.
+
+Live at **[yieldcurve3d.com](https://yieldcurve3d.com)**.
 
 It runs entirely in the browser. Visitors need nothing installed. Hosting costs
 nothing.
+
+## What you can do with it
+
+- **Change what the height means.** *Yield* is the plain view. *Yield minus Fed
+  funds* is where QE becomes obvious: the front edge pins to zero while
+  everything behind it is dragged down. *Yield minus 3-month* turns the whole
+  surface into curve slope, where anything below the zero plane is an
+  inversion. The spread views switch to a diverging colour scale so the sign
+  change is visible.
+- **Read a whole day at once.** Move the pointer across the scene and the
+  readout gives you every tenor Treasury published that day, the policy rate,
+  2s10s and 10y-3m, whatever is on the back wall, and whether the day sits
+  inside a recession or a Fed programme. Click to pin it. Escape clears it.
+- **Put something behind the surface**: the Fed balance sheet, the S&P 500 back
+  to 1990, the NASDAQ, the VIX, or the 10-year term premium.
+- **Share the exact view.** Every control writes to the URL, so a link restores
+  the dates, the height mode, the back wall, the camera and the theme.
+- **Take the picture.** Download, copy, open in a new tab, print, or share on
+  X. The image is recomposited with the axis labels, the sources and a
+  `yieldcurve3d.com` watermark, at twice screen resolution.
+
+| | |
+|---|---|
+| `⌥⌘S` | Download image |
+| `⇧⌘S` | Copy image |
+| `⌥S` | Copy link |
+| `⌘P` | Print |
+| `Esc` | Clear the pinned date |
 
 ---
 
@@ -71,11 +102,28 @@ that file from this folder, and commit.
 
 ---
 
-## Using a domain name
+## Pointing yieldcurve3d.com at it
 
-Buy one anywhere (roughly $12 a year). Then in **Settings** → **Pages** →
-"Custom domain", type it in and save. GitHub tells you which DNS records to
-add at your registrar. Tick **Enforce HTTPS** once it offers to.
+`docs/CNAME` already contains the domain, so GitHub will pick it up. You need
+to point the domain at GitHub from wherever you registered it.
+
+At your registrar's DNS settings, add these four **A** records for the bare
+domain (host `@`):
+
+```
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+```
+
+Then one **CNAME** record, host `www`, pointing at `YOUR-USERNAME.github.io`
+(note the trailing dot if your registrar wants one).
+
+Back in the repository, **Settings** → **Pages** should now show
+`yieldcurve3d.com` under Custom domain. Once the DNS has propagated — usually
+minutes, occasionally a day — tick **Enforce HTTPS**. GitHub issues the
+certificate free.
 
 ---
 
@@ -129,9 +177,18 @@ year is re-fetched.
 
 **Everything else** comes from FRED, the St. Louis Fed's data service: the Fed
 funds target (`DFEDTAR`, `DFEDTARU`, `DFEDTARL`), the effective rate (`EFFR`),
-the balance sheet (`WALCL`), and three market series. These are only
+the balance sheet (`WALCL`), the NBER recession indicator (`USRECD`), the
+10-year term premium (`THREEFYTP10`), and the market series. These are only
 re-downloaded when the local copy is more than a few days stale. No API key is
 needed.
+
+**The S&P 500** is in two halves. FRED only carries the last ten years, so the
+deep history comes from the spreadsheet in `data/raw/sp500-1982-2021.xlsx`
+(daily closes, 1982 to March 2021) and FRED extends it to the present. The two
+sources overlap by 1,147 trading days and agree to an average of 0.0012 index
+points, so the join is invisible. The pipeline reads the spreadsheet with the
+standard library — an `.xlsx` is a zip of XML — and checks that the column it
+reads really is headed "Close" rather than trusting its position.
 
 ### Filling the gaps
 
@@ -169,13 +226,41 @@ them is a real market event — the August 2007 credit freeze, the week Lehman
 failed, and the April 2023 debt-ceiling scare, when one-month bills briefly
 yielded almost two points less than three-month bills.
 
+### Recessions, QE bands and events
+
+Three different things want to mark the same time axis, so each uses a
+different visual channel and they can all be read at once:
+
+- **Recessions** dim the surface, like a cloud shadow crossing it, and dim the
+  back-wall series with it. They also get a narrow rail in their own lane past
+  the back wall, for reading exact start and end dates. Because they work in
+  lightness, they never fight the QE bands for colour.
+- **QE and QT programmes** are coloured bands across the floor, blue for
+  easing, red for tightening, with a brighter rule at each start date.
+- **Events** are markers only, never text. Sixteen days where the surface
+  visibly does something get a small diamond in the margin; the words appear
+  in the readout when the date cursor reaches one, and in the sidebar list,
+  which you can click to jump. That keeps a 36-year view from turning into a
+  wall of annotations.
+
+Every claim attached to an event was checked against the data before it went
+in. Two dates moved as a result: the AAA downgrade marker sits on 8 August
+2011, the first session after the Friday-evening announcement, because yields
+actually rose on the day itself; and the SVB marker sits on 13 March 2023,
+which is the largest single-day fall in the 2-year yield anywhere in this
+record, rather than the 10th.
+
 ---
 
 ## Changing things
 
 **Add a period to the buttons.** Open `pipeline/build_data.py`, find the
 `PRESETS` list, add a line in the same shape as the others, and re-run the
-script. Same for `REGIMES`, which draws the coloured bands on the floor.
+script. Same for `REGIMES`, which draws the coloured bands on the floor, and
+`EVENTS`, which places the markers.
+
+**Change the light or dark palette.** `docs/js/theme.js`. Every colour the page
+and the 3D scene use is defined there once, in one object per theme.
 
 **Change the colours.** `docs/js/colormap.js`, the `STOPS` list at the top.
 
@@ -188,13 +273,16 @@ the very top.
 
 ## About the S&P 500
 
-S&P 500 index values belong to S&P Dow Jones Indices. The free feed only goes
-back ten years, which is why it's offered as one option among several rather
-than the default. The NASDAQ Composite reaches back to 1971 and the VIX starts
-on 2 January 1990 — the very same day the Treasury's daily curve does.
+S&P 500 index values are the intellectual property of S&P Dow Jones Indices,
+which is why the free feed is capped at ten years. The deep history here comes
+from a file you supplied. That is fine for a personal project, but if the site
+ever becomes commercial, or if S&P ask, the honest fix is to switch the default
+back wall to the NASDAQ Composite (free, back to 1971) or the VIX (free, and it
+starts on 2 January 1990, the very same day the Treasury's daily curve does).
+Both are already in the dropdown, so it is a one-line change.
 
 Treasury and Federal Reserve data are US government works and carry no
-copyright.
+copyright. NBER recession dates are published facts.
 
 ---
 

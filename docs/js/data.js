@@ -9,10 +9,11 @@
 const BASE = "data/";
 
 export async function load() {
-  const [manifest, context, buffer] = await Promise.all([
+  const [manifest, context, buffer, tenorBuffer] = await Promise.all([
     fetch(BASE + "manifest.json").then(requireOk).then((r) => r.json()),
     fetch(BASE + "context.json").then(requireOk).then((r) => r.json()),
     fetch(BASE + "surface.bin").then(requireOk).then((r) => r.arrayBuffer()),
+    fetch(BASE + "tenors.bin").then(requireOk).then((r) => r.arrayBuffer()),
   ]);
 
   const cols = manifest.gridCount;
@@ -26,6 +27,23 @@ export async function load() {
   const yields = new Float32Array(raw.length);
   const { scale, offset } = manifest;
   for (let i = 0; i < raw.length; i++) yields[i] = raw[i] / scale - offset;
+
+  // Published tenors, stored separately from the resampled surface so the
+  // readout can quote the numbers Treasury actually released. Each row is the
+  // 14 tenor values followed by a bitmask of which ones were published rather
+  // than filled in.
+  const tenorCount = manifest.tenorYears.length;
+  const tenorStride = tenorCount + 1;
+  const tenorRaw = new Uint16Array(tenorBuffer);
+  const tenors = new Float32Array(rows * tenorCount);
+  const published = new Uint16Array(rows);
+  for (let r = 0; r < rows; r++) {
+    const src = r * tenorStride;
+    for (let t = 0; t < tenorCount; t++) {
+      tenors[r * tenorCount + t] = tenorRaw[src + t] / scale - offset;
+    }
+    published[r] = tenorRaw[src + tenorCount];
+  }
 
   const dates = manifest.dates;
   const dayIndex = new Map(dates.map((d, i) => [d, i]));
@@ -41,9 +59,35 @@ export async function load() {
     realLow: manifest.realLow,
     realHigh: manifest.realHigh,
 
+    tenorCount,
+    tenorYears: manifest.tenorYears,
+    tenorLabels: manifest.tenorLabels,
+
     /** Yield at (day, maturity grid column), in percent. */
     at(day, col) {
       return yields[day * cols + col];
+    },
+
+    /** The published tenor curve for one day: [{label, years, value, real}]. */
+    tenorCurve(day) {
+      const base = day * tenorCount;
+      const mask = published[day];
+      const out = [];
+      for (let t = 0; t < tenorCount; t++) {
+        out.push({
+          label: manifest.tenorLabels[t],
+          years: manifest.tenorYears[t],
+          value: tenors[base + t],
+          real: ((mask >> t) & 1) === 1,
+        });
+      }
+      return out;
+    },
+
+    /** One published tenor, by maturity in years. */
+    tenorAt(day, years) {
+      const t = manifest.tenorYears.indexOf(years);
+      return t < 0 ? null : tenors[day * tenorCount + t];
     },
 
     /** Index of a YYYY-MM-DD date, or the nearest trading day at or after it. */

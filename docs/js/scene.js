@@ -11,9 +11,13 @@ import { OrbitControls } from "three/addons/OrbitControls.js";
 import { maturityLabel } from "./data.js";
 
 export const BOX = {
-  W: 100,   // maturity axis, 1 month at x=0 to 30 years at x=W
-  D: 170,   // time axis, earliest date at z=0 (far) to latest at z=D (near)
-  H: 62,    // yield axis
+  W: 100,     // maturity axis, 1 month at x=0 to 30 years at x=W
+  D: 170,     // time axis, earliest date at z=0 (far) to latest at z=D (near)
+  H: 62,      // value axis
+  FF_X: -8,   // Fed funds ribbon, just in front of the 1-month edge
+  WALL_X: 110,      // context series, just beyond the 30-year edge
+  RAIL_X0: 117,     // recession rail: its own lane past the back wall, so it
+  RAIL_X1: 126,     // never competes with the QE bands across the floor
 };
 
 // Maturities that get a tick and a label. The rest of the grid is unlabelled.
@@ -30,24 +34,27 @@ const VIEWS = {
 };
 
 export class Stage {
-  constructor(canvas, labelHost) {
+  constructor(canvas, labelHost, theme) {
     this.canvas = canvas;
     this.renderer = new THREE.WebGLRenderer({
-      canvas, antialias: true, alpha: false, powerPreference: "high-performance",
+      canvas,
+      antialias: true,
+      alpha: false,
+      powerPreference: "high-performance",
+      // Needed so the frame can still be read back after rendering, which is
+      // how the snapshot tools capture the image.
+      preserveDrawingBuffer: true,
     });
-    this.renderer.setClearColor(0x080b14, 1);
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.Fog(0x080b14, 340, 860);
-
-    this.camera = new THREE.PerspectiveCamera(38, 1, 1, 2000);
+    this.camera = new THREE.PerspectiveCamera(38, 1, 1, 2400);
     this.camera.position.set(200, 150, 240);   // replaced by goTo() on start
 
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.075;
     this.controls.minDistance = 60;
-    this.controls.maxDistance = 900;
+    this.controls.maxDistance = 1100;
     this.controls.maxPolarAngle = Math.PI * 0.995;   // allow looking from below
     this.controls.zoomSpeed = 0.75;
 
@@ -58,39 +65,92 @@ export class Stage {
     this.world.position.set(-BOX.W / 2, -BOX.H * 0.36, -BOX.D / 2);
     this.scene.add(this.world);
 
-    this.scene.add(new THREE.AmbientLight(0xc3d0e8, 0.34));
-    const key = new THREE.DirectionalLight(0xfff4e2, 0.88);
-    key.position.set(0.5, 1, 0.45);
-    this.scene.add(key);
-    const fill = new THREE.DirectionalLight(0x7d9ad0, 0.3);
-    fill.position.set(-0.65, 0.3, -0.75);
-    this.scene.add(fill);
+    this.ambient = new THREE.AmbientLight(0xffffff, 1);
+    this.key = new THREE.DirectionalLight(0xffffff, 1);
+    this.key.position.set(0.5, 1, 0.45);
+    this.fill = new THREE.DirectionalLight(0xffffff, 1);
+    this.fill.position.set(-0.65, 0.3, -0.75);
+    this.scene.add(this.ambient, this.key, this.fill);
 
     this.frame = new THREE.Group();
     this.world.add(this.frame);
 
-    this.labels = new LabelPool(labelHost);
-    this.yieldMax = 8;
-    this.tween = null;
-    this.clock = new THREE.Clock();
+    // An invisible floor used only for picking, so the date cursor still works
+    // when the pointer is beside the surface rather than on it.
+    this.pickPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(BOX.RAIL_X1 - BOX.FF_X + 30, BOX.D + 30),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    this.pickPlane.rotation.x = -Math.PI / 2;
+    this.pickPlane.position.set((BOX.FF_X + BOX.RAIL_X1) / 2, 0, BOX.D / 2);
+    this.world.add(this.pickPlane);
 
+    this.labels = new LabelPool(labelHost);
+    this.valueMin = 0;
+    this.valueMax = 8;
+    this.tween = null;
+    this.lastFrame = performance.now();
+    this.frameLabels = [];
+
+    this.setTheme(theme);
     this.resize();
     window.addEventListener("resize", () => this.resize());
   }
 
+  /* -------------------------------------------------------------- theme */
+  setTheme(theme) {
+    this.theme = theme;
+    this.renderer.setClearColor(theme.background, 1);
+    this.scene.fog = new THREE.Fog(theme.background, theme.fog[0], theme.fog[1]);
+    this.ambient.color.setHex(theme.ambient[0]);
+    this.ambient.intensity = theme.ambient[1];
+    this.key.color.setHex(theme.key[0]);
+    this.key.intensity = theme.key[1];
+    this.fill.color.setHex(theme.fill[0]);
+    this.fill.intensity = theme.fill[1];
+  }
+
   resize() {
-    const w = this.canvas.clientWidth || 1;
-    const h = this.canvas.clientHeight || 1;
+    const w = this.canvas.clientWidth || 0;
+    const h = this.canvas.clientHeight || 0;
+    // While the app is still hidden the canvas measures zero. Re-framing from
+    // a degenerate aspect ratio would throw the camera to a nonsense distance,
+    // so wait until there is a real box to fit.
+    if (w < 10 || h < 10) return;
+
+    const before = this.framingDistance();
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    const after = this.framingDistance();
+
+    // A window that changes shape changes how far back the camera has to sit.
+    // Scaling the existing distance by the ratio keeps the user's own zoom and
+    // orientation intact while still fitting the new frame. Because the ratio
+    // is derived from the aspect alone, repeated resizes at the same size are
+    // a no-op rather than compounding.
+    if (this.ready) {
+      const factor = after / before;
+      if (isFinite(factor) && factor > 0 && Math.abs(factor - 1) > 0.002) {
+        this.camera.position.sub(this.controls.target)
+          .multiplyScalar(factor).add(this.controls.target);
+        if (this.tween) {
+          this.tween.toPos.sub(this.controls.target)
+            .multiplyScalar(factor).add(this.controls.target);
+        }
+      }
+    }
+    this.ready = true;
   }
 
   /* ------------------------------------------------------- coordinates */
   x(col, cols) { return (col / (cols - 1)) * BOX.W; }
   z(row, rows) { return rows < 2 ? BOX.D : (row / (rows - 1)) * BOX.D; }
-  y(value)     { return (value / this.yieldMax) * BOX.H; }
+  y(value) {
+    const span = this.valueMax - this.valueMin || 1;
+    return ((value - this.valueMin) / span) * BOX.H;
+  }
 
   /** Position along the maturity axis for a maturity in years. */
   xForMaturity(years, maturities) {
@@ -103,21 +163,37 @@ export class Stage {
     return this.x(i + f, n);
   }
 
-  /* ------------------------------------------------------------- frame */
   /**
-   * Draw the floor grid, the two back walls and their tick marks. Called
-   * whenever the yield scale or the visible date range changes.
+   * Set the vertical scale from the data, rounded outwards to whole gridlines.
+   * Spread modes go negative, so the floor of the box is not always zero.
    */
-  buildFrame(maturities, yearMarks) {
+  setValueRange(dataMin, dataMax) {
+    const spread = Math.max(0.4, dataMax - dataMin);
+    const step = spread > 9 ? 2 : spread > 4.5 ? 1 : spread > 2 ? 0.5 : 0.25;
+    this.step = step;
+    this.valueMin = Math.min(0, Math.floor(dataMin / step) * step);
+    this.valueMax = Math.ceil((dataMax + spread * 0.04) / step) * step;
+    if (this.valueMax <= this.valueMin) this.valueMax = this.valueMin + step;
+    return [this.valueMin, this.valueMax];
+  }
+
+  valueTicks() {
+    const out = [];
+    for (let v = this.valueMin; v <= this.valueMax + 1e-9; v += this.step) {
+      out.push(Math.round(v * 1000) / 1000);
+    }
+    return out;
+  }
+
+  /* ------------------------------------------------------------- frame */
+  buildFrame(maturities, timeMarks, unit = "%") {
     this.frame.clear();
     this.frameLabels = [];
 
-    const faint = new THREE.LineBasicMaterial({ color: 0x263149, transparent: true, opacity: 0.85 });
-    const edge  = new THREE.LineBasicMaterial({ color: 0x38465f });
+    const theme = this.theme;
     const pts = [];
     const push = (a, b) => pts.push(a[0], a[1], a[2], b[0], b[1], b[2]);
-
-    const { W, D, H } = BOX;
+    const { W, D } = BOX;
 
     // Floor lines running along time, one per labelled maturity.
     for (const m of MATURITY_TICKS) {
@@ -126,69 +202,81 @@ export class Stage {
       this.frameLabels.push({ p: [x, -3.5, D + 13], text: maturityLabel(m) });
     }
 
-    // Floor lines running across maturity, one per year mark.
-    for (const mark of yearMarks) {
-      const z = mark.z;
-      push([0, 0, z], [W, 0, z]);
-      this.frameLabels.push({ p: [-11, -1.5, z], text: mark.label });
+    // Floor lines running across maturity, one per time mark.
+    for (const mark of timeMarks) {
+      push([0, 0, mark.z], [W, 0, mark.z]);
+      this.frameLabels.push({ p: [-11, -1.5, mark.z], text: mark.label });
     }
 
-    // Yield gridlines on the far wall and the short-maturity wall.
-    const ticks = this.yieldTicks();
+    // Value gridlines on the far wall and the short-maturity wall.
+    const ticks = this.valueTicks();
     for (const v of ticks) {
       const y = this.y(v);
-      push([0, y, 0], [W, y, 0]);      // far wall
-      push([0, y, 0], [0, y, D]);      // left wall
-      this.frameLabels.push({ p: [-7, y, D + 4], text: `${v}%` });
+      push([0, y, 0], [W, y, 0]);
+      push([0, y, 0], [0, y, D]);
+      const text = `${v > 0 && this.valueMin < 0 ? "+" : ""}${v}${unit}`;
+      this.frameLabels.push({ p: [-7, y, D + 4], text });
     }
 
-    // Box edges.
-    push([0, 0, 0], [W, 0, 0]); push([W, 0, 0], [W, 0, D]);
-    push([W, 0, D], [0, 0, D]); push([0, 0, D], [0, 0, 0]);
+    // Box outline at the base of the value axis.
+    const floor = this.y(this.valueMin);
+    push([0, floor, 0], [W, floor, 0]); push([W, floor, 0], [W, floor, D]);
+    push([W, floor, D], [0, floor, D]); push([0, floor, D], [0, floor, 0]);
 
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    this.frame.add(new THREE.LineSegments(geo, faint));
+    this.frame.add(new THREE.LineSegments(geo, new THREE.LineBasicMaterial({
+      color: theme.frame, transparent: true, opacity: 0.9,
+    })));
 
-    // The three vertical corner posts, slightly brighter.
+    // Vertical corner posts.
     const posts = [];
-    const pp = (a, b) => posts.push(a[0], a[1], a[2], b[0], b[1], b[2]);
     const top = this.y(ticks[ticks.length - 1]);
-    pp([0, 0, 0], [0, top, 0]);
-    pp([W, 0, 0], [W, top, 0]);
-    pp([0, 0, D], [0, top, D]);
+    for (const [px, pz] of [[0, 0], [W, 0], [0, D]]) {
+      posts.push(px, floor, pz, px, top, pz);
+    }
     const pgeo = new THREE.BufferGeometry();
     pgeo.setAttribute("position", new THREE.Float32BufferAttribute(posts, 3));
-    this.frame.add(new THREE.LineSegments(pgeo, edge));
+    this.frame.add(new THREE.LineSegments(
+      pgeo, new THREE.LineBasicMaterial({ color: theme.frameEdge })));
+
+    // When the scale straddles zero, mark it: on a spread surface the sign is
+    // the whole story, and the eye needs a plane to read it against.
+    if (this.valueMin < -1e-9) {
+      const y0 = this.y(0);
+      const zero = new THREE.Mesh(
+        new THREE.PlaneGeometry(W + Math.abs(BOX.FF_X) + 6, D),
+        new THREE.MeshBasicMaterial({
+          color: theme.zeroPlane, transparent: true, opacity: 0.12,
+          side: THREE.DoubleSide, depthWrite: false,
+        })
+      );
+      zero.rotation.x = -Math.PI / 2;
+      zero.position.set((BOX.FF_X - 3 + W + 3) / 2, y0, D / 2);
+      this.frame.add(zero);
+
+      const edge = new THREE.BufferGeometry();
+      edge.setAttribute("position", new THREE.Float32BufferAttribute(
+        [BOX.FF_X - 3, y0, D, W + 3, y0, D, W + 3, y0, D, W + 3, y0, 0], 3));
+      this.frame.add(new THREE.LineSegments(edge, new THREE.LineBasicMaterial({
+        color: theme.zeroPlane, transparent: true, opacity: 0.75,
+      })));
+    }
 
     this.frameLabels.push({ p: [W / 2, -10, D + 30], text: "Maturity", cls: "axis-title" });
-    this.frameLabels.push({ p: [-20, top * 0.58, D + 4], text: "Yield", cls: "axis-title" });
-  }
-
-  /** Round, evenly spaced yield gridlines that reach just past the data. */
-  yieldTicks() {
-    const step = this.yieldMax > 9 ? 2 : this.yieldMax > 4.5 ? 2 : this.yieldMax > 2 ? 1 : 0.5;
-    const out = [];
-    for (let v = 0; v <= this.yieldMax + 1e-6; v += step) out.push(Math.round(v * 10) / 10);
-    return out;
-  }
-
-  /** Set the vertical scale, rounded up so the top gridline is a round number. */
-  setYieldMax(dataMax) {
-    const step = dataMax > 9 ? 2 : dataMax > 4.5 ? 2 : dataMax > 2 ? 1 : 0.5;
-    this.yieldMax = Math.max(step, Math.ceil((dataMax * 1.06) / step) * step);
-    return this.yieldMax;
   }
 
   /* -------------------------------------------------------------- views */
   /** Distance at which the whole box comfortably fills the frame. */
   framingDistance() {
-    const { W, D, H } = BOX;
-    // A bounding sphere over-estimates how much room a flat, wide box needs,
-    // so on a landscape canvas we can safely move in. A portrait phone has no
-    // such slack, and pulling in there would push the axis labels off screen.
-    const slack = this.camera.aspect >= 1.3 ? 0.85 : 0.99;
-    const radius = Math.hypot((W + 28) / 2, H / 2, D / 2) * slack;
+    const { D, H, FF_X, RAIL_X1 } = BOX;
+    // A bounding sphere over-estimates how much room this flat, wide box
+    // needs, so a landscape canvas can afford to move in. A portrait one
+    // cannot, and pulling in there pushes the axis labels off screen. Ramp
+    // between the two rather than stepping, so a window dragged across the
+    // threshold does not jump.
+    const slack = Math.min(1, Math.max(0.87, 0.87 + 0.22 * (1.55 - this.camera.aspect)));
+    const radius = Math.hypot((RAIL_X1 - FF_X + 24) / 2, H / 2, D / 2) * slack;
     const vFov = (this.camera.fov * Math.PI) / 180;
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * this.camera.aspect);
     return radius / Math.sin(Math.min(vFov, hFov) / 2);
@@ -218,29 +306,33 @@ export class Stage {
     };
   }
 
-  /* -------------------------------------------------------------- frame */
+  /* ------------------------------------------------------------- render */
   render(extraLabels = []) {
-    const delta = this.clock.getDelta();
+    const now = performance.now();
+    const delta = Math.min(0.1, (now - this.lastFrame) / 1000);
+    this.lastFrame = now;
     if (this.tween) {
       // Time-based rather than frame-based, so the move takes the same
       // three-quarters of a second on a slow machine as on a fast one.
       const tw = this.tween;
       tw.t = Math.min(1, tw.t + delta / 0.75);
-      const e = tw.t < 0.5 ? 4 * tw.t ** 3 : 1 - (-2 * tw.t + 2) ** 3 / 2;  // ease in-out
+      const e = tw.t < 0.5 ? 4 * tw.t ** 3 : 1 - (-2 * tw.t + 2) ** 3 / 2;
       this.camera.position.lerpVectors(tw.fromPos, tw.toPos, e);
       this.controls.target.lerpVectors(tw.fromTarget, tw.toTarget, e);
       if (tw.t >= 1) this.tween = null;
     }
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
-    this.drawLabels(extraLabels);
+    this.placed = this.drawLabels(extraLabels);
   }
 
+  /** Project world-space label anchors to screen pixels. */
   drawLabels(extra) {
     const all = (this.frameLabels || []).concat(extra);
     this.labels.begin();
     const v = new THREE.Vector3();
     const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+    const placed = [];
     for (const label of all) {
       v.set(label.p[0], label.p[1], label.p[2]);
       this.world.localToWorld(v);
@@ -253,8 +345,10 @@ export class Stage {
       const margin = label.text.length > 10 ? 78 : 30;
       if (px < margin || px > w - margin || py < 12 || py > h - 12) continue;
       this.labels.add(px, py, label.text, label.cls);
+      placed.push({ x: px, y: py, text: label.text, cls: label.cls || "" });
     }
     this.labels.end();
+    return placed;
   }
 }
 

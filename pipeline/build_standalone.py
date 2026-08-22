@@ -27,10 +27,13 @@ MODULES = [
     "vendor/three.core.js",
     "vendor/three.module.js",
     "vendor/OrbitControls.js",
+    "js/theme.js",
     "js/colormap.js",
     "js/data.js",
     "js/scene.js",
     "js/layers.js",
+    "js/inspector.js",
+    "js/snapshot.js",
     "js/app.js",
 ]
 
@@ -43,9 +46,13 @@ RESOLVE = {
     "./data.js": "js/data.js",
     "./scene.js": "js/scene.js",
     "./layers.js": "js/layers.js",
+    "./theme.js": "js/theme.js",
+    "./inspector.js": "js/inspector.js",
+    "./snapshot.js": "js/snapshot.js",
 }
 
-DATA_FILES = ["data/manifest.json", "data/context.json", "data/surface.bin"]
+DATA_FILES = ["data/manifest.json", "data/context.json",
+              "data/surface.bin", "data/tenors.bin"]
 
 SPECIFIER = re.compile(r"""(from\s*|import\s*\(\s*)(['"])([^'"]+)\2""")
 

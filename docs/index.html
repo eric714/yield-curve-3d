@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="color-scheme" content="dark">
 <title>The Shape of Money — 36 Years of the US Treasury Yield Curve in 3D</title>
-<meta name="description" content="An interactive three-dimensional view of the US Treasury yield curve since 1990, alongside the Fed funds rate and the Federal Reserve's balance sheet.">
+<meta name="description" content="An interactive three-dimensional view of the US Treasury yield curve since 1990, alongside the Fed funds rate, the Federal Reserve's balance sheet, the S&amp;P 500 and NBER recessions.">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
@@ -25,20 +26,38 @@
   <div id="stage">
     <canvas id="scene"></canvas>
     <div id="labels" aria-hidden="true"></div>
-    <div id="probe" hidden></div>
 
     <div id="stage-top">
       <h1>The Shape of Money</h1>
       <p class="sub">Every US Treasury yield curve since 1990</p>
     </div>
 
-    <div id="regime-now" hidden></div>
+    <div id="stage-tools">
+      <button id="theme-toggle" title="Switch between light and dark" aria-label="Switch theme">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg>
+      </button>
+      <div class="menu-wrap">
+        <button id="snap-toggle" aria-expanded="false" aria-haspopup="true" title="Chart snapshot">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 8h3l2-2h6l2 2h3v11H4V8Zm8 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="snap-menu" hidden role="menu">
+          <p class="menu-head">Chart snapshot</p>
+          <button data-snap="download" role="menuitem"><span>Download image</span><kbd>⌥⌘S</kbd></button>
+          <button data-snap="copy" role="menuitem"><span>Copy image</span><kbd>⇧⌘S</kbd></button>
+          <button data-snap="link" role="menuitem"><span>Copy link</span><kbd>⌥S</kbd></button>
+          <button data-snap="tab" role="menuitem"><span>Open in new tab</span></button>
+          <button data-snap="print" role="menuitem"><span>Print</span><kbd>⌘P</kbd></button>
+          <button data-snap="x" role="menuitem"><span>Share on X</span></button>
+        </div>
+      </div>
+      <button id="panel-toggle" aria-expanded="true" title="Show or hide the controls">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
 
-    <button id="panel-toggle" aria-expanded="true" title="Show or hide the controls">
-      <span></span><span></span><span></span>
-    </button>
-
-    <div id="hint">Drag to rotate · scroll to zoom · right-drag to pan</div>
+    <div id="inspector" hidden></div>
+    <div id="toast" hidden></div>
+    <div id="hint">Drag to rotate · scroll to zoom · move across the surface to read a date</div>
   </div>
 
   <aside id="panel">
@@ -64,12 +83,23 @@
     </section>
 
     <section class="block">
+      <h2>Height of the surface</h2>
+      <select id="height-mode" aria-label="What the height of the surface means">
+        <option value="level" selected>Yield</option>
+        <option value="vsFunds">Yield minus Fed funds</option>
+        <option value="vs3m">Yield minus 3-month</option>
+      </select>
+      <p id="height-note" class="note"></p>
+    </section>
+
+    <section class="block">
       <h2>Behind the surface</h2>
       <select id="context-series" aria-label="Series shown on the back wall">
         <option value="WALCL" selected>Federal Reserve balance sheet</option>
+        <option value="SP500">S&amp;P 500</option>
         <option value="NASDAQCOM">NASDAQ Composite</option>
         <option value="VIXCLS">VIX (volatility)</option>
-        <option value="SP500">S&amp;P 500 (2016 onward)</option>
+        <option value="THREEFYTP10">10-year term premium</option>
         <option value="none">Nothing</option>
       </select>
       <p id="context-note" class="note"></p>
@@ -77,8 +107,10 @@
 
     <section class="block">
       <h2>Show</h2>
-      <label class="check"><input type="checkbox" id="opt-regimes" checked> QE and QT periods</label>
-      <label class="check"><input type="checkbox" id="opt-fedfunds" checked> Fed funds target</label>
+      <label class="check"><input type="checkbox" id="opt-regimes" checked> <span class="sw sw-qe"></span> QE and QT periods</label>
+      <label class="check"><input type="checkbox" id="opt-recessions" checked> <span class="sw sw-rec"></span> Recessions</label>
+      <label class="check"><input type="checkbox" id="opt-events" checked> <span class="sw sw-ev"></span> Event markers</label>
+      <label class="check"><input type="checkbox" id="opt-fedfunds" checked> <span class="sw sw-ff"></span> Fed funds target</label>
       <label class="check"><input type="checkbox" id="opt-lines" checked> Individual curves</label>
       <label class="check"><input type="checkbox" id="opt-recon" checked> Mark reconstructed data</label>
     </section>
@@ -93,8 +125,13 @@
       </div>
     </section>
 
+    <section class="block" id="events-block">
+      <h2>Notable days in view</h2>
+      <div id="events-list"></div>
+    </section>
+
     <section class="block">
-      <h2>Yield</h2>
+      <h2 id="legend-title">Yield</h2>
       <div id="legend"><div id="legend-bar"></div><div id="legend-ticks"></div></div>
     </section>
 
@@ -102,15 +139,15 @@
       <h2>About</h2>
       <p>Height is the annualised yield a US Treasury security of that maturity
       paid on that day. The near edge is short-dated debt, the far edge is the
-      30&#8209;year bond.</p>
+      30&#8209;year bond. Recessions fall across the surface as shade.</p>
       <p><strong>Reconstructed data.</strong> The Treasury stopped issuing the
       30&#8209;year bond between February 2002 and February 2006, and did not
       publish a 1&#8209;month rate before July 2001. Those gaps are filled by
       interpolation so the surface stays continuous, and shaded paler where
       that has happened.</p>
       <p class="src">Yields: US Department of the Treasury. Policy rate, balance
-      sheet and market series: Federal Reserve Economic Data, St.&nbsp;Louis Fed.
-      Both are US government works and carry no copyright.
+      sheet, term premium, NASDAQ, VIX and recession dating: Federal Reserve
+      Economic Data, St.&nbsp;Louis Fed. S&amp;P 500 closing prices from 1982.
       <span id="stamp"></span></p>
       <p class="src">Built with <a href="vendor/THREE-LICENSE.txt">three.js</a>,
       used under the MIT licence.</p>
@@ -119,7 +156,8 @@
 
 </main>
 
-<noscript><p style="padding:2rem;color:#eee">This visualisation needs JavaScript.</p></noscript>
+<div id="print-host" aria-hidden="true"></div>
+<noscript><p style="padding:2rem">This visualisation needs JavaScript.</p></noscript>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

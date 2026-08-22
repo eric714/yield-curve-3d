@@ -1,66 +1,96 @@
 /**
- * Ties everything together: loads the data, builds the controls, and runs the
- * render loop.
+ * Ties everything together: loads the data, builds the controls, keeps the URL
+ * in step with what is on screen, and runs the render loop.
  */
 import * as THREE from "three";
-import { load, longDate, maturityLabel, monthYear, pct } from "./data.js";
+import { load, longDate, monthYear } from "./data.js";
 import { Stage, BOX } from "./scene.js";
-import { Layers } from "./layers.js";
+import { Layers, HEIGHT_MODES } from "./layers.js";
+import { Inspector } from "./inspector.js";
+import { THEMES, initialTheme, remember, applyCss } from "./theme.js";
 import { cssGradient } from "./colormap.js";
+import * as snapshot from "./snapshot.js";
 
 const $ = (sel) => document.querySelector(sel);
 
 /** Assigned by buildSlider(); repositions the handles after any range change. */
 let syncSlider = () => {};
 
+const MIN_SPAN = 15;   // trading days
+
+const TOGGLES = {
+  qe:     { key: "showRegimes",    el: "#opt-regimes" },
+  rec:    { key: "showRecessions", el: "#opt-recessions" },
+  ev:     { key: "showEvents",     el: "#opt-events" },
+  ff:     { key: "showFedFunds",   el: "#opt-fedfunds" },
+  lines:  { key: "showLines",      el: "#opt-lines" },
+  recon:  { key: "showRecon",      el: "#opt-recon" },
+};
+
 const state = {
   from: 0,
   to: 0,
+  heightMode: "level",
+  contextSeries: "WALCL",
+  view: "default",
+  theme: "dark",
+  preset: null,
   showRegimes: true,
+  showRecessions: true,
+  showEvents: true,
   showFedFunds: true,
   showLines: true,
   showRecon: true,
-  contextSeries: "WALCL",
-  preset: null,
 };
 
-const MIN_SPAN = 15;   // trading days
-
-let data, stage, layers, summary;
+let data, stage, layers, inspector, summary;
 let dirty = true;
 let extraLabels = [];
+let cursorDay = null;
+let toastTimer = null;
 
 init().catch(showError);
 
 async function init() {
   data = await load();
 
-  stage = new Stage($("#scene"), $("#labels"));
-  layers = new Layers(stage, data);
+  state.theme = initialTheme();
+  applyCss(THEMES[state.theme]);
 
   state.from = 0;
   state.to = data.rows - 1;
+  const restored = readUrl();
+  if (!restored) applyPreset(indexOfPreset("Global financial crisis"), false);
+
+  stage = new Stage($("#scene"), $("#labels"), THEMES[state.theme]);
+  layers = new Layers(stage, data, THEMES[state.theme]);
+  inspector = new Inspector($("#inspector"), data);
 
   buildPresets();
   buildSlider();
   buildToggles();
   buildViews();
-  buildLegendSwatch();
-  buildProbe();
+  buildSnapshotMenu();
+  buildKeys();
+  $("#legend-bar").style.background = cssGradient();
+  $("#stamp").textContent = `Data through ${monthYear(data.manifest.lastDate)}.`;
 
-  $("#stamp").textContent =
-    `Updated ${monthYear(data.manifest.lastDate)}.`;
-
-  // Open on the global financial crisis. It is the most striking stretch in
-  // the whole series and it makes the controls self-explanatory.
-  applyPreset(data.manifest.presets.findIndex((p) => p.name === "Global financial crisis"));
+  syncControls();
 
   // Reveal and size the canvas before framing the camera, otherwise the
   // aspect ratio is still zero and the opening shot is mis-framed.
   $("#app").hidden = false;
   stage.resize();
-  stage.goTo("default", true);
+  stage.goTo(state.view, true);
   $("#loading").classList.add("done");
+
+  // A handle for poking at the scene from the browser console.
+  window.yieldCurve = {
+    state, stage, layers, data,
+    redraw: () => { dirty = true; },
+    snapshotImage, runSnapshot,
+  };
+
   requestAnimationFrame(frame);
 }
 
@@ -70,28 +100,27 @@ function frame() {
     rebuild();
     dirty = false;
   }
+  stage.lastExtraLabels = extraLabels;
   stage.render(extraLabels);
   requestAnimationFrame(frame);
 }
 
 function rebuild() {
   summary = layers.update(state);
-  stage.buildFrame(data.maturities, layers.timeMarks(summary.rows));
+  const mode = HEIGHT_MODES[state.heightMode];
+  stage.buildFrame(data.maturities, layers.timeMarks(summary.rows), mode.unit);
 
   extraLabels = summary.regimeLabels.slice();
-
   if (summary.ff) {
     extraLabels.push({
-      p: [-8, stage.y(summary.ff.latest) + 4.5, BOX.D],
-      text: "Fed funds",
-      cls: "axis-title",
+      p: [BOX.FF_X, stage.y(summary.ff.latest - layers.offsetFor(state.heightMode, state.to)) + 4.5, BOX.D],
+      text: "Fed funds", cls: "axis-title",
     });
   }
   if (summary.wall) {
     extraLabels.push({
-      p: [summary.wall.wallX, summary.wall.wallTop + 5, BOX.D * 0.5],
-      text: shortSeriesName(),
-      cls: "axis-title",
+      p: [BOX.WALL_X, summary.wall.wallTop + 5, BOX.D * 0.5],
+      text: shortSeriesName(), cls: "axis-title",
     });
     $("#context-note").textContent = contextCaption(summary.wall);
   } else {
@@ -99,12 +128,66 @@ function rebuild() {
       ? "The back wall is empty."
       : "No data for this series in the selected range.";
   }
+  if (state.showRecessions && (data.manifest.recessions || []).some(
+      (r) => r.end >= data.dates[state.from] && r.start <= data.dates[state.to])) {
+    extraLabels.push({
+      p: [(BOX.RAIL_X0 + BOX.RAIL_X1) / 2 + 8, stage.y(stage.valueMin) + 1.5, BOX.D * 0.5],
+      text: "Recessions", cls: "era",
+    });
+  }
 
-  updateLegend(summary.colourMax);
+  layers.setCursor(cursorDay);
+  updateLegend();
   updateRangeReadout();
+  updateEventList(summary.events);
+  $("#height-note").textContent = mode.note;
+  if (cursorDay != null) inspector.show(cursorDay, state, summary);
+  writeUrl();
+}
+
+/* ---------------------------------------------------------------- state */
+function readUrl() {
+  const params = new URLSearchParams(location.hash.slice(1));
+  if (![...params.keys()].length) return false;
+  const from = params.get("from"), to = params.get("to");
+  if (from && to) {
+    state.from = data.indexOf(from);
+    state.to = Math.min(data.rows - 1, data.indexOf(to));
+    if (state.to - state.from < MIN_SPAN) state.to = Math.min(data.rows - 1, state.from + MIN_SPAN);
+  }
+  if (HEIGHT_MODES[params.get("m")]) state.heightMode = params.get("m");
+  if (params.get("w")) state.contextSeries = params.get("w");
+  if (params.get("v")) state.view = params.get("v");
+  if (params.get("t") === "light" || params.get("t") === "dark") state.theme = params.get("t");
+  if (params.has("s")) {
+    const on = new Set(params.get("s").split(",").filter(Boolean));
+    for (const [code, spec] of Object.entries(TOGGLES)) state[spec.key] = on.has(code);
+  }
+  applyCss(THEMES[state.theme]);
+  return true;
+}
+
+function currentUrl() {
+  const params = new URLSearchParams();
+  params.set("from", data.dates[state.from]);
+  params.set("to", data.dates[state.to]);
+  params.set("m", state.heightMode);
+  params.set("w", state.contextSeries);
+  params.set("v", state.view);
+  params.set("t", state.theme);
+  params.set("s", Object.entries(TOGGLES)
+    .filter(([, spec]) => state[spec.key]).map(([code]) => code).join(","));
+  return `${location.origin}${location.pathname}#${params}`;
+}
+
+function writeUrl() {
+  history.replaceState(null, "", `#${currentUrl().split("#")[1]}`);
 }
 
 /* -------------------------------------------------------------- presets */
+const indexOfPreset = (name) =>
+  data.manifest.presets.findIndex((p) => p.name === name);
+
 function buildPresets() {
   const host = $("#presets");
   data.manifest.presets.forEach((preset, i) => {
@@ -116,13 +199,14 @@ function buildPresets() {
   });
 }
 
-function applyPreset(index) {
+function applyPreset(index, redraw = true) {
   if (index < 0) index = 0;
   const preset = data.manifest.presets[index];
   state.from = data.indexOf(preset.start);
   state.to = Math.min(data.rows - 1, data.indexOf(preset.end));
   if (state.to - state.from < MIN_SPAN) state.to = state.from + MIN_SPAN;
   state.preset = index;
+  if (!redraw) return;
   $("#preset-note").textContent = preset.note;
   markPreset();
   syncSlider();
@@ -150,7 +234,6 @@ function buildSlider() {
     lo: el.querySelector('[data-handle="lo"]'),
     hi: el.querySelector('[data-handle="hi"]'),
   };
-
   const posFor = (index) => (index / (data.rows - 1)) * 100;
 
   syncSlider = () => {
@@ -168,11 +251,9 @@ function buildSlider() {
 
   const setHandle = (which, index) => {
     if (which === "lo") {
-      state.from = Math.min(index, state.to - MIN_SPAN);
-      state.from = Math.max(0, state.from);
+      state.from = Math.max(0, Math.min(index, state.to - MIN_SPAN));
     } else {
-      state.to = Math.max(index, state.from + MIN_SPAN);
-      state.to = Math.min(data.rows - 1, state.to);
+      state.to = Math.min(data.rows - 1, Math.max(index, state.from + MIN_SPAN));
     }
     clearPreset();
     syncSlider();
@@ -184,7 +265,7 @@ function buildSlider() {
     handle.addEventListener("pointerdown", (ev) => {
       handle.setPointerCapture(ev.pointerId);
       const move = (e) => setHandle(which, indexAt(e.clientX));
-      const up = (e) => {
+      const up = () => {
         handle.releasePointerCapture(ev.pointerId);
         handle.removeEventListener("pointermove", move);
         handle.removeEventListener("pointerup", up);
@@ -200,18 +281,15 @@ function buildSlider() {
       let step = steps[ev.key];
       if (step === undefined) return;
       if (ev.shiftKey) step *= 21;
-      const current = which === "lo" ? state.from : state.to;
-      setHandle(which, current + step);
+      setHandle(which, (which === "lo" ? state.from : state.to) + step);
       ev.preventDefault();
     });
   }
 
-  // Clicking the track moves the nearer handle.
   el.addEventListener("pointerdown", (ev) => {
     if (ev.target.classList.contains("handle")) return;
     const index = indexAt(ev.clientX);
-    const which = Math.abs(index - state.from) < Math.abs(index - state.to) ? "lo" : "hi";
-    setHandle(which, index);
+    setHandle(Math.abs(index - state.from) < Math.abs(index - state.to) ? "lo" : "hi", index);
   });
 
   syncSlider();
@@ -226,148 +304,269 @@ function updateRangeReadout() {
     years >= 1.4 ? `${years.toFixed(1)} years` : `${Math.round(days / 21)} months`;
 }
 
-/* -------------------------------------------------------------- toggles */
+/* -------------------------------------------------------------- controls */
+function syncControls() {
+  for (const spec of Object.values(TOGGLES)) $(spec.el).checked = state[spec.key];
+  $("#height-mode").value = state.heightMode;
+  $("#context-series").value = state.contextSeries;
+  if (state.preset !== null) {
+    $("#preset-note").textContent = data.manifest.presets[state.preset].note;
+  }
+  markPreset();
+  syncSlider();
+}
+
 function buildToggles() {
-  const map = {
-    "#opt-regimes": "showRegimes",
-    "#opt-fedfunds": "showFedFunds",
-    "#opt-lines": "showLines",
-    "#opt-recon": "showRecon",
-  };
-  for (const [sel, key] of Object.entries(map)) {
-    const el = $(sel);
-    el.checked = state[key];
-    el.addEventListener("change", () => { state[key] = el.checked; dirty = true; });
+  for (const spec of Object.values(TOGGLES)) {
+    const el = $(spec.el);
+    el.addEventListener("change", () => { state[spec.key] = el.checked; dirty = true; });
   }
 
-  const select = $("#context-series");
-  select.value = state.contextSeries;
-  select.addEventListener("change", () => {
-    state.contextSeries = select.value;
+  $("#height-mode").addEventListener("change", (ev) => {
+    state.heightMode = ev.target.value;
+    dirty = true;
+  });
+  $("#context-series").addEventListener("change", (ev) => {
+    state.contextSeries = ev.target.value;
     dirty = true;
   });
 
-  const toggle = $("#panel-toggle");
-  toggle.addEventListener("click", () => {
+  $("#theme-toggle").addEventListener("click", () => {
+    state.theme = state.theme === "dark" ? "light" : "dark";
+    const theme = THEMES[state.theme];
+    applyCss(theme);
+    remember(state.theme);
+    stage.setTheme(theme);
+    layers.setTheme(theme);
+    dirty = true;
+  });
+
+  const collapse = () => {
     $("#app").classList.toggle("collapsed");
     setTimeout(() => stage.resize(), 320);
-  });
-  // A double-click on empty stage also collapses the panel.
+  };
+  $("#panel-toggle").addEventListener("click", collapse);
   $("#stage").addEventListener("dblclick", (ev) => {
-    if (ev.target.id !== "scene") return;
-    $("#app").classList.toggle("collapsed");
-    setTimeout(() => stage.resize(), 320);
+    if (ev.target.id === "scene") collapse();
   });
+
+  buildCursor();
 }
 
 function buildViews() {
   $(".views").addEventListener("click", (ev) => {
     const name = ev.target.dataset?.view;
-    if (name) stage.goTo(name);
+    if (!name) return;
+    state.view = name;
+    stage.goTo(name);
+    writeUrl();
   });
 }
 
 /* --------------------------------------------------------------- legend */
-function buildLegendSwatch() {
-  $("#legend-bar").style.background = cssGradient();
-}
+function updateLegend() {
+  const mode = HEIGHT_MODES[state.heightMode];
+  $("#legend-title").textContent = mode.label;
+  $("#legend-bar").style.background = cssGradient(mode.ramp);
 
-function updateLegend(max) {
   const host = $("#legend-ticks");
-  const steps = 5;
   host.innerHTML = "";
+  const steps = 5;
+  const lo = mode.ramp === "diverging" ? -summary.colourAbs : 0;
+  const hi = mode.ramp === "diverging" ? summary.colourAbs : summary.colourMax;
   for (let i = 0; i < steps; i++) {
+    const v = lo + ((hi - lo) * i) / (steps - 1);
     const span = document.createElement("span");
-    span.textContent = `${((max * i) / (steps - 1)).toFixed(1)}%`;
+    span.textContent = `${v > 0 && lo < 0 ? "+" : ""}${v.toFixed(1)}`;
     host.appendChild(span);
   }
 }
 
 function shortSeriesName() {
   return {
-    WALCL: "Fed balance sheet",
-    NASDAQCOM: "NASDAQ Composite",
-    VIXCLS: "VIX",
-    SP500: "S&P 500",
+    WALCL: "Fed balance sheet", SP500: "S&P 500", NASDAQCOM: "NASDAQ Composite",
+    VIXCLS: "VIX", THREEFYTP10: "Term premium",
   }[state.contextSeries] || "";
 }
 
 function contextCaption(wall) {
   const change = wall.changePct;
-  if (change === null || !isFinite(change)) return wall.label;
-  const dir = change >= 0 ? "up" : "down";
-  return `${wall.firstText} → ${wall.lastText} over this range, ` +
-         `${dir} ${Math.abs(change).toFixed(0)}%.`;
+  const base = `${wall.firstText} → ${wall.lastText} over this range`;
+  if (change === null || !isFinite(change) || wall.id === "THREEFYTP10") return `${base}.`;
+  return `${base}, ${change >= 0 ? "up" : "down"} ${Math.abs(change).toFixed(0)}%.`;
 }
 
-/* ---------------------------------------------------------------- probe */
-function buildProbe() {
+/* --------------------------------------------------------------- events */
+function updateEventList(events) {
+  const host = $("#events-list");
+  host.innerHTML = "";
+  if (!events.length) {
+    host.innerHTML = '<p class="empty">No marked events in this range.</p>';
+    return;
+  }
+  for (const ev of events) {
+    const btn = document.createElement("button");
+    btn.innerHTML = `<b>${escapeHtml(ev.title)}</b><time>${longDate(ev.date)}</time>`;
+    btn.addEventListener("click", () => {
+      cursorDay = data.indexOf(ev.date);
+      inspector.pinned = cursorDay;
+      layers.setCursor(cursorDay);
+      inspector.show(cursorDay, state, summary);
+    });
+    host.appendChild(btn);
+  }
+}
+
+/* ---------------------------------------------------------------- cursor */
+/**
+ * The cursor picks a date, not a point. Rays that miss the surface fall
+ * through to an invisible floor plane, so sliding along the empty part of the
+ * box still scrubs through time.
+ */
+function buildCursor() {
   const canvas = $("#scene");
-  const probe = $("#probe");
-  const regimeBox = $("#regime-now");
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const local = new THREE.Vector3();
 
-  const hide = () => { probe.hidden = true; regimeBox.hidden = true; };
-
-  canvas.addEventListener("pointerleave", hide);
-  canvas.addEventListener("pointermove", (ev) => {
+  const dateAt = (ev) => {
     const rect = canvas.getBoundingClientRect();
     pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, stage.camera);
-
-    const hits = raycaster.intersectObject(layers.surface, false);
-    if (!hits.length) { hide(); return; }
-
+    const hits = raycaster.intersectObjects([layers.surface, stage.pickPlane], false);
+    if (!hits.length) return null;
     local.copy(hits[0].point);
     stage.world.worldToLocal(local);
-
     const rows = layers.rows;
-    const cols = data.cols;
-    const col = clamp(Math.round((local.x / BOX.W) * (cols - 1)), 0, cols - 1);
-    const rowSlot = clamp(Math.round((local.z / BOX.D) * (rows.length - 1)), 0, rows.length - 1);
-    const day = rows[rowSlot];
+    const slot = clamp(Math.round((local.z / BOX.D) * (rows.length - 1)), 0, rows.length - 1);
+    return rows[slot];
+  };
 
-    const value = data.at(day, col);
-    const iso = data.dates[day];
-    const reconstructed = col < data.realLow[day] || col > data.realHigh[day];
+  canvas.addEventListener("pointermove", (ev) => {
+    if (inspector.pinned != null) return;
+    const day = dateAt(ev);
+    if (day === cursorDay) return;
+    cursorDay = day;
+    layers.setCursor(day);
+    if (day == null) inspector.clear(); else inspector.show(day, state, summary);
+  });
 
-    probe.innerHTML =
-      `<b>${pct(value)}</b> &nbsp;<span class="p-date">at ${maturityLabel(data.maturities[col])}</span>` +
-      `<br><span class="p-date">${longDate(iso)}</span>` +
-      (reconstructed ? `<span class="p-recon">Reconstructed — not published</span>` : "");
-    probe.hidden = false;
-    probe.style.left = `${ev.clientX - rect.left}px`;
-    probe.style.top = `${ev.clientY - rect.top}px`;
+  canvas.addEventListener("pointerleave", () => {
+    if (inspector.pinned != null) return;
+    cursorDay = null;
+    layers.setCursor(null);
+    inspector.clear();
+  });
 
-    const regime = data.manifest.regimes.find((r) => iso >= r.start && iso <= r.end);
-    if (regime && state.showRegimes) {
-      regimeBox.innerHTML = `<b>${regime.name}</b><span>${regime.note}</span>`;
-      regimeBox.hidden = false;
+  // A click pins the date so the pointer can leave without losing the reading.
+  canvas.addEventListener("click", (ev) => {
+    if (inspector.pinned != null) {
+      inspector.pinned = null;
     } else {
-      regimeBox.hidden = true;
+      const day = dateAt(ev);
+      if (day == null) return;
+      inspector.pinned = day;
+      cursorDay = day;
+    }
+    layers.setCursor(cursorDay);
+    if (cursorDay != null) inspector.show(cursorDay, state, summary);
+  });
+}
+
+/* -------------------------------------------------------------- snapshot */
+function buildSnapshotMenu() {
+  const toggle = $("#snap-toggle");
+  const menu = $("#snap-menu");
+
+  const close = () => { menu.hidden = true; toggle.setAttribute("aria-expanded", "false"); };
+  toggle.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    menu.hidden = !menu.hidden;
+    toggle.setAttribute("aria-expanded", String(!menu.hidden));
+  });
+  document.addEventListener("click", close);
+  menu.addEventListener("click", (ev) => ev.stopPropagation());
+
+  menu.addEventListener("click", (ev) => {
+    const action = ev.target.closest("button")?.dataset.snap;
+    if (action) { close(); runSnapshot(action); }
+  });
+}
+
+function snapshotImage(scale = 2) {
+  const range = `${monthYear(data.dates[state.from])} to ${monthYear(data.dates[state.to])}`;
+  const mode = HEIGHT_MODES[state.heightMode];
+  return snapshot.compose({
+    stage,
+    theme: THEMES[state.theme],
+    title: "The Shape of Money",
+    subtitle: `US Treasury yield curve, ${range}` +
+      (state.heightMode === "level" ? "" : ` · ${mode.label}`),
+    footer: "US Treasury; Federal Reserve Economic Data, St. Louis Fed",
+    scale,
+  });
+}
+
+async function runSnapshot(action) {
+  try {
+    const stamp = `${data.dates[state.from]}_${data.dates[state.to]}`;
+    if (action === "link") return toast(await snapshot.copyLink(currentUrl()));
+    if (action === "x") {
+      return toast(snapshot.shareOnX(currentUrl(),
+        "The US Treasury yield curve in 3D — every trading day since 1990"));
+    }
+    const canvas = snapshotImage(action === "print" ? 2.5 : 2);
+    if (action === "download") return toast(await snapshot.download(canvas, `yield-curve-${stamp}.png`));
+    if (action === "copy") return toast(await snapshot.copyImage(canvas));
+    if (action === "tab") return toast(await snapshot.openInNewTab(canvas));
+    if (action === "print") return toast(await snapshot.print(canvas, $("#print-host")));
+  } catch (err) {
+    toast(err.message || "That did not work");
+  }
+}
+
+function buildKeys() {
+  window.addEventListener("keydown", (ev) => {
+    const meta = ev.metaKey || ev.ctrlKey;
+    const key = ev.key.toLowerCase();
+    if (key === "s" && meta && ev.altKey) { ev.preventDefault(); runSnapshot("download"); }
+    else if (key === "s" && meta && ev.shiftKey) { ev.preventDefault(); runSnapshot("copy"); }
+    else if (key === "s" && ev.altKey && !meta) { ev.preventDefault(); runSnapshot("link"); }
+    else if (key === "p" && meta) { ev.preventDefault(); runSnapshot("print"); }
+    else if (key === "escape") {
+      inspector.pinned = null;
+      cursorDay = null;
+      layers.setCursor(null);
+      inspector.clear();
+      $("#snap-menu").hidden = true;
     }
   });
 }
 
+function toast(message) {
+  const el = $("#toast");
+  el.textContent = message;
+  el.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.hidden = true; }, 2400);
+}
+
+/* ---------------------------------------------------------------- utils */
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
-/* ---------------------------------------------------------------- error */
+const escapeHtml = (s) => String(s).replace(/[&<>"]/g,
+  (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
 function showError(err) {
   console.error(err);
-  const box = $("#loading");
-  box.innerHTML =
+  $("#loading").innerHTML =
     `<p style="max-width:34rem;text-align:center;line-height:1.6">
        <strong>Could not start.</strong><br>${escapeHtml(err.message)}<br><br>
-       <span style="font-size:13px;color:#5a6782">
+       <span style="font-size:13px;opacity:.7">
          If you opened this file directly from your computer, the browser blocks
          it from loading the data. Serve the folder instead, for example by
          running <code>python3 -m http.server</code> in it.
        </span>
      </p>`;
 }
-
-const escapeHtml = (s) =>
-  String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
