@@ -90,7 +90,7 @@ function rebuild() {
   if (summary.wall) {
     extraLabels.push({
       p: [summary.wall.wallX, summary.wall.wallTop + 5, BOX.D * 0.5],
-      text: `${shortSeriesName()} · peak ${summary.wall.maxText}`,
+      text: shortSeriesName(),
       cls: "axis-title",
     });
     $("#context-note").textContent = contextCaption(summary.wall);

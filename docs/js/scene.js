@@ -23,9 +23,9 @@ const MATURITY_TICKS = [1 / 12, 0.25, 0.5, 1, 2, 5, 10, 20, 30];
 // straight down the time axis), elevation, and distance as a multiple of the
 // framing radius. Expressed this way they stay correct if the box changes size.
 const VIEWS = {
-  default: { az: 41, el: 27, dist: 1.06, target: [0, 2, 0] },
-  front:   { az: 0,  el: 11, dist: 0.94, target: [0, -3, 0] },
-  side:    { az: 90, el: 14, dist: 1.02, target: [0, 0, 0] },
+  default: { az: 41, el: 27, dist: 1.06, target: [0, 6, 0] },
+  front:   { az: 0,  el: 11, dist: 0.94, target: [0, 1, 0] },
+  side:    { az: 90, el: 14, dist: 1.02, target: [0, 4, 0] },
   top:     { az: 0,  el: 87, dist: 1.00, target: [0, 0, 0] },
 };
 
@@ -184,7 +184,11 @@ export class Stage {
   /** Distance at which the whole box comfortably fills the frame. */
   framingDistance() {
     const { W, D, H } = BOX;
-    const radius = Math.hypot((W + 28) / 2, H / 2, D / 2);
+    // A bounding sphere over-estimates how much room a flat, wide box needs,
+    // so on a landscape canvas we can safely move in. A portrait phone has no
+    // such slack, and pulling in there would push the axis labels off screen.
+    const slack = this.camera.aspect >= 1.3 ? 0.85 : 0.99;
+    const radius = Math.hypot((W + 28) / 2, H / 2, D / 2) * slack;
     const vFov = (this.camera.fov * Math.PI) / 180;
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * this.camera.aspect);
     return radius / Math.sin(Math.min(vFov, hFov) / 2);
@@ -244,7 +248,10 @@ export class Stage {
       if (v.z > 1) continue;                       // behind the camera
       const px = (v.x * 0.5 + 0.5) * w;
       const py = (-v.y * 0.5 + 0.5) * h;
-      if (px < -80 || px > w + 80 || py < -30 || py > h + 30) continue;
+      // A label whose anchor is close to an edge would be cut in half by the
+      // overlay's clipping, which reads worse than not showing it at all.
+      const margin = label.text.length > 10 ? 78 : 30;
+      if (px < margin || px > w - margin || py < 12 || py > h - 12) continue;
       this.labels.add(px, py, label.text, label.cls);
     }
     this.labels.end();
