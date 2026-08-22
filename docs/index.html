@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>The Shape of Money — 36 Years of the US Treasury Yield Curve in 3D</title>
+<meta name="description" content="An interactive three-dimensional view of the US Treasury yield curve since 1990, alongside the Fed funds rate and the Federal Reserve's balance sheet.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
+<script type="importmap">
+{ "imports": {
+    "three": "./vendor/three.module.js",
+    "three/webgpu": "./vendor/three.module.js",
+    "three/tsl": "./vendor/three.module.js",
+    "three/addons/": "./vendor/"
+} }
+</script>
+</head>
+<body>
+
+<div id="loading"><div class="spinner"></div><p>Loading 36 years of yield curves…</p></div>
+
+<main id="app" hidden>
+
+  <div id="stage">
+    <canvas id="scene"></canvas>
+    <div id="labels" aria-hidden="true"></div>
+    <div id="probe" hidden></div>
+
+    <div id="stage-top">
+      <h1>The Shape of Money</h1>
+      <p class="sub">Every US Treasury yield curve since 1990</p>
+    </div>
+
+    <div id="regime-now" hidden></div>
+
+    <button id="panel-toggle" aria-expanded="true" title="Show or hide the controls">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div id="hint">Drag to rotate · scroll to zoom · right-drag to pan</div>
+  </div>
+
+  <aside id="panel">
+    <section class="block">
+      <h2>Periods of interest</h2>
+      <div id="presets" class="presets"></div>
+      <p id="preset-note" class="note"></p>
+    </section>
+
+    <section class="block">
+      <h2>Date range</h2>
+      <div id="slider" class="slider">
+        <div class="track"></div>
+        <div class="fill"></div>
+        <button class="handle" data-handle="lo" aria-label="Start date"></button>
+        <button class="handle" data-handle="hi" aria-label="End date"></button>
+      </div>
+      <div class="range-readout">
+        <span id="range-lo"></span>
+        <span id="range-span"></span>
+        <span id="range-hi"></span>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Behind the surface</h2>
+      <select id="context-series" aria-label="Series shown on the back wall">
+        <option value="WALCL" selected>Federal Reserve balance sheet</option>
+        <option value="NASDAQCOM">NASDAQ Composite</option>
+        <option value="VIXCLS">VIX (volatility)</option>
+        <option value="SP500">S&amp;P 500 (2016 onward)</option>
+        <option value="none">Nothing</option>
+      </select>
+      <p id="context-note" class="note"></p>
+    </section>
+
+    <section class="block">
+      <h2>Show</h2>
+      <label class="check"><input type="checkbox" id="opt-regimes" checked> QE and QT periods</label>
+      <label class="check"><input type="checkbox" id="opt-fedfunds" checked> Fed funds target</label>
+      <label class="check"><input type="checkbox" id="opt-lines" checked> Individual curves</label>
+      <label class="check"><input type="checkbox" id="opt-recon" checked> Mark reconstructed data</label>
+    </section>
+
+    <section class="block">
+      <h2>View</h2>
+      <div class="views">
+        <button data-view="default">Default</button>
+        <button data-view="front">Curve on</button>
+        <button data-view="side">Along time</button>
+        <button data-view="top">Overhead</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Yield</h2>
+      <div id="legend"><div id="legend-bar"></div><div id="legend-ticks"></div></div>
+    </section>
+
+    <section class="block credits">
+      <h2>About</h2>
+      <p>Height is the annualised yield a US Treasury security of that maturity
+      paid on that day. The near edge is short-dated debt, the far edge is the
+      30&#8209;year bond.</p>
+      <p><strong>Reconstructed data.</strong> The Treasury stopped issuing the
+      30&#8209;year bond between February 2002 and February 2006, and did not
+      publish a 1&#8209;month rate before July 2001. Those gaps are filled by
+      interpolation so the surface stays continuous, and shaded paler where
+      that has happened.</p>
+      <p class="src">Yields: US Department of the Treasury. Policy rate, balance
+      sheet and market series: Federal Reserve Economic Data, St.&nbsp;Louis Fed.
+      Both are US government works and carry no copyright.
+      <span id="stamp"></span></p>
+      <p class="src">Built with <a href="vendor/THREE-LICENSE.txt">three.js</a>,
+      used under the MIT licence.</p>
+    </section>
+  </aside>
+
+</main>
+
+<noscript><p style="padding:2rem;color:#eee">This visualisation needs JavaScript.</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
