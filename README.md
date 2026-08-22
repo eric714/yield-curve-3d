@@ -17,6 +17,7 @@ nothing.
 | `docs/data/` | The prepared dataset the page loads (about 1.4 MB total). |
 | `docs/vendor/` | three.js, the 3D graphics library. Bundled so the site has no outside dependencies. |
 | `pipeline/build_data.py` | Downloads new data and rebuilds `docs/data/`. |
+| `pipeline/build_standalone.py` | Optional: packs the whole site into one shareable file. |
 | `data/raw/` | Cached original downloads. Once a year is saved here it is never fetched again. |
 | `.github/workflows/` | The robot that keeps the data current. |
 
@@ -98,6 +99,24 @@ cd yield-curve-3d && python3 pipeline/build_data.py
 
 It only downloads what it doesn't already have. A run with nothing new takes a
 couple of seconds; the very first run takes about a minute.
+
+---
+
+## A single-file copy
+
+There is also a version that packs the whole thing - code, graphics library and
+all 36 years of data - into one HTML file:
+
+```bash
+cd yield-curve-3d && python3 pipeline/build_standalone.py
+```
+
+It writes `dist/shape-of-money.html`, about 4.6 MB. That file needs no server
+and no internet connection. Double-click it, put it on a USB stick, or email
+it to someone. Rebuild it whenever you want a fresh copy of the data.
+
+The hosted site is the better option for anything public, because it updates
+itself. This is for sending to one person.
 
 ---
 
