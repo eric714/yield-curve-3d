@@ -86,6 +86,14 @@ FRED_SERIES = {
     "THREEFYTP10": "10-year Treasury term premium (ACM)",
 }
 
+# S&P 500 index values are the property of S&P Dow Jones Indices, and the daily
+# closes here came from a Yahoo Finance download whose terms bar commercial
+# redistribution. Neither matters while the site is free and non-commercial,
+# and nothing else depends on this series: the NASDAQ Composite covers 1971
+# onwards and the VIX starts the same day the yield curve does. If this site
+# ever earns money, remove "SP500" from the series list below and from the
+# dropdown in docs/index.html, and everything else keeps working.
+#
 # Yahoo Finance daily S&P 500, supplied as a spreadsheet. FRED only carries the
 # last ten years because of index licensing, so the workbook provides the deep
 # history and FRED extends it to the present. The two overlap by four and a

@@ -318,6 +318,26 @@ the very top.
 
 ---
 
+## If this site ever makes money, read this first
+
+Two things are fine for a free, non-commercial site and stop being fine the day
+there is revenue:
+
+- **S&P 500 index values** belong to S&P Dow Jones Indices, who license display
+  rights commercially. The deep history here also came from a Yahoo Finance
+  download, whose terms bar commercial redistribution.
+- Nothing else in the project has any licensing exposure. Treasury and Federal
+  Reserve data are US government works, NBER recession dates are published
+  facts, and three.js is MIT.
+
+The fix is one line in each of two files, and it is marked in both:
+drop `"SP500"` from the series list in `pipeline/build_data.py` and its
+`<option>` from `docs/index.html`. Nothing depends on it. The NASDAQ Composite
+runs from 1971 and the VIX starts on 2 January 1990, the same day the yield
+curve does, so the back wall keeps working either way.
+
+This is a note about where the risk sits, not legal advice.
+
 ## About the S&P 500
 
 S&P 500 index values are the intellectual property of S&P Dow Jones Indices,
