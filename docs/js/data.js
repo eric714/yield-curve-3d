@@ -68,6 +68,16 @@ export async function load() {
       return yields[day * cols + col];
     },
 
+    /** Raw tenor values for one day, as a view into the backing array. */
+    tenorRow(day) {
+      return tenors.subarray(day * tenorCount, (day + 1) * tenorCount);
+    },
+
+    /** Bitmask of which tenors were published rather than filled in. */
+    publishedMask(day) {
+      return published[day];
+    },
+
     /** The published tenor curve for one day: [{label, years, value, real}]. */
     tenorCurve(day) {
       const base = day * tenorCount;
@@ -128,8 +138,10 @@ export const pct = (v) => `${v.toFixed(2)}%`;
 /** "1 Mo", "18 Mo", "10 Yr" — a readable label for a maturity in years. */
 export function maturityLabel(years) {
   if (years < 0.95) {
-    const months = Math.round(years * 12);
-    return `${months} mo`;
+    // Treasury publishes a 1.5-month tenor, so months are not always whole.
+    const months = years * 12;
+    const whole = Math.abs(months - Math.round(months)) < 0.05;
+    return `${whole ? Math.round(months) : Math.round(months * 10) / 10} mo`;
   }
   const rounded = years < 2 ? Math.round(years * 10) / 10 : Math.round(years);
   return `${rounded} yr`;

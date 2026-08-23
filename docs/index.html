@@ -55,7 +55,20 @@
       </button>
     </div>
 
-    <div id="inspector" hidden></div>
+    <div id="corner">
+      <div id="inspector" hidden></div>
+      <div id="legend-box">
+        <button id="legend-toggle" aria-expanded="true">
+          <span id="legend-title">Yield</span>
+          <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.5 6 8.5 10 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="legend-body">
+          <div id="legend-bar"></div>
+          <div id="legend-ticks"></div>
+          <p id="legend-recon"><span class="chip"></span> paler shading marks reconstructed data</p>
+        </div>
+      </div>
+    </div>
     <div id="toast" hidden></div>
     <div id="hint">Drag to rotate · scroll to zoom · move across the surface to read a date</div>
   </div>
@@ -71,7 +84,7 @@
       <h2>Date range</h2>
       <div id="slider" class="slider">
         <div class="track"></div>
-        <div class="fill"></div>
+        <button class="fill" aria-label="Move the whole range" title="Drag to move the whole range"></button>
         <button class="handle" data-handle="lo" aria-label="Start date"></button>
         <button class="handle" data-handle="hi" aria-label="End date"></button>
       </div>
@@ -106,13 +119,20 @@
     </section>
 
     <section class="block">
+      <h2>Maturities on the surface</h2>
+      <label class="check all"><input type="checkbox" id="tenor-all" checked> Select all</label>
+      <div id="tenor-list" class="tenors"></div>
+      <p class="note">Switch any off and the curve is re-interpolated through
+      the ones that are left, so the surface stays continuous.</p>
+    </section>
+
+    <section class="block">
       <h2>Show</h2>
       <label class="check"><input type="checkbox" id="opt-regimes" checked> <span class="sw sw-qe"></span> QE and QT periods</label>
       <label class="check"><input type="checkbox" id="opt-recessions" checked> <span class="sw sw-rec"></span> Recessions</label>
       <label class="check"><input type="checkbox" id="opt-events" checked> <span class="sw sw-ev"></span> Event markers</label>
       <label class="check"><input type="checkbox" id="opt-fedfunds" checked> <span class="sw sw-ff"></span> Fed funds target</label>
-      <label class="check"><input type="checkbox" id="opt-lines" checked> Individual curves</label>
-      <label class="check"><input type="checkbox" id="opt-recon" checked> Mark reconstructed data</label>
+      <label class="check"><input type="checkbox" id="opt-lines" checked> Daily curve lines</label>
     </section>
 
     <section class="block">
@@ -128,11 +148,6 @@
     <section class="block" id="events-block">
       <h2>Notable days in view</h2>
       <div id="events-list"></div>
-    </section>
-
-    <section class="block">
-      <h2 id="legend-title">Yield</h2>
-      <div id="legend"><div id="legend-bar"></div><div id="legend-ticks"></div></div>
     </section>
 
     <section class="block credits">
@@ -151,6 +166,17 @@
       <span id="stamp"></span></p>
       <p class="src">Built with <a href="vendor/THREE-LICENSE.txt">three.js</a>,
       used under the MIT licence.</p>
+    </section>
+
+    <section class="block disclaimer">
+      <h2>About the data</h2>
+      <p>This is an educational visualisation of US Treasury yield data. While
+      we try to present the data accurately, errors, delays, missing data or
+      visualisation artefacts may occur. Always verify important information
+      with the original data source.</p>
+      <p><strong>For educational and informational purposes only. Not
+      investment advice.</strong> No warranty of any kind is given, express or
+      implied, as to accuracy, completeness or fitness for any purpose.</p>
     </section>
   </aside>
 

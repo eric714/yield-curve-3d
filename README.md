@@ -26,6 +26,10 @@ nothing.
   to 1990, the NASDAQ, the VIX, or the 10-year term premium.
 - **Share the exact view.** Every control writes to the URL, so a link restores
   the dates, the height mode, the back wall, the camera and the theme.
+- **Choose the maturities.** Switch any of the fourteen tenors off and the
+  curve is re-interpolated through the ones that are left, so the surface stays
+  continuous rather than developing holes, and the maturity axis re-lays itself
+  to the range you kept. Two is the minimum.
 - **Take the picture.** Download, copy, open in a new tab, print, or share on
   X. The image is recomposited with the axis labels, the sources and a
   `yieldcurve3d.com` watermark, at twice screen resolution.
@@ -37,6 +41,10 @@ nothing.
 | `⌥S` | Copy link |
 | `⌘P` | Print |
 | `Esc` | Clear the pinned date |
+
+The date slider has three grips: the two ends change the range, and the bar
+between them slides the whole window without changing its length, which is how
+you walk a fixed span forward through history.
 
 ---
 
@@ -290,6 +298,19 @@ copyright. NBER recession dates are published facts.
 
 Nothing. GitHub Pages is free for public repositories, and Actions minutes are
 free too. A domain name is optional.
+
+## Disclaimer
+
+Shown on the site itself, and repeated here:
+
+> **About the data.** This is an educational visualisation of US Treasury yield
+> data. While we try to present the data accurately, errors, delays, missing
+> data or visualisation artefacts may occur. Always verify important
+> information with the original data source.
+>
+> **For educational and informational purposes only. Not investment advice.**
+> No warranty of any kind is given, express or implied, as to accuracy,
+> completeness or fitness for any purpose.
 
 ## Licence
 

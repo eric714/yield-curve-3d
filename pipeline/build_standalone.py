@@ -29,6 +29,7 @@ MODULES = [
     "vendor/OrbitControls.js",
     "js/theme.js",
     "js/colormap.js",
+    "js/interpolate.js",
     "js/data.js",
     "js/scene.js",
     "js/layers.js",
@@ -49,6 +50,7 @@ RESOLVE = {
     "./theme.js": "js/theme.js",
     "./inspector.js": "js/inspector.js",
     "./snapshot.js": "js/snapshot.js",
+    "./interpolate.js": "js/interpolate.js",
 }
 
 DATA_FILES = ["data/manifest.json", "data/context.json",
@@ -80,7 +82,29 @@ def rewrite_imports(source):
     return SPECIFIER.sub(swap, source)
 
 
+def check_coverage():
+    """Fail loudly if a module or an import was added without registering it.
+
+    A missed entry produces a bundle that loads and then dies on an unresolved
+    import, which is a much worse failure than not building at all.
+    """
+    listed = set(MODULES)
+    problems = []
+    for name in sorted(os.listdir(os.path.join(DOCS, "js"))):
+        if not name.endswith(".js"):
+            continue
+        key = f"js/{name}"
+        if key not in listed:
+            problems.append(f"{key} is not in MODULES")
+        for spec in re.findall(r'from\s+"(\./[^"]+)"', read(key)):
+            if spec not in RESOLVE:
+                problems.append(f"{key} imports {spec}, which is not in RESOLVE")
+    if problems:
+        raise SystemExit("Cannot bundle:\n  " + "\n  ".join(problems))
+
+
 def main():
+    check_coverage()
     html = read("index.html")
     css = read("style.css")
 

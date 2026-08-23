@@ -126,11 +126,42 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
 #labels div.era{color:var(--ink-dim);font-family:var(--font);font-size:11px}
 
 /* ------------------------------------------------------------- inspector */
+/* Readout and legend share the bottom-left corner, stacked. */
+#corner{
+  position:absolute;left:22px;bottom:22px;z-index:5;
+  display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+  max-height:calc(100% - 44px);
+}
 #inspector{
-  position:absolute;left:22px;bottom:22px;width:262px;padding:.7rem .8rem;
+  width:262px;padding:.7rem .8rem;
   background:var(--bg-float);border:1px solid var(--line);border-radius:9px;
   box-shadow:var(--shadow);backdrop-filter:blur(10px);
-  font-size:12px;z-index:5;pointer-events:none;
+  font-size:12px;pointer-events:none;
+}
+
+#legend-box{
+  width:262px;background:var(--bg-float);border:1px solid var(--line);
+  border-radius:9px;box-shadow:var(--shadow);backdrop-filter:blur(10px);
+  overflow:hidden;
+}
+#legend-toggle{
+  display:flex;width:100%;align-items:center;justify-content:space-between;
+  gap:.5rem;padding:.5rem .8rem;background:none;border:0;cursor:pointer;
+  color:var(--ink-faint);font-size:11px;text-transform:uppercase;
+  letter-spacing:.09em;
+}
+#legend-toggle:hover{color:var(--ink)}
+#legend-toggle svg{transition:transform .18s;flex:0 0 auto}
+#legend-box.closed #legend-toggle svg{transform:rotate(-90deg)}
+#legend-box.closed #legend-body{display:none}
+#legend-body{padding:0 .8rem .7rem}
+#legend-recon{
+  display:flex;align-items:center;gap:.4rem;
+  margin-top:.5rem;font-size:10.5px;color:var(--ink-faint);
+}
+#legend-recon .chip{
+  width:16px;height:9px;border-radius:3px;flex:0 0 16px;
+  background:linear-gradient(90deg,#7f8794,#9aa2ae);
 }
 .ins-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.5rem}
 .ins-date{font-weight:600;font-size:13px}
@@ -167,9 +198,16 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
 }
 
 .slider{position:relative;height:26px;margin:.55rem 0 .3rem}
-.slider .track,.slider .fill{position:absolute;top:11px;height:4px;border-radius:4px}
-.slider .track{left:0;right:0;background:var(--line)}
-.slider .fill{background:var(--accent)}
+.slider .track,.slider .fill{position:absolute;border-radius:4px}
+.slider .track{left:0;right:0;top:11px;height:4px;background:var(--line)}
+/* The fill is a control, not decoration: grabbing it slides the whole range.
+   It is taller than the track so there is something to actually take hold of. */
+.slider .fill{
+  top:7px;height:12px;background:var(--accent);border:0;padding:0;
+  cursor:grab;touch-action:none;min-width:6px;
+}
+.slider .fill:active{cursor:grabbing}
+.slider .fill:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
 .slider .handle{
   position:absolute;top:2px;width:16px;height:22px;margin-left:-8px;
   background:var(--ink);border:0;border-radius:4px;cursor:ew-resize;
@@ -189,6 +227,12 @@ select{
 .check{display:flex;align-items:center;gap:.5rem;font-size:13px;
   color:var(--ink-dim);cursor:pointer;padding:.16rem 0}
 .check input{accent-color:var(--accent);cursor:pointer}
+.check.all{font-weight:600;color:var(--ink);margin-bottom:.35rem}
+.tenors{
+  display:grid;grid-template-columns:1fr 1fr;gap:0 .6rem;
+  padding-left:.2rem;border-left:2px solid var(--line);
+}
+.tenors .check{font-size:12px;padding:.1rem 0}
 .sw{width:11px;height:11px;border-radius:3px;flex:0 0 11px}
 .sw-qe{background:linear-gradient(90deg,#3aa8e0,#e05a5a)}
 .sw-rec{background:currentColor;opacity:.35}
@@ -222,6 +266,8 @@ select{
 .credits p{font-size:12.5px;color:var(--ink-dim);margin-bottom:.6rem;line-height:1.5}
 .credits strong{color:var(--ink)}
 .credits .src{font-size:11.5px;color:var(--ink-faint)}
+.disclaimer p{font-size:11.5px;color:var(--ink-faint);line-height:1.5;margin-bottom:.55rem}
+.disclaimer strong{color:var(--ink-dim)}
 .credits a{color:var(--ink-dim);text-decoration:underline;text-underline-offset:2px}
 .credits a:hover{color:var(--accent)}
 
@@ -247,7 +293,9 @@ select{
   #stage-top h1{font-size:18px}
   #stage-top .sub{font-size:12px}
   #hint{display:none}
-  #inspector{left:10px;bottom:10px;width:220px;font-size:11px}
+  #corner{left:10px;bottom:10px;gap:6px}
+  #inspector,#legend-box{width:210px;font-size:11px}
+  .tenors{grid-template-columns:1fr 1fr 1fr}
   .ins-grid{grid-template-columns:1fr 1fr}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

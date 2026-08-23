@@ -779,6 +779,7 @@ def main():
         "lastDate": last,
         "dayCount": len(days),
         "gridCount": GRID_N,
+        "warp": WARP,
         "maturities": [round(m, 6) for m in grid_m],
         "tenorYears": [round(m, 6) for m in TENOR_YEARS],
         "tenorLabels": [label for label, _ in TENORS],

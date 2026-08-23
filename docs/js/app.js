@@ -5,7 +5,7 @@
 import * as THREE from "three";
 import { load, longDate, monthYear } from "./data.js";
 import { Stage, BOX } from "./scene.js";
-import { Layers, HEIGHT_MODES } from "./layers.js";
+import { Layers, HEIGHT_MODES, defaultTenors } from "./layers.js";
 import { Inspector } from "./inspector.js";
 import { THEMES, initialTheme, remember, applyCss } from "./theme.js";
 import { cssGradient } from "./colormap.js";
@@ -24,7 +24,6 @@ const TOGGLES = {
   ev:     { key: "showEvents",     el: "#opt-events" },
   ff:     { key: "showFedFunds",   el: "#opt-fedfunds" },
   lines:  { key: "showLines",      el: "#opt-lines" },
-  recon:  { key: "showRecon",      el: "#opt-recon" },
 };
 
 const state = {
@@ -40,7 +39,8 @@ const state = {
   showEvents: true,
   showFedFunds: true,
   showLines: true,
-  showRecon: true,
+  legendOpen: true,
+  tenors: null,          // null means every maturity
 };
 
 let data, stage, layers, inspector, summary;
@@ -71,6 +71,8 @@ async function init() {
   buildToggles();
   buildViews();
   buildSnapshotMenu();
+  buildTenorPicker();
+  buildLegend();
   buildKeys();
   $("#legend-bar").style.background = cssGradient();
   $("#stamp").textContent = `Data through ${monthYear(data.manifest.lastDate)}.`;
@@ -108,7 +110,8 @@ function frame() {
 function rebuild() {
   summary = layers.update(state);
   const mode = HEIGHT_MODES[state.heightMode];
-  stage.buildFrame(data.maturities, layers.timeMarks(summary.rows), mode.unit);
+  stage.buildFrame(summary.grid, layers.timeMarks(summary.rows), mode.unit,
+                   summary.maturityTicks);
 
   extraLabels = summary.regimeLabels.slice();
   if (summary.ff) {
@@ -159,6 +162,15 @@ function readUrl() {
   if (params.get("w")) state.contextSeries = params.get("w");
   if (params.get("v")) state.view = params.get("v");
   if (params.get("t") === "light" || params.get("t") === "dark") state.theme = params.get("t");
+  if (params.has("tn")) {
+    const mask = parseInt(params.get("tn"), 10);
+    if (Number.isFinite(mask)) {
+      const picked = [];
+      for (let i = 0; i < data.tenorCount; i++) if ((mask >> i) & 1) picked.push(i);
+      if (picked.length >= 2) state.tenors = picked;
+    }
+  }
+  if (params.get("lg") === "0") state.legendOpen = false;
   if (params.has("s")) {
     const on = new Set(params.get("s").split(",").filter(Boolean));
     for (const [code, spec] of Object.entries(TOGGLES)) state[spec.key] = on.has(code);
@@ -177,6 +189,10 @@ function currentUrl() {
   params.set("t", state.theme);
   params.set("s", Object.entries(TOGGLES)
     .filter(([, spec]) => state[spec.key]).map(([code]) => code).join(","));
+  if (state.tenors) {
+    params.set("tn", String(state.tenors.reduce((m, i) => m | (1 << i), 0)));
+  }
+  if (!state.legendOpen) params.set("lg", "0");
   return `${location.origin}${location.pathname}#${params}`;
 }
 
@@ -286,8 +302,53 @@ function buildSlider() {
     });
   }
 
+  // Dragging the middle slides the whole window without changing its length,
+  // which is how you walk a fixed span forward through history.
+  fill.addEventListener("pointerdown", (ev) => {
+    fill.setPointerCapture(ev.pointerId);
+    const grabbed = indexAt(ev.clientX);
+    const span = state.to - state.from;
+    const startFrom = state.from;
+
+    const move = (e) => {
+      const shift = indexAt(e.clientX) - grabbed;
+      const from = Math.max(0, Math.min(data.rows - 1 - span, startFrom + shift));
+      if (from === state.from) return;
+      state.from = from;
+      state.to = from + span;
+      clearPreset();
+      syncSlider();
+      dirty = true;
+    };
+    const up = () => {
+      fill.releasePointerCapture(ev.pointerId);
+      fill.removeEventListener("pointermove", move);
+      fill.removeEventListener("pointerup", up);
+    };
+    fill.addEventListener("pointermove", move);
+    fill.addEventListener("pointerup", up);
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+
+  // Arrow keys nudge the whole window when the middle has focus.
+  fill.addEventListener("keydown", (ev) => {
+    const steps = { ArrowLeft: -1, ArrowRight: 1, PageDown: -252, PageUp: 252 };
+    let step = steps[ev.key];
+    if (step === undefined) return;
+    if (ev.shiftKey) step *= 21;
+    const span = state.to - state.from;
+    const from = Math.max(0, Math.min(data.rows - 1 - span, state.from + step));
+    state.from = from;
+    state.to = from + span;
+    clearPreset();
+    syncSlider();
+    dirty = true;
+    ev.preventDefault();
+  });
+
   el.addEventListener("pointerdown", (ev) => {
-    if (ev.target.classList.contains("handle")) return;
+    if (ev.target.classList.contains("handle") || ev.target.classList.contains("fill")) return;
     const index = indexAt(ev.clientX);
     setHandle(Math.abs(index - state.from) < Math.abs(index - state.to) ? "lo" : "hi", index);
   });
@@ -314,6 +375,7 @@ function syncControls() {
   }
   markPreset();
   syncSlider();
+  syncTenorPicker();
 }
 
 function buildToggles() {
@@ -353,6 +415,70 @@ function buildToggles() {
   buildCursor();
 }
 
+/**
+ * One checkbox per maturity, plus a select-all. Two is the minimum: a surface
+ * needs at least two knots to interpolate between.
+ */
+function buildTenorPicker() {
+  const host = $("#tenor-list");
+  const all = $("#tenor-all");
+  const boxes = [];
+
+  data.tenorLabels.forEach((label, i) => {
+    const wrap = document.createElement("label");
+    wrap.className = "check";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.checked = true;
+    box.dataset.tenor = String(i);
+    wrap.append(box, document.createTextNode(` ${label.replace(" Month", " mo")}`));
+    host.appendChild(wrap);
+    boxes.push(box);
+  });
+
+  const selection = () => boxes.reduce((out, b, i) => (b.checked && out.push(i), out), []);
+
+  const commit = () => {
+    const picked = selection();
+    if (picked.length < 2) return false;
+    state.tenors = picked.length === boxes.length ? null : picked;
+    all.checked = picked.length === boxes.length;
+    all.indeterminate = picked.length > 0 && picked.length < boxes.length;
+    dirty = true;
+    return true;
+  };
+
+  host.addEventListener("change", (ev) => {
+    const box = ev.target;
+    if (!box.dataset.tenor) return;
+    if (!commit()) {
+      box.checked = true;         // refuse to drop below two maturities
+      toast("Keep at least two maturities");
+    }
+  });
+
+  all.addEventListener("change", () => {
+    // "None" would leave nothing to draw, so clearing falls back to the two
+    // ends of the curve, which is the smallest surface that still means
+    // something.
+    const on = all.checked;
+    boxes.forEach((b, i) => {
+      b.checked = on || i === 0 || i === boxes.length - 1;
+    });
+    commit();
+  });
+
+  syncTenorPicker = () => {
+    const picked = state.tenors || defaultTenors(boxes.length);
+    boxes.forEach((b, i) => { b.checked = picked.includes(i); });
+    all.checked = picked.length === boxes.length;
+    all.indeterminate = picked.length < boxes.length;
+  };
+  syncTenorPicker();
+}
+
+let syncTenorPicker = () => {};
+
 function buildViews() {
   $(".views").addEventListener("click", (ev) => {
     const name = ev.target.dataset?.view;
@@ -364,10 +490,27 @@ function buildViews() {
 }
 
 /* --------------------------------------------------------------- legend */
+function buildLegend() {
+  const toggle = $("#legend-toggle");
+  const apply = () => {
+    $("#legend-box").classList.toggle("closed", !state.legendOpen);
+    toggle.setAttribute("aria-expanded", String(state.legendOpen));
+  };
+  toggle.addEventListener("click", () => {
+    state.legendOpen = !state.legendOpen;
+    apply();
+    writeUrl();
+  });
+  apply();
+}
+
 function updateLegend() {
   const mode = HEIGHT_MODES[state.heightMode];
   $("#legend-title").textContent = mode.label;
   $("#legend-bar").style.background = cssGradient(mode.ramp);
+
+  // Only mention reconstructed data when some is actually on screen.
+  $("#legend-recon").hidden = !summary.anyFilled;
 
   const host = $("#legend-ticks");
   host.innerHTML = "";

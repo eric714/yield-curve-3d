@@ -186,7 +186,7 @@ export class Stage {
   }
 
   /* ------------------------------------------------------------- frame */
-  buildFrame(maturities, timeMarks, unit = "%") {
+  buildFrame(maturities, timeMarks, unit = "%", maturityTicks = MATURITY_TICKS) {
     this.frame.clear();
     this.frameLabels = [];
 
@@ -196,7 +196,7 @@ export class Stage {
     const { W, D } = BOX;
 
     // Floor lines running along time, one per labelled maturity.
-    for (const m of MATURITY_TICKS) {
+    for (const m of maturityTicks) {
       const x = this.xForMaturity(m, maturities);
       push([x, 0, 0], [x, 0, D]);
       this.frameLabels.push({ p: [x, -3.5, D + 13], text: maturityLabel(m) });

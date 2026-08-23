@@ -11,6 +11,7 @@ import * as THREE from "three";
 import { BOX } from "./scene.js";
 import { ramp, REGIME_COLOURS } from "./colormap.js";
 import { monthYear } from "./data.js";
+import { pchip } from "./interpolate.js";
 
 // Cap on mesh rows. Longer ranges are sampled down; at 36 years this is about
 // one row every two trading days, far finer than a screen pixel.
@@ -37,6 +38,9 @@ const SERIES_STYLE = {
   VIXCLS:      { colour: 0xe07a9a, unit: "",    scale: 1,    decimals: 1, log: false },
   THREEFYTP10: { colour: 0xb392e0, unit: "pp",  scale: 1,    decimals: 2, log: false },
 };
+
+/** Every tenor, as index positions. */
+export const defaultTenors = (n) => Array.from({ length: n }, (_, i) => i);
 
 export class Layers {
   constructor(stage, data, theme) {
@@ -128,6 +132,20 @@ export class Layers {
     this.cursorCurve.visible = this.cursorFloor.visible = false;
     this.group.add(this.cursorCurve, this.cursorFloor);
 
+    // The surface is resampled every rebuild, either copied straight from the
+    // prebuilt grid or re-interpolated through whichever maturities the reader
+    // has left switched on.
+    this.gridM = new Float64Array(cols);
+    this.gridX = new Float64Array(cols);
+    this.sampled = new Float32Array(maxVerts);
+    this.filled = new Uint8Array(maxVerts);
+    this.knotX = new Float64Array(32);
+    this.knotY = new Float64Array(32);
+    this.knotReal = new Uint8Array(32);
+    this.rowOut = new Float64Array(cols);
+    this.warp = data.manifest.warp || 0.32;
+    this.buildGrid(null);
+
     this.rows = [];
     this.setTheme(theme);
   }
@@ -171,7 +189,7 @@ export class Layers {
     }
 
     this.threeMonth = new Float32Array(rows);
-    for (let i = 0; i < rows; i++) this.threeMonth[i] = this.data.at(i, this.col3m);
+    for (let i = 0; i < rows; i++) this.threeMonth[i] = this.data.tenorAt(i, 0.25);
 
     this.inRecession = new Uint8Array(rows);
     for (const span of manifest.recessions || []) {
@@ -180,6 +198,84 @@ export class Layers {
       for (let i = a; i <= b && i < rows; i++) this.inRecession[i] = 1;
     }
     void dates; void cols;
+  }
+
+  /**
+   * Lay out the maturity axis for a set of selected tenors.
+   *
+   * Evenly spaced in maturity raised to the same power the pipeline used, so
+   * the short end keeps its room. Passing null restores the full axis.
+   */
+  buildGrid(selected) {
+    const { manifest } = this.data;
+    const years = manifest.tenorYears;
+    const n = this.gridM.length;
+    const lo = selected ? years[selected[0]] : years[0];
+    const hi = selected ? years[selected[selected.length - 1]] : years[years.length - 1];
+    const a = lo ** this.warp, b = hi ** this.warp;
+    for (let i = 0; i < n; i++) {
+      const x = a + ((b - a) * i) / (n - 1);
+      this.gridX[i] = x;
+      this.gridM[i] = x ** (1 / this.warp);
+    }
+  }
+
+  /**
+   * Fill `sampled` with the yield at every grid point for every drawn row, and
+   * `filled` with whether that point rests on reconstructed data.
+   *
+   * With every maturity switched on this is a straight copy of the prebuilt
+   * grid, which already carries the pipeline's short-end anchoring. With a
+   * subset it re-interpolates through the chosen maturities only, so the
+   * surface stays continuous instead of developing holes.
+   */
+  resample(rows, selected) {
+    const data = this.data;
+    const cols = data.cols;
+    const nRows = rows.length;
+    const all = selected.length === data.tenorCount;
+
+    if (all) {
+      this.buildGrid(null);
+      for (let r = 0; r < nRows; r++) {
+        const day = rows[r];
+        const src = day * cols, dst = r * cols;
+        const lo = data.realLow[day], hi = data.realHigh[day];
+        for (let c = 0; c < cols; c++) {
+          this.sampled[dst + c] = data.yields[src + c];
+          this.filled[dst + c] = c < lo || c > hi ? 1 : 0;
+        }
+      }
+      return;
+    }
+
+    this.buildGrid(selected);
+    const years = data.manifest.tenorYears;
+    const k = selected.length;
+    for (let i = 0; i < k; i++) this.knotX[i] = years[selected[i]] ** this.warp;
+
+    for (let r = 0; r < nRows; r++) {
+      const day = rows[r];
+      const curve = data.tenorRow(day);
+      const mask = data.publishedMask(day);
+      for (let i = 0; i < k; i++) {
+        this.knotY[i] = curve[selected[i]];
+        this.knotReal[i] = (mask >> selected[i]) & 1;
+      }
+      pchip(this.knotX, this.knotY, k, this.gridX, this.rowOut);
+
+      const dst = r * cols;
+      for (let c = 0; c < cols; c++) {
+        this.sampled[dst + c] = this.rowOut[c];
+        // A point is reconstructed if either knot it sits between was filled
+        // in rather than published.
+        const x = this.gridX[c];
+        let j = 0;
+        while (j < k - 2 && this.knotX[j + 1] < x) j++;
+        this.filled[dst + c] =
+          this.knotReal[j] && this.knotReal[Math.min(j + 1, k - 1)] ? 0 : 1;
+      }
+    }
   }
 
   /** Apply the current height mode to a raw yield. */
@@ -207,13 +303,17 @@ export class Layers {
     this.rows = rows;
     this.mode = mode;
 
+    const selected = state.tenors && state.tenors.length >= 2
+      ? state.tenors : defaultTenors(data.tenorCount);
+    this.resample(rows, selected);
+
     // Extent of the transformed values across what is actually drawn.
     let lo = Infinity, hi = -Infinity;
-    for (const day of rows) {
-      const shift = this.offsetFor(mode, day);
-      const base = day * cols;
+    for (let r = 0; r < rows.length; r++) {
+      const shift = this.offsetFor(mode, rows[r]);
+      const base = r * cols;
       for (let c = 0; c < cols; c++) {
-        const v = data.yields[base + c] - shift;
+        const v = this.sampled[base + c] - shift;
         if (v < lo) lo = v;
         if (v > hi) hi = v;
       }
@@ -232,6 +332,10 @@ export class Layers {
 
     return {
       rows, mode, wall, ff, regimeLabels, events,
+      grid: this.gridM,
+      maturityTicks: this.maturityTicks(selected),
+      selected,
+      anyFilled: this.anyFilled,
       valueMin: this.stage.valueMin,
       valueMax: this.stage.valueMax,
       colourAbs: this.colourAbs,
@@ -260,18 +364,18 @@ export class Layers {
     const nRows = rows.length;
     const rgb = [0, 0, 0];
     const shade = theme.shadow;
+    let anyFilled = false;
     let p = 0;
 
     for (let r = 0; r < nRows; r++) {
       const day = rows[r];
       const z = stage.z(r, nRows);
-      const lo = data.realLow[day], hi = data.realHigh[day];
-      const base = day * cols;
+      const base = r * cols;
       const shift = this.offsetFor(mode, day);
       const shaded = state.showRecessions && this.inRecession[day];
 
       for (let c = 0; c < cols; c++) {
-        const v = data.yields[base + c] - shift;
+        const v = this.sampled[base + c] - shift;
         pos[p]     = stage.x(c, cols);
         pos[p + 1] = stage.y(v);
         pos[p + 2] = z;
@@ -279,7 +383,8 @@ export class Layers {
         this.colourFor(v, rgb);
         let r0 = rgb[0], g0 = rgb[1], b0 = rgb[2];
 
-        if (state.showRecon && (c < lo || c > hi)) {
+        if (this.filled[base + c]) {
+          anyFilled = true;
           // Reconstructed: pull towards a desaturated, dimmer version of
           // itself so it still reads as part of the surface but is visibly
           // not measured data.
@@ -321,6 +426,7 @@ export class Layers {
     this.surfaceGeo.setDrawRange(0, (nRows - 1) * (cols - 1) * 6);
     this.surfaceGeo.computeVertexNormals();
     this.surfaceGeo.computeBoundingSphere();
+    this.anyFilled = anyFilled;
   }
 
   /* ------------------------------------------------------ daily curves */
@@ -340,11 +446,11 @@ export class Layers {
     for (let r = 0; r < nRows; r += stride) {
       const day = rows[r];
       const z = stage.z(r, nRows) + 0.05;
-      const base = day * cols;
+      const base = r * cols;
       const shift = this.offsetFor(mode, day);
       for (let c = 0; c < cols - 1; c++) {
         for (const cc of [c, c + 1]) {
-          const v = data.yields[base + cc] - shift;
+          const v = this.sampled[base + cc] - shift;
           pos[p]     = stage.x(cc, cols);
           pos[p + 1] = stage.y(v) + 0.25;   // lift clear of the surface
           pos[p + 2] = z;
@@ -646,10 +752,10 @@ export class Layers {
     }
     const z = stage.z(slot, nRows);
     const shift = this.offsetFor(this.mode, day);
-    const base = day * cols;
+    const base = slot * cols;
     for (let c = 0; c < cols; c++) {
       this.cursorPos[c * 3] = stage.x(c, cols);
-      this.cursorPos[c * 3 + 1] = stage.y(data.yields[base + c] - shift) + 0.5;
+      this.cursorPos[c * 3 + 1] = stage.y(this.sampled[base + c] - shift) + 0.5;
       this.cursorPos[c * 3 + 2] = z;
     }
     this.cursorGeo.attributes.position.needsUpdate = true;
@@ -659,6 +765,24 @@ export class Layers {
     this.cursorFloorPos.set([BOX.FF_X - 7, floor, z, BOX.RAIL_X1 + 1, floor, z]);
     this.cursorFloorGeo.attributes.position.needsUpdate = true;
     this.cursorFloorGeo.computeBoundingSphere();
+  }
+
+  /**
+   * Maturities to label on the axis. The standard set, narrowed to whatever
+   * the grid currently spans; if that leaves too few, fall back to the chosen
+   * maturities themselves so the axis is never bare.
+   */
+  maturityTicks(selected) {
+    const STANDARD = [1 / 12, 0.25, 0.5, 1, 2, 5, 10, 20, 30];
+    const lo = this.gridM[0], hi = this.gridM[this.gridM.length - 1];
+    const inRange = STANDARD.filter((m) => m >= lo - 1e-6 && m <= hi + 1e-6);
+    if (inRange.length >= 4) return inRange;
+
+    const years = this.data.manifest.tenorYears;
+    const chosen = selected.map((i) => years[i]);
+    if (chosen.length <= 8) return chosen;
+    const stride = Math.ceil(chosen.length / 8);
+    return chosen.filter((_, i) => i % stride === 0 || i === chosen.length - 1);
   }
 
   /** Year or month gridline positions for the current range. */
