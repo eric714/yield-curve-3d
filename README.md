@@ -140,8 +140,9 @@ that file from this folder, and commit.
 
 ## Pointing yieldcurve3d.com at it
 
-`docs/CNAME` already contains the domain, so GitHub will pick it up. You need
-to point the domain at GitHub from wherever you registered it.
+Do this **after** the site is working at the github.io address, not before.
+Pointing a domain at GitHub before the site exists just gives you a broken page
+and no way to tell which step went wrong.
 
 At your registrar's DNS settings, add these four **A** records for the bare
 domain (host `@`):
@@ -156,10 +157,13 @@ domain (host `@`):
 Then one **CNAME** record, host `www`, pointing at `YOUR-USERNAME.github.io`
 (note the trailing dot if your registrar wants one).
 
-Back in the repository, **Settings** → **Pages** should now show
-`yieldcurve3d.com` under Custom domain. Once the DNS has propagated — usually
-minutes, occasionally a day — tick **Enforce HTTPS**. GitHub issues the
-certificate free.
+Then in the repository, **Settings** → **Pages** → **Custom domain**, type
+`yieldcurve3d.com` and press Save. GitHub writes a `CNAME` file into `docs/`
+for you, which adds a commit you will want to pull down in GitHub Desktop
+before making further changes.
+
+Once the DNS has propagated — usually minutes, occasionally a day — tick
+**Enforce HTTPS**. GitHub issues the certificate free.
 
 ---
 
