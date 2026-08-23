@@ -532,6 +532,10 @@ function buildTour() {
         state.heightMode = change.heightMode;
         $("#height-mode").value = change.heightMode;
       }
+      if (change.contextSeries) {
+        state.contextSeries = change.contextSeries;
+        $("#context-series").value = change.contextSeries;
+      }
       if (change.view) {
         state.view = change.view;
         stage.goTo(change.view);

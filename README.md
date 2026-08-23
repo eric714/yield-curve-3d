@@ -366,11 +366,17 @@ copyright. NBER recession dates are published facts.
 
 ## The walkthrough
 
-First-time visitors get a six-step tour that names the three axes and then
-drives the chart while it explains them: it turns the surface end-on to show
-what a single day looks like, swings it side-on to show time stacking up, and
-jumps to 2022 to show an inverted curve rather than only describing one. It
-assumes no knowledge of bonds.
+First-time visitors get a ten-step tour that drives the chart while it explains
+it, on the principle that showing beats telling. It turns the surface end-on so
+a single day is unmistakable, swings it side-on so time stacking up is obvious,
+and jumps to 2022 to show an inverted curve rather than describing one.
+
+The first five steps teach the chart; the rest teach the panel. Each control
+step rings the section it is talking about and puts the chart into a state
+where that control matters: the height step drops you into 2008 with the
+surface measured against the Fed funds rate, because quantitative easing is
+close to invisible on a plain yield surface and obvious on that one. It assumes
+no knowledge of bonds throughout.
 
 It runs once, remembers that in the browser, and the question mark in the top
 corner replays it. Embedded copies never show it.

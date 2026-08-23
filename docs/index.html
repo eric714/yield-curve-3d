@@ -123,7 +123,7 @@
       </div>
     </section>
 
-    <section class="block">
+    <section class="block" id="height-block">
       <h2>Height of the surface</h2>
       <select id="height-mode" aria-label="What the height of the surface means">
         <option value="level" selected>Yield</option>
@@ -133,7 +133,7 @@
       <p id="height-note" class="note"></p>
     </section>
 
-    <section class="block">
+    <section class="block" id="wall-block">
       <h2>Behind the surface</h2>
       <select id="context-series" aria-label="Series shown on the back wall">
         <option value="WALCL" selected>Federal Reserve balance sheet</option>
@@ -146,7 +146,7 @@
       <p id="context-note" class="note"></p>
     </section>
 
-    <section class="block">
+    <section class="block" id="maturities-block">
       <h2>Maturities on the surface</h2>
       <label class="check all"><input type="checkbox" id="tenor-all" checked> Select all</label>
       <div id="tenor-list" class="tenors"></div>
@@ -154,7 +154,7 @@
       the ones that are left, so the surface stays continuous.</p>
     </section>
 
-    <section class="block">
+    <section class="block" id="show-block">
       <h2>Show</h2>
       <label class="check"><input type="checkbox" id="opt-regimes" checked> <span class="sw sw-qe"></span> QE and QT periods</label>
       <label class="check"><input type="checkbox" id="opt-recessions" checked> <span class="sw sw-rec"></span> Recessions</label>

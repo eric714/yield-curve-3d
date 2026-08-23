@@ -38,8 +38,8 @@ const STEPS = [
     title: "When it slopes the wrong way",
     body: "Sometimes two-year money costs more than ten-year, and the surface "
         + "tips backwards. That is an inversion. One came before all four "
-        + "recessions shown here, though the long inversion from 2022 was not "
-        + "followed by one.",
+        + "recessions in this record, though the long inversion from 2022 was "
+        + "not followed by one.",
     apply: { preset: "Inflation shock", view: "front" },
   },
   {
@@ -50,11 +50,47 @@ const STEPS = [
     apply: { preset: "Past five years", view: "default" },
   },
   {
+    title: "Height can mean other things",
+    body: "This is 2008 to 2010, and the height is now the yield minus the "
+        + "Fed's own overnight rate. The near edge pins to zero, because that "
+        + "is the Fed. Everything behind shows how far the market sat above "
+        + "it. Quantitative easing is hard to see any other way: on a plain "
+        + "yield surface these years look flat and dead.",
+    apply: { preset: "QE1", view: "default", heightMode: "vsFunds" },
+    spotlight: "#height-block",
+  },
+  {
+    title: "Something behind the surface",
+    body: "The back wall carries a second series for context. By default it is "
+        + "the Federal Reserve's balance sheet, climbing as it bought bonds. "
+        + "You can swap it for the S&P 500, the NASDAQ, the VIX, or the "
+        + "ten-year term premium.",
+    apply: { preset: "Everything", view: "default", heightMode: "level",
+             contextSeries: "WALCL" },
+    spotlight: "#wall-block",
+  },
+  {
+    title: "What is marked on it",
+    body: "Coloured bands on the floor are the Fed's bond-buying and selling "
+        + "programmes, blue for easing and red for tightening. Recessions fall "
+        + "across the surface as shade. Small diamonds mark days when "
+        + "something happened; put the cursor on one and the panel tells you "
+        + "what.",
+    spotlight: "#show-block",
+  },
+  {
+    title: "Choose the maturities",
+    body: "Switch any of them off and the curve is redrawn through the ones "
+        + "left, so the surface stays continuous instead of developing holes. "
+        + "Useful for looking only at the short end, where the Fed acts.",
+    spotlight: "#maturities-block",
+  },
+  {
     title: "Now go and look",
     body: "These buttons jump to the famous episodes: try the global financial "
         + "crisis. Drag either end of the date slider to change the range, or "
         + "the bar between them to move the whole window through history.",
-    apply: {},
+    apply: { preset: "Past five years", view: "default", heightMode: "level" },
     spotlight: "#presets",
   },
 ];
@@ -116,7 +152,11 @@ export class Tour {
     if (step.apply) this.api.apply(step.apply);
     if (step.spotlight) {
       const el = document.querySelector(step.spotlight);
-      if (el) { el.classList.add("tour-spot"); this.spotted = el; }
+      if (el) {
+        el.classList.add("tour-spot");
+        this.spotted = el;
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }
 
     const last = this.index === STEPS.length - 1;
