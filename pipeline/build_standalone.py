@@ -35,6 +35,7 @@ MODULES = [
     "js/layers.js",
     "js/inspector.js",
     "js/snapshot.js",
+    "js/tour.js",
     "js/app.js",
 ]
 
@@ -51,6 +52,7 @@ RESOLVE = {
     "./inspector.js": "js/inspector.js",
     "./snapshot.js": "js/snapshot.js",
     "./interpolate.js": "js/interpolate.js",
+    "./tour.js": "js/tour.js",
 }
 
 DATA_FILES = ["data/manifest.json", "data/context.json",

@@ -10,6 +10,7 @@ import { Inspector } from "./inspector.js";
 import { THEMES, initialTheme, remember, applyCss } from "./theme.js";
 import { cssGradient } from "./colormap.js";
 import * as snapshot from "./snapshot.js";
+import { Tour } from "./tour.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -86,6 +87,7 @@ async function init() {
   buildToggles();
   buildViews();
   buildSnapshotMenu();
+  buildTour();
   buildTenorPicker();
   buildLegend();
   buildKeys();
@@ -515,6 +517,32 @@ function buildTenorPicker() {
 }
 
 let syncTenorPicker = () => {};
+
+/**
+ * The walkthrough drives the chart as it explains it, so it gets a small
+ * command surface rather than reaching into the state object itself.
+ */
+function buildTour() {
+  const tour = new Tour($("#stage"), {
+    apply(change) {
+      if (change.preset) applyPreset(indexOfPreset(change.preset));
+      if (change.heightMode) {
+        state.heightMode = change.heightMode;
+        $("#height-mode").value = change.heightMode;
+      }
+      if (change.view) {
+        state.view = change.view;
+        stage.goTo(change.view);
+      }
+      dirty = true;
+    },
+  });
+
+  $("#tour-btn").addEventListener("click", () => tour.start());
+
+  // Never in an embed: a publisher's readers did not ask for a walkthrough.
+  if (!EMBEDDED && Tour.unseen()) setTimeout(() => tour.start(), 700);
+}
 
 function buildViews() {
   $(".views").addEventListener("click", (ev) => {

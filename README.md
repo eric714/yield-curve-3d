@@ -357,6 +357,23 @@ copyright. NBER recession dates are published facts.
 
 ---
 
+## The walkthrough
+
+First-time visitors get a six-step tour that names the three axes and then
+drives the chart while it explains them: it turns the surface end-on to show
+what a single day looks like, swings it side-on to show time stacking up, and
+jumps to 2022 to show an inverted curve rather than only describing one. It
+assumes no knowledge of bonds.
+
+It runs once, remembers that in the browser, and the question mark in the top
+corner replays it. Embedded copies never show it.
+
+The claim in the inversion step was checked against the data rather than
+repeated from folklore. All four recessions in this record were preceded by a
+2-year/10-year inversion, between five and twenty-four months ahead. But 571 of
+the 1,052 inverted days had no recession within two years of them, almost all
+from the long inversion of 2022 to 2024, so the step says that too.
+
 ## Embedding it somewhere else
 
 Add `?embed=1` to the address and the page strips back to the chart alone: no
