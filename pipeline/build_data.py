@@ -754,6 +754,13 @@ EVENTS = [
      "over the weekend and the spike is gone within three sessions."),
 ]
 
+# The opening view. Deliberately a rolling window rather than fixed dates: the
+# first thing a visitor should see is what the curve is doing now, on a site
+# that updates every evening. Five years rather than three or four because it
+# still reaches back to the zero floor of 2021, so the whole arc from nothing
+# to six per cent and back is on screen at once.
+DEFAULT_YEARS = 5
+
 PRESETS = [
     ("Everything",              "1990-01-02", None,
      "Every trading day the Treasury has published a full daily curve."),
@@ -787,6 +794,12 @@ PRESETS = [
 
 def build_meta(days):
     first, last = days[0].isoformat(), days[-1].isoformat()
+
+    # Recomputed on every build, so the opening view never goes stale.
+    window_start = days[-1].replace(year=days[-1].year - DEFAULT_YEARS)
+    rolling = ("Past five years", max(days[0], window_start).isoformat(), last,
+               "Zero to six per cent and most of the way back, in the time it "
+               "takes to forget that money was ever free.")
     events = [
         {"date": d, "title": t, "note": n}
         for d, t, n in EVENTS if first <= d <= last
@@ -797,7 +810,7 @@ def build_meta(days):
     ]
     presets = [
         {"name": n, "start": s, "end": e or last, "note": note}
-        for n, s, e, note in PRESETS
+        for n, s, e, note in [rolling] + PRESETS
     ]
     return regimes, presets, events, first, last
 

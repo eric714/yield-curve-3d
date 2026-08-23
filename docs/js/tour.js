@@ -16,8 +16,9 @@ const STEPS = [
   {
     title: "What you are looking at",
     body: "Governments borrow money by selling bonds. This surface is what it "
-        + "cost the United States to borrow, on every trading day since 1990.",
-    apply: { preset: "Global financial crisis", view: "default", heightMode: "level" },
+        + "cost the United States to borrow, on every trading day. You are "
+        + "looking at the last five years; the record goes back to 1990.",
+    apply: { preset: "Past five years", view: "default", heightMode: "level" },
   },
   {
     title: "Each ridge is one day",
@@ -46,13 +47,13 @@ const STEPS = [
     body: "Move the pointer across the surface, or tap it on a phone, and the "
         + "panel gives you every rate the Treasury published that day. Click "
         + "to pin it there.",
-    apply: { preset: "Global financial crisis", view: "default" },
+    apply: { preset: "Past five years", view: "default" },
   },
   {
     title: "Now go and look",
-    body: "The buttons jump to the famous episodes. Drag either end of the "
-        + "date slider to change the range, or the bar between them to move "
-        + "the whole window through history.",
+    body: "These buttons jump to the famous episodes: try the global financial "
+        + "crisis. Drag either end of the date slider to change the range, or "
+        + "the bar between them to move the whole window through history.",
     apply: {},
     spotlight: "#presets",
   },

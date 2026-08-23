@@ -305,6 +305,13 @@ for a point less.
 
 ## Changing things
 
+**Change the opening view.** `DEFAULT_YEARS` at the top of the `PRESETS`
+section in `pipeline/build_data.py`. It is a rolling window recomputed on every
+build, so the first thing a visitor sees is always current. Five was chosen
+over four because it still reaches the zero floor of 2021: a five-year window
+spans 0.01 to 6.02 per cent, where four years starts at 2.82 and misses the
+climb entirely. Worth revisiting once 2021 falls out of range.
+
 **Add a period to the buttons.** Open `pipeline/build_data.py`, find the
 `PRESETS` list, add a line in the same shape as the others, and re-run the
 script. Same for `REGIMES`, which draws the coloured bands on the floor, and

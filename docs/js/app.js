@@ -75,8 +75,10 @@ async function init() {
 
   state.from = 0;
   state.to = data.rows - 1;
+  // Preset 0 is the rolling recent window the pipeline builds, so a first-time
+  // visitor lands on what the curve is doing now rather than on history.
   const restored = readUrl();
-  if (!restored) applyPreset(indexOfPreset("Global financial crisis"), false);
+  if (!restored) applyPreset(0, false);
 
   stage = new Stage($("#scene"), $("#labels"), THEMES[state.theme]);
   layers = new Layers(stage, data, THEMES[state.theme]);
