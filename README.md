@@ -372,6 +372,12 @@ whatever is on screen:
 
 GitHub Pages sets no framing restrictions, so this works on any site.
 
+One detail worth knowing if you embed it low down a long page: browsers do not
+schedule animation frames for an iframe that is scrolled out of view. The chart
+therefore draws its first frame immediately on load rather than waiting for the
+animation loop, so it is already there when the reader arrives instead of
+appearing blank until they scroll to it.
+
 ## The social preview
 
 `docs/preview.png` is what X, Slack, iMessage and the rest show when the link is

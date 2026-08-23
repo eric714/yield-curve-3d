@@ -101,10 +101,21 @@ async function init() {
   stage.goTo(state.view, true);
   $("#loading").classList.add("done");
 
+  // Draw one frame straight away rather than waiting for the animation loop.
+  // Browsers do not schedule animation frames for an iframe that is scrolled
+  // out of view, so an embedded chart placed below the fold would otherwise
+  // sit blank until the reader reached it.
+  rebuild();
+  dirty = false;
+  stage.lastExtraLabels = extraLabels;
+  stage.render(extraLabels);
+
   // A handle for poking at the scene from the browser console.
   window.yieldCurve = {
     state, stage, layers, data,
-    redraw: () => { dirty = true; },
+    // Synchronous, so it still works from the console when the tab is in the
+    // background and animation frames have stopped being scheduled.
+    redraw: () => { rebuild(); dirty = false; stage.render(extraLabels); },
     snapshotImage, runSnapshot,
   };
 
