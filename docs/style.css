@@ -68,9 +68,12 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
 #stage-top .sub{font-size:13px;color:var(--ink-dim);margin-top:2px}
 
 #hint{
-  position:absolute;bottom:14px;right:22px;font-size:11.5px;
-  color:var(--ink-faint);pointer-events:none;text-align:right;
+  position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+  font-size:11.5px;color:var(--ink-faint);pointer-events:none;
+  white-space:nowrap;transition:opacity .2s;
 }
+/* Step aside while the readout is up rather than competing with it. */
+#stage:has(#inspector:not([hidden])) #hint{opacity:0}
 
 /* tool buttons, top right of the stage */
 #stage-tools{position:absolute;top:20px;right:20px;display:flex;gap:7px;z-index:6}
@@ -126,13 +129,16 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
 #labels div.era{color:var(--ink-dim);font-family:var(--font);font-size:11px}
 
 /* ------------------------------------------------------------- inspector */
-/* Readout and legend share the bottom-left corner, stacked. */
+/* Legend keeps the bottom-left corner. The readout sits opposite it, because
+   the bottom of the yield axis lands on the left and the panel was covering
+   the 0-2% labels, which are the ones that matter during ZIRP. */
 #corner{
   position:absolute;left:22px;bottom:22px;z-index:5;
   display:flex;flex-direction:column;gap:8px;align-items:flex-start;
   max-height:calc(100% - 44px);
 }
 #inspector{
+  position:absolute;right:22px;bottom:22px;z-index:5;
   width:262px;padding:.7rem .8rem;
   background:var(--bg-float);border:1px solid var(--line);border-radius:9px;
   box-shadow:var(--shadow);backdrop-filter:blur(10px);
@@ -305,6 +311,7 @@ select{
   #stage-top .sub{font-size:12px}
   #hint{display:none}
   #corner{left:10px;bottom:10px;gap:6px}
+  #inspector{right:10px;bottom:10px}
   #inspector,#legend-box{width:210px;font-size:11px}
   .tenors{grid-template-columns:1fr 1fr 1fr}
   .ins-grid{grid-template-columns:1fr 1fr}

@@ -165,22 +165,40 @@ export class Stage {
 
   /**
    * Set the vertical scale from the data, rounded outwards to whole gridlines.
-   * Spread modes go negative, so the floor of the box is not always zero.
+   *
+   * Zero is kept on the axis when the data already runs near it, or when the
+   * mode makes the sign meaningful. Otherwise the box is fitted to the data:
+   * a three-week window at four per cent should not be drawn as a flat sheet
+   * floating at the top of an empty box.
    */
-  setValueRange(dataMin, dataMax) {
-    const spread = Math.max(0.4, dataMax - dataMin);
-    const step = spread > 9 ? 2 : spread > 4.5 ? 1 : spread > 2 ? 0.5 : 0.25;
+  setValueRange(dataMin, dataMax, includeZero = false) {
+    const span = Math.max(0.2, dataMax - dataMin);
+    const nearZero = dataMin >= 0 && dataMin <= span * 0.4;
+    const pad = span * 0.08;
+
+    // Pad below the data only when the data actually goes below zero. Padding
+    // a zero-based yield axis would put gridlines at negative yields, which
+    // have never existed in this series.
+    const lo = dataMin < 0 ? dataMin - pad
+             : includeZero || nearZero ? 0
+             : dataMin - pad;
+    const hi = dataMax > 0 ? dataMax + pad : includeZero ? 0 : dataMax + pad;
+
+    const step = niceStep(hi - lo);
     this.step = step;
-    this.valueMin = Math.min(0, Math.floor(dataMin / step) * step);
-    this.valueMax = Math.ceil((dataMax + spread * 0.04) / step) * step;
-    if (this.valueMax <= this.valueMin) this.valueMax = this.valueMin + step;
+    const round = (v) => Math.round(v * 1e6) / 1e6;   // keep 0.05 steps clean
+    this.valueMin = round(Math.floor(lo / step + 1e-9) * step);
+    this.valueMax = round(Math.ceil(hi / step - 1e-9) * step);
+    if (this.valueMax - this.valueMin < step * 0.5) this.valueMax = this.valueMin + step;
+    this.decimals = step >= 1 ? 0 : step >= 0.1 ? 1 : 2;
     return [this.valueMin, this.valueMax];
   }
 
   valueTicks() {
     const out = [];
-    for (let v = this.valueMin; v <= this.valueMax + 1e-9; v += this.step) {
-      out.push(Math.round(v * 1000) / 1000);
+    const n = Math.round((this.valueMax - this.valueMin) / this.step);
+    for (let i = 0; i <= n; i++) {
+      out.push(Math.round((this.valueMin + i * this.step) * 1000) / 1000);
     }
     return out;
   }
@@ -214,7 +232,8 @@ export class Stage {
       const y = this.y(v);
       push([0, y, 0], [W, y, 0]);
       push([0, y, 0], [0, y, D]);
-      const text = `${v > 0 && this.valueMin < 0 ? "+" : ""}${v}${unit}`;
+      const sign = v > 0 && this.valueMin < 0 ? "+" : "";
+      const text = `${sign}${v.toFixed(this.decimals)}${unit}`;
       this.frameLabels.push({ p: [-7, y, D + 4], text });
     }
 
@@ -350,6 +369,17 @@ export class Stage {
     this.labels.end();
     return placed;
   }
+}
+
+/**
+ * A round gridline interval giving roughly six lines across the axis, from the
+ * 1-2-5 sequence people already read scales in.
+ */
+function niceStep(span) {
+  const raw = Math.max(span, 1e-6) / 6;
+  const magnitude = 10 ** Math.floor(Math.log10(raw));
+  const n = raw / magnitude;
+  return (n <= 1.5 ? 1 : n <= 3 ? 2 : n <= 7 ? 5 : 10) * magnitude;
 }
 
 /**

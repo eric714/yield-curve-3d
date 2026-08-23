@@ -323,6 +323,14 @@ Shown on the site itself, and repeated here:
 > No warranty of any kind is given, express or implied, as to accuracy,
 > completeness or fitness for any purpose.
 
+## Name
+
+"The Shape of Money" is original to this project. It is not borrowed from the
+New York Times piece that inspired the idea, from any repository, or from
+anywhere else. Nothing here is derived from another visualisation: the only
+third-party code in the project is three.js, in `docs/vendor/`, under its own
+MIT licence.
+
 ## Licence
 
 The code here is MIT licensed — see `LICENSE`. It is original work; it is not

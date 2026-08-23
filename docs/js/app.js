@@ -56,6 +56,7 @@ async function init() {
 
   state.theme = initialTheme();
   applyCss(THEMES[state.theme]);
+  if (window.matchMedia("(max-width: 820px)").matches) state.legendOpen = false;
 
   state.from = 0;
   state.to = data.rows - 1;
@@ -171,6 +172,7 @@ function readUrl() {
     }
   }
   if (params.get("lg") === "0") state.legendOpen = false;
+  if (params.get("lg") === "1") state.legendOpen = true;
   if (params.has("s")) {
     const on = new Set(params.get("s").split(",").filter(Boolean));
     for (const [code, spec] of Object.entries(TOGGLES)) state[spec.key] = on.has(code);
@@ -587,8 +589,21 @@ function buildCursor() {
     return rows[slot];
   };
 
+  // Rotating the scene should not also scrub the date, and letting go after a
+  // rotation should not count as a click. Track the drag so both stay out of
+  // the way. This matters most on a phone, where every gesture is a drag.
+  let dragging = false;
+  let downAt = null;
+
+  canvas.addEventListener("pointerdown", (ev) => {
+    dragging = true;
+    downAt = { x: ev.clientX, y: ev.clientY };
+  });
+
+  window.addEventListener("pointerup", () => { dragging = false; });
+
   canvas.addEventListener("pointermove", (ev) => {
-    if (inspector.pinned != null) return;
+    if (dragging || inspector.pinned != null) return;
     const day = dateAt(ev);
     if (day === cursorDay) return;
     cursorDay = day;
@@ -605,6 +620,10 @@ function buildCursor() {
 
   // A click pins the date so the pointer can leave without losing the reading.
   canvas.addEventListener("click", (ev) => {
+    const moved = downAt
+      ? Math.hypot(ev.clientX - downAt.x, ev.clientY - downAt.y) : 0;
+    if (moved > 4) return;                     // that was a rotation, not a tap
+
     if (inspector.pinned != null) {
       inspector.pinned = null;
     } else {

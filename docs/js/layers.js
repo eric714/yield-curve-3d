@@ -235,6 +235,9 @@ export class Layers {
     const nRows = rows.length;
     const all = selected.length === data.tenorCount;
 
+    this.selected = selected;
+    this.allSelected = all;
+
     if (all) {
       this.buildGrid(null);
       for (let r = 0; r < nRows; r++) {
@@ -278,6 +281,26 @@ export class Layers {
     }
   }
 
+  /**
+   * Yields at every grid point for a single day, whether or not that day is
+   * one of the rows currently drawn. The cursor needs this: at long ranges the
+   * mesh is sampled down, and clicking an event dated to a skipped day would
+   * otherwise highlight a curve from several days away.
+   */
+  sampleRowInto(day, out) {
+    const data = this.data;
+    const cols = data.cols;
+    if (this.allSelected) {
+      const src = day * cols;
+      for (let c = 0; c < cols; c++) out[c] = data.yields[src + c];
+      return out;
+    }
+    const sel = this.selected;
+    const curve = data.tenorRow(day);
+    for (let i = 0; i < sel.length; i++) this.knotY[i] = curve[sel[i]];
+    return pchip(this.knotX, this.knotY, sel.length, this.gridX, out);
+  }
+
   /** Apply the current height mode to a raw yield. */
   offsetFor(mode, day) {
     if (mode === "vsFunds") return this.fundsMid[day];
@@ -318,7 +341,7 @@ export class Layers {
         if (v > hi) hi = v;
       }
     }
-    this.stage.setValueRange(lo, hi);
+    this.stage.setValueRange(lo, hi, mode !== "level");
     this.colourAbs = Math.max(Math.abs(lo), Math.abs(hi), 0.25);
     this.colourMax = Math.max(hi, 0.25);
 
@@ -755,18 +778,22 @@ export class Layers {
     const { data, stage } = this;
     const cols = data.cols;
     const nRows = this.rows.length;
-    // Snap to the nearest drawn row so the highlight sits on the mesh.
-    let slot = 0, best = Infinity;
-    for (let i = 0; i < nRows; i++) {
-      const d = Math.abs(this.rows[i] - day);
-      if (d < best) { best = d; slot = i; }
+
+    // Place the curve at the day's true position along the axis, between the
+    // two rows that bracket it, rather than snapping to the nearer one.
+    let slot = 0;
+    while (slot < nRows - 1 && this.rows[slot + 1] <= day) slot++;
+    let z = stage.z(slot, nRows);
+    if (slot < nRows - 1 && this.rows[slot + 1] > this.rows[slot]) {
+      const frac = (day - this.rows[slot]) / (this.rows[slot + 1] - this.rows[slot]);
+      z += frac * (stage.z(slot + 1, nRows) - z);
     }
-    const z = stage.z(slot, nRows);
+
+    this.sampleRowInto(day, this.rowOut);
     const shift = this.offsetFor(this.mode, day);
-    const base = slot * cols;
     for (let c = 0; c < cols; c++) {
       this.cursorPos[c * 3] = stage.x(c, cols);
-      this.cursorPos[c * 3 + 1] = stage.y(this.sampled[base + c] - shift) + 0.5;
+      this.cursorPos[c * 3 + 1] = stage.y(this.rowOut[c] - shift) + 0.5;
       this.cursorPos[c * 3 + 2] = z;
     }
     this.cursorGeo.attributes.position.needsUpdate = true;
