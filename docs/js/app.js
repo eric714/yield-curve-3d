@@ -26,6 +26,14 @@ const TOGGLES = {
   lines:  { key: "showLines",      el: "#opt-lines" },
 };
 
+/**
+ * Embedded mode is requested with ?embed=1 on the iframe's src, which keeps it
+ * out of the hash where the view state lives. Everything else still works: the
+ * embedder picks the period through the usual parameters and the reader can
+ * rotate, zoom and read the surface.
+ */
+const EMBEDDED = new URLSearchParams(location.search).get("embed") === "1";
+
 const state = {
   from: 0,
   to: 0,
@@ -58,6 +66,11 @@ async function init() {
   state.theme = initialTheme();
   applyCss(THEMES[state.theme]);
   if (window.matchMedia("(max-width: 820px)").matches) state.legendOpen = false;
+  if (EMBEDDED) {
+    document.documentElement.dataset.embed = "1";
+    // A frame is usually short, and the legend is the first thing to go.
+    if (window.innerHeight < 520) state.legendOpen = false;
+  }
 
   state.from = 0;
   state.to = data.rows - 1;
@@ -182,6 +195,15 @@ function readUrl() {
   return true;
 }
 
+/** An iframe snippet reproducing the current view, for a publisher to paste. */
+function embedSnippet() {
+  const url = new URL(currentUrl());
+  url.search = "?embed=1";
+  return `<iframe src="${url}" width="100%" height="560" style="border:0;` +
+    `border-radius:8px" loading="lazy" title="The Shape of Money: ` +
+    `US Treasury yield curve" allowfullscreen></iframe>`;
+}
+
 function currentUrl() {
   const params = new URLSearchParams();
   params.set("from", data.dates[state.from]);
@@ -200,6 +222,7 @@ function currentUrl() {
 }
 
 function writeUrl() {
+  if (EMBEDDED) return;
   history.replaceState(null, "", `#${currentUrl().split("#")[1]}`);
 }
 
@@ -676,6 +699,10 @@ async function runSnapshot(action) {
   try {
     const stamp = `${data.dates[state.from]}_${data.dates[state.to]}`;
     if (action === "link") return toast(await snapshot.copyLink(currentUrl()));
+    if (action === "embed") {
+      await snapshot.copyLink(embedSnippet());
+      return toast("Embed code copied");
+    }
     if (action === "x") {
       return toast(snapshot.shareOnX(currentUrl(),
         "The US Treasury yield curve in 3D — every trading day since 1990"));

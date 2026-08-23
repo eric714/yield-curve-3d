@@ -288,6 +288,30 @@ select{
 .credits a{color:var(--ink-dim);text-decoration:underline;text-underline-offset:2px}
 .credits a:hover{color:var(--accent)}
 
+/* ------------------------------------------------------------------ embed */
+/* ?embed=1 strips the page back to the chart so a publisher can put it in an
+   iframe. The view still comes from the URL, so an embedder picks the period
+   and the reader can rotate and read it, but not wander off the story. */
+#embed-credit{display:none}
+[data-embed] #panel,
+[data-embed] #panel-toggle{display:none!important}
+[data-embed] #app{display:block}
+[data-embed] #stage{width:100%;height:100%}
+[data-embed] #stage-top h1{font-size:17px}
+[data-embed] #stage-top .sub{font-size:11.5px}
+[data-embed] #hint{font-size:10.5px}
+[data-embed] #embed-credit{
+  position:absolute;right:16px;bottom:14px;display:flex;align-items:center;
+  gap:4px;font-size:11px;color:var(--ink-faint);text-decoration:none;
+  padding:.25rem .45rem;border-radius:5px;transition:.15s;z-index:6;
+}
+[data-embed] #embed-credit:hover{color:var(--ink);background:var(--line)}
+/* Short frames cannot spare the room for the title and the hint. */
+@media (max-height:420px){
+  [data-embed] #stage-top .sub,[data-embed] #hint{display:none}
+  [data-embed] #stage-top h1{font-size:15px}
+}
+
 /* ----------------------------------------------------------------- print */
 #print-host{display:none}
 @media print{

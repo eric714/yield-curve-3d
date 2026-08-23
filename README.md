@@ -353,6 +353,25 @@ copyright. NBER recession dates are published facts.
 
 ---
 
+## Embedding it somewhere else
+
+Add `?embed=1` to the address and the page strips back to the chart alone: no
+side panel, a small credit link back to the site, and the reader can still
+rotate, zoom and read any day. The view still comes from the URL, so whoever
+embeds it chooses the period and the reader stays on that story rather than
+wandering off it.
+
+The **Copy embed code** item in the snapshot menu writes the snippet for
+whatever is on screen:
+
+```html
+<iframe src="https://yieldcurve3d.com/?embed=1#from=2007-06-01&to=2009-12-31&m=vsFunds"
+        width="100%" height="560" style="border:0;border-radius:8px"
+        loading="lazy" title="The Shape of Money" allowfullscreen></iframe>
+```
+
+GitHub Pages sets no framing restrictions, so this works on any site.
+
 ## The social preview
 
 `docs/preview.png` is what X, Slack, iMessage and the rest show when the link is
