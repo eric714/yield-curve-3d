@@ -6,6 +6,24 @@
 <meta name="color-scheme" content="dark">
 <title>The Shape of Money — 36 Years of the US Treasury Yield Curve in 3D</title>
 <meta name="description" content="An interactive three-dimensional view of the US Treasury yield curve since 1990, alongside the Fed funds rate, the Federal Reserve's balance sheet, the S&amp;P 500 and NBER recessions.">
+<link rel="canonical" href="https://yieldcurve3d.com/">
+
+<!-- Social preview. The image is redrawn from the data by the daily job, so a
+     shared link always shows the current surface. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Shape of Money">
+<meta property="og:url" content="https://yieldcurve3d.com/">
+<meta property="og:title" content="The Shape of Money">
+<meta property="og:description" content="Every US Treasury yield curve since 1990, in three dimensions, with the Fed funds rate, the Federal Reserve's balance sheet, the S&amp;P 500 and recessions.">
+<meta property="og:image" content="https://yieldcurve3d.com/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A three-dimensional surface of US Treasury yields from 1990 to the present, warm where rates were high and deep blue through the years near zero.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Shape of Money">
+<meta name="twitter:description" content="Every US Treasury yield curve since 1990, in three dimensions.">
+<meta name="twitter:image" content="https://yieldcurve3d.com/preview.png">
+
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
@@ -24,7 +42,7 @@
 <main id="app" hidden>
 
   <div id="stage">
-    <canvas id="scene"></canvas>
+    <canvas id="scene" role="img" aria-label="Three-dimensional surface of US Treasury yields. Use the controls beside it to change the dates and what is shown; the readout gives the figures for any day you point at."></canvas>
     <div id="labels" aria-hidden="true"></div>
 
     <div id="stage-top">

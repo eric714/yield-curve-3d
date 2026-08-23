@@ -42,6 +42,23 @@ const SERIES_STYLE = {
 /** Every tenor, as index positions. */
 export const defaultTenors = (n) => Array.from({ length: n }, (_, i) => i);
 
+/**
+ * Empty a group, freeing the GPU buffers as it goes.
+ *
+ * Group.clear() only detaches children; their geometries and materials stay
+ * allocated on the graphics card. The floor layers are rebuilt on every frame
+ * of a slider drag, so without this they leak about six buffers per frame.
+ */
+function disposeChildren(group) {
+  for (const child of group.children) {
+    child.geometry?.dispose();
+    const material = child.material;
+    if (Array.isArray(material)) material.forEach((m) => m.dispose());
+    else material?.dispose();
+  }
+  group.clear();
+}
+
 export class Layers {
   constructor(stage, data, theme) {
     this.stage = stage;
@@ -638,7 +655,7 @@ export class Layers {
 
   /* -------------------------------------------------------- QE bands */
   buildRegimes(rows, state) {
-    this.regimes.clear();
+    disposeChildren(this.regimes);
     if (!state.showRegimes) return [];
 
     const { dates, manifest } = this.data;
@@ -691,7 +708,7 @@ export class Layers {
    * read off without crowding the QE bands.
    */
   buildRecessions(rows, state) {
-    this.recessions.clear();
+    disposeChildren(this.recessions);
     if (!state.showRecessions) return;
 
     const { dates, manifest } = this.data;
@@ -728,7 +745,7 @@ export class Layers {
    * turning into a wall of annotations.
    */
   buildEvents(rows, state) {
-    this.events.clear();
+    disposeChildren(this.events);
     const { dates, manifest } = this.data;
     const list = (manifest.events || []).filter(
       (e) => e.date >= dates[rows[0]] && e.date <= dates[rows[rows.length - 1]]);

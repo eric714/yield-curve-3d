@@ -112,16 +112,6 @@ export async function load() {
       return lo;
     },
 
-    /** Highest and lowest yield across a slice of days, for axis scaling. */
-    extent(from, to) {
-      let lo = Infinity, hi = -Infinity;
-      for (let i = from * cols, end = (to + 1) * cols; i < end; i++) {
-        const v = yields[i];
-        if (v < lo) lo = v;
-        if (v > hi) hi = v;
-      }
-      return [lo, hi];
-    },
   };
 }
 

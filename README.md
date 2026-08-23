@@ -57,6 +57,7 @@ you walk a fixed span forward through history.
 | `docs/vendor/` | three.js, the 3D graphics library. Bundled so the site has no outside dependencies. |
 | `pipeline/build_data.py` | Downloads new data and rebuilds `docs/data/`. |
 | `pipeline/build_standalone.py` | Optional: packs the whole site into one shareable file. |
+| `pipeline/build_preview.py` | Draws `docs/preview.png`, the image social sites show. |
 | `data/raw/` | Cached original downloads. Once a year is saved here it is never fetched again. |
 | `.github/workflows/` | The robot that keeps the data current. |
 
@@ -110,7 +111,7 @@ day's curve. Each run:
    already in `data/raw/treasury/` and are never fetched again.
 2. Refreshes a FRED series only if the local copy is more than a few days old.
    On a typical run every one of them is skipped.
-3. Rebuilds `docs/data/`.
+3. Rebuilds `docs/data/` and redraws the social preview card.
 4. Commits **only if something changed.** The build is deterministic, so a day
    with no new data produces byte-identical files and no commit.
 
@@ -331,6 +332,19 @@ Treasury and Federal Reserve data are US government works and carry no
 copyright. NBER recession dates are published facts.
 
 ---
+
+## The social preview
+
+`docs/preview.png` is what X, Slack, iMessage and the rest show when the link is
+shared. It is drawn from the same data the site loads, by
+`pipeline/build_preview.py`, and redrawn on every update, so a shared link
+always shows the current surface rather than a stale screenshot.
+
+That script writes a PNG with nothing but the standard library: a PNG is a few
+chunks around zlib-compressed scanlines, and a shaded surface is a
+painter's-algorithm fill over projected quads. It takes about two tenths of a
+second. The framing is measured from the projected geometry rather than tuned
+by hand, so the card stays well composed as the data grows.
 
 ## Phones and tablets
 

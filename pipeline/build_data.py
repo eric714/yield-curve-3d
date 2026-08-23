@@ -22,6 +22,8 @@ import struct
 import sys
 import urllib.error
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from datetime import date, datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -837,6 +839,12 @@ def main():
 
     with open(os.path.join(OUT, "context.json"), "w", encoding="utf-8") as fh:
         json.dump(context, fh, separators=(",", ":"))
+
+    try:
+        import build_preview
+        build_preview.main()
+    except Exception as exc:                       # a card is not worth failing over
+        print(f"  ! preview card not rendered: {exc}")
 
     size = len(blob) / 1024
     print(f"  tenors.bin    {len(tenor_blob) / 1024:,.0f} KB")

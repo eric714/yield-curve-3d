@@ -205,6 +205,12 @@ export class Stage {
 
   /* ------------------------------------------------------------- frame */
   buildFrame(maturities, timeMarks, unit = "%", maturityTicks = MATURITY_TICKS) {
+    // The frame is rebuilt on every update, so free the previous buffers
+    // rather than leaving them allocated on the graphics card.
+    for (const child of this.frame.children) {
+      child.geometry?.dispose();
+      child.material?.dispose();
+    }
     this.frame.clear();
     this.frameLabels = [];
 
