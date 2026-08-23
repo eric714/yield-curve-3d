@@ -677,9 +677,28 @@ EVENTS = [
     ("2023-03-13", "Silicon Valley Bank fails",
      "The 2-year yield drops 0.57 points in one session, the largest single-day "
      "fall anywhere in this record, and 1.02 points in three."),
-    ("2023-04-20", "The debt ceiling scare",
-     "One-month bills yield 1.74 points less than three-month bills, as "
-     "investors shun paper maturing near the deadline."),
+    ("2023-04-20", "The debt ceiling scare begins",
+     "One-month bills yield 1.74 points LESS than three-month bills. Paper "
+     "maturing before the deadline is precious, so its yield collapses. Over "
+     "the next five weeks that relationship turns inside out."),
+    ("2023-05-04", "The deadline crosses the one-month window",
+     "The 1-month yield jumps 1.06 points in a single day, the largest move "
+     "in this record. That morning's four-week bill matured on 6 June, days "
+     "past the point Treasury said the cash ran out, and sold at 5.84 per "
+     "cent. The week before, one maturing 30 May had gone at 3.83."),
+    ("2023-05-11", "One month costs more than two",
+     "The 1-month closes a full point above the 2-month, the widest such "
+     "inversion on record. Treasury sold four-week bills maturing 13 June at "
+     "5.61 per cent that morning, and eight-week bills maturing 11 July at "
+     "4.68: twice the loan for a point less, to come due clear of the danger."),
+    ("2023-05-23", "Nowhere near a deal",
+     "Nine days from the deadline and House Republicans say no agreement is "
+     "close. The dislocation holds, with June paper still yielding far more "
+     "than July paper."),
+    ("2023-05-26", "The most expensive four weeks on record",
+     "The 1-month reaches 6.02 per cent, the highest ever published, to lend "
+     "to the United States for four weeks. An agreement in principle lands "
+     "over the weekend and the spike is gone within three sessions."),
 ]
 
 PRESETS = [

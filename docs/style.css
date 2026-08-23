@@ -246,7 +246,18 @@ select{
 .views button:hover{border-color:var(--ink-faint);color:var(--ink)}
 
 /* ---------------------------------------------------------------- events */
-#events-list{display:flex;flex-direction:column;gap:2px}
+#events-count{
+  float:right;font-variant-numeric:tabular-nums;letter-spacing:0;
+  color:var(--ink-faint);
+}
+/* Long ranges can carry twenty markers; keep the list from pushing the rest
+   of the panel off the bottom. */
+#events-list{
+  display:flex;flex-direction:column;gap:2px;
+  max-height:184px;overflow-y:auto;
+}
+#events-list::-webkit-scrollbar{width:7px}
+#events-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:7px}
 #events-list button{
   display:block;width:100%;text-align:left;background:none;border:0;
   padding:.3rem .4rem;border-radius:5px;cursor:pointer;color:var(--ink-dim);

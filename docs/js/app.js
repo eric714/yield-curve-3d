@@ -543,6 +543,7 @@ function contextCaption(wall) {
 function updateEventList(events) {
   const host = $("#events-list");
   host.innerHTML = "";
+  $("#events-count").textContent = events.length ? `${events.length}` : "";
   if (!events.length) {
     host.innerHTML = '<p class="empty">No marked events in this range.</p>';
     return;

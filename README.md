@@ -245,11 +245,12 @@ different visual channel and they can all be read at once:
   lightness, they never fight the QE bands for colour.
 - **QE and QT programmes** are coloured bands across the floor, blue for
   easing, red for tightening, with a brighter rule at each start date.
-- **Events** are markers only, never text. Sixteen days where the surface
+- **Events** are markers only, never text. Twenty days where the surface
   visibly does something get a small diamond in the margin; the words appear
   in the readout when the date cursor reaches one, and in the sidebar list,
   which you can click to jump. That keeps a 36-year view from turning into a
-  wall of annotations.
+  wall of annotations. Markers that would land on the same pixel merge into
+  one slightly larger diamond rather than stacking up.
 
 Every claim attached to an event was checked against the data before it went
 in. Two dates moved as a result: the AAA downgrade marker sits on 8 August
@@ -257,6 +258,16 @@ in. Two dates moved as a result: the AAA downgrade marker sits on 8 August
 actually rose on the day itself; and the SVB marker sits on 13 March 2023,
 which is the largest single-day fall in the 2-year yield anywhere in this
 record, rather than the 10th.
+
+The five markers across April and May 2023 tell one story in sequence, and the
+numbers in them come from Treasury's own auction results
+(`api.fiscaldata.treasury.gov`) rather than from news coverage. The mechanism
+is worth knowing: the 1-month yield is derived from bills maturing about four
+weeks out, so as that window slid forward it crossed the date Treasury said
+the cash would run out, and the yield on those particular bills jumped while
+bills maturing safely past the danger got *cheaper*. On 11 May the four-week
+auction cleared at 5.61 per cent and the eight-week at 4.68: twice the loan
+for a point less.
 
 ---
 

@@ -107,7 +107,7 @@ function nearestEvent(data, iso) {
     const gap = Math.abs(Date.parse(ev.date) - target) / 86400000;
     if (gap < bestGap) { bestGap = gap; best = ev; }
   }
-  return bestGap <= 4 ? best : null;
+  return bestGap <= 3 ? best : null;
 }
 
 function shortName(id) {

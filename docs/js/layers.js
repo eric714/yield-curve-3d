@@ -716,11 +716,22 @@ export class Layers {
     const verts = [];
     const x = BOX.FF_X - 5;
 
-    for (const ev of list) {
-      const z = zFor(ev.date);
-      const s = 1.9;
-      const diamond = [[x, floor + 0.4, z - s], [x + s, floor + 0.4, z],
-                       [x, floor + 0.4, z + s], [x - s, floor + 0.4, z]];
+    // Zoomed out to decades, several events can land on the same pixel. Merge
+    // markers that would overlap into one slightly larger diamond rather than
+    // stacking them into an indistinct blob; the sidebar still lists each one.
+    const placed = list.map((ev) => ({ z: zFor(ev.date), n: 1 }))
+      .sort((a, b) => a.z - b.z)
+      .reduce((groups, mark) => {
+        const last = groups[groups.length - 1];
+        if (last && mark.z - last.z < 3.4) { last.n++; return groups; }
+        groups.push(mark);
+        return groups;
+      }, []);
+
+    for (const mark of placed) {
+      const s = mark.n > 1 ? 2.6 : 1.9;
+      const diamond = [[x, floor + 0.4, mark.z - s], [x + s, floor + 0.4, mark.z],
+                       [x, floor + 0.4, mark.z + s], [x - s, floor + 0.4, mark.z]];
       for (const i of [0, 1, 2, 0, 2, 3]) verts.push(...diamond[i]);
     }
 
