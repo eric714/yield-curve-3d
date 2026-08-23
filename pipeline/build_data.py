@@ -20,6 +20,7 @@ import zipfile
 import os
 import struct
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -32,7 +33,11 @@ RAW_FRED = os.path.join(ROOT, "data", "raw", "fred")
 OUT = os.path.join(ROOT, "docs", "data")
 
 FIRST_YEAR = 1990          # Treasury's daily par yield curve begins 1990-01-02
-USER_AGENT = "yield-curve-3d/1.0 (static site data builder)"
+# The "compatible" form is the conventional way for a tool to identify itself
+# while still getting past user-agent filtering, which some content delivery
+# networks apply to requests from datacentre addresses.
+USER_AGENT = ("Mozilla/5.0 (compatible; yieldcurve3d/1.0; "
+              "+https://yieldcurve3d.com)")
 
 # ---------------------------------------------------------------------------
 # Tenor definitions
@@ -105,6 +110,16 @@ SP500_SPLICE = "2021-03-25"     # last date taken from the workbook
 # ---------------------------------------------------------------------------
 # Downloading
 # ---------------------------------------------------------------------------
+class DownloadFailed(Exception):
+    """Any reason a download did not produce usable text.
+
+    Wrapping them all is deliberate. A read that times out raises TimeoutError,
+    a refused connection raises URLError, a truncated response raises something
+    else again, and the caller's answer is the same in every case: keep the
+    copy already on disk and carry on.
+    """
+
+
 def _ssl_context():
     """Build an SSL context, hunting for a CA bundle if the default has none.
 
@@ -131,30 +146,44 @@ def _ssl_context():
 _SSL_CTX = None
 
 
-def fetch(url):
-    """Download a URL as text. Falls back to curl if urllib has no CA store."""
+def fetch(url, timeout=30, attempts=3):
+    """Download a URL as text, retrying briefly before giving up.
+
+    Falls back to curl if urllib has no certificate store.
+    """
     global _SSL_CTX
     if _SSL_CTX is None:
         _SSL_CTX = _ssl_context()
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    try:
-        with urllib.request.urlopen(req, timeout=90, context=_SSL_CTX) as resp:
-            return resp.read().decode("utf-8-sig")
-    except urllib.error.URLError as exc:
-        if "CERTIFICATE_VERIFY_FAILED" not in str(exc):
-            raise
-        import shutil
-        import subprocess
-        curl = shutil.which("curl")
-        if not curl:
-            raise
-        done = subprocess.run(
-            [curl, "-sSL", "--max-time", "90", "-A", USER_AGENT, url],
-            capture_output=True, timeout=120,
-        )
-        if done.returncode != 0:
-            raise urllib.error.URLError(done.stderr.decode("utf-8", "replace")[:200])
-        return done.stdout.decode("utf-8-sig")
+
+    last = None
+    for attempt in range(attempts):
+        if attempt:
+            time.sleep(2 * attempt)
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as resp:
+                return resp.read().decode("utf-8-sig")
+        except Exception as exc:
+            last = exc
+            if "CERTIFICATE_VERIFY_FAILED" not in str(exc):
+                continue
+            import shutil
+            import subprocess
+            curl = shutil.which("curl")
+            if not curl:
+                continue
+            try:
+                done = subprocess.run(
+                    [curl, "-sSL", "--max-time", str(timeout), "-A", USER_AGENT, url],
+                    capture_output=True, timeout=timeout + 20,
+                )
+                if done.returncode == 0:
+                    return done.stdout.decode("utf-8-sig")
+                last = RuntimeError(done.stderr.decode("utf-8", "replace")[:200])
+            except Exception as curl_exc:
+                last = curl_exc
+
+    raise DownloadFailed(f"{type(last).__name__}: {last}")
 
 
 def treasury_url(year):
@@ -185,12 +214,13 @@ def sync_treasury(today):
             continue
         try:
             text = fetch(treasury_url(year))
-        except urllib.error.URLError as exc:
+        except DownloadFailed as exc:
             if os.path.exists(path):
                 print(f"  ! {year}: download failed ({exc}), keeping cached copy")
                 cached.append(year)
                 continue
-            raise
+            raise SystemExit(
+                f"Cannot fetch {year} and there is no cached copy: {exc}")
         if "Date" not in text.split("\n", 1)[0]:
             print(f"  ! {year}: unexpected response, skipping")
             continue
@@ -198,6 +228,7 @@ def sync_treasury(today):
             fh.write(text)
         fetched.append(year)
     print(f"  treasury: {len(cached)} cached, {len(fetched)} downloaded {fetched}")
+    return today.year in fetched
 
 
 def last_observation(path):
@@ -222,7 +253,7 @@ def sync_fred(today):
             continue
         try:
             text = fetch(fred_url(series_id))
-        except urllib.error.URLError as exc:
+        except DownloadFailed as exc:
             print(f"  ! fred {series_id}: download failed ({exc})")
             continue
         if not text.lstrip().lower().startswith("observation_date"):
@@ -777,7 +808,7 @@ def build_meta(days):
 def main():
     today = date.today()
     print("Syncing sources (cached files are not re-downloaded)")
-    sync_treasury(today)
+    refreshed = sync_treasury(today)
     sync_fred(today)
 
     print("Reading cached data")
@@ -853,6 +884,16 @@ def main():
         build_preview.main()
     except Exception as exc:                       # a card is not worth failing over
         print(f"  ! preview card not rendered: {exc}")
+
+    if not refreshed:
+        behind = (today - days[-1]).days
+        print(f"\n  ! Could not reach Treasury. Newest data is {days[-1]} "
+              f"({behind} days old).")
+        if behind > 10:
+            raise SystemExit(
+                "Data is more than ten days stale and Treasury is unreachable. "
+                "Failing so this is noticed rather than quietly serving old "
+                "numbers.")
 
     size = len(blob) / 1024
     print(f"  tenors.bin    {len(tenor_blob) / 1024:,.0f} KB")
