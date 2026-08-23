@@ -311,9 +311,25 @@ select{
   #stage-top .sub{font-size:12px}
   #hint{display:none}
   #corner{left:10px;bottom:10px;gap:6px}
-  #inspector{right:10px;bottom:10px}
-  #inspector,#legend-box{width:210px;font-size:11px}
+  #legend-box{width:210px;font-size:11px}
   .tenors{grid-template-columns:1fr 1fr 1fr}
-  .ins-grid{grid-template-columns:1fr 1fr}
+
+  /* On a phone the readout is the widest thing on screen, so lay it along the
+     bottom rather than stacking it into a tall column that buries the chart. */
+  #inspector{
+    left:10px;right:10px;bottom:10px;width:auto;
+    font-size:11px;padding:.55rem .65rem;
+    max-height:54%;overflow-y:auto;
+  }
+  /* Both want the bottom of a small screen. The readout is the thing you
+     asked for by tapping, so it wins while it is up. */
+  #stage:has(#inspector:not([hidden])) #corner{opacity:0;pointer-events:none}
+  .ins-grid{grid-template-columns:repeat(3,1fr);gap:1px 10px}
+  .ins-m{font-size:10px}
+  .ins-v{font-size:11px}
+  .ins-extra{grid-template-columns:auto 1fr;gap:0 8px}
+  .ins-extra dt,.ins-extra dd{font-size:10.5px}
+  .ins-note,.ins-hint{display:none}
+  .ins-event span{font-size:10.5px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

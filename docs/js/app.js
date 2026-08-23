@@ -52,6 +52,7 @@ let toastTimer = null;
 init().catch(showError);
 
 async function init() {
+  requireWebGL();
   data = await load();
 
   state.theme = initialTheme();
@@ -720,6 +721,25 @@ const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g,
   (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/**
+ * Fail with an explanation rather than a stack trace on the handful of
+ * browsers and locked-down devices that have no WebGL.
+ */
+function requireWebGL() {
+  try {
+    const probe = document.createElement("canvas");
+    const gl = probe.getContext("webgl2") || probe.getContext("webgl");
+    if (gl) return;
+  } catch (err) {
+    /* fall through to the message below */
+  }
+  throw new Error(
+    "This browser cannot draw 3D graphics (WebGL is unavailable). " +
+    "Try a different browser, or check whether hardware acceleration is " +
+    "switched off in your settings."
+  );
+}
 
 function showError(err) {
   console.error(err);

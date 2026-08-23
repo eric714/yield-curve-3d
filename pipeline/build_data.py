@@ -226,14 +226,20 @@ def sync_fred(today):
 # ---------------------------------------------------------------------------
 # Parsing
 # ---------------------------------------------------------------------------
+KNOWN_COLUMNS = {"Date"} | {label for label, _ in TENORS}
+
+
 def read_treasury():
     """-> {date: {maturity_years: yield_pct}} across every cached year file."""
     curves = {}
+    unknown = set()
     for name in sorted(os.listdir(RAW_TREASURY)):
         if not name.endswith(".csv"):
             continue
         with open(os.path.join(RAW_TREASURY, name), encoding="utf-8-sig") as fh:
-            for row in csv.DictReader(fh):
+            reader = csv.DictReader(fh)
+            unknown |= {c for c in (reader.fieldnames or []) if c not in KNOWN_COLUMNS}
+            for row in reader:
                 raw_date = (row.get("Date") or "").strip()
                 if not raw_date:
                     continue
@@ -252,6 +258,12 @@ def read_treasury():
                         continue
                 if point:
                     curves[day] = point
+
+    if unknown:
+        print(f"  ! Treasury is publishing maturities this build does not know "
+              f"about: {sorted(unknown)}")
+        print(f"  ! They are being ignored. Add them to TENORS in this file to "
+              f"include them.")
     return curves
 
 

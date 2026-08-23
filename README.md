@@ -101,6 +101,33 @@ Save. Without this the daily update can fetch data but can't save it.
 **Run workflow**. It should finish green in under a minute. From then on it
 runs by itself every weekday evening.
 
+### What the updater actually does
+
+It runs at 22:30 UTC Monday to Friday, which is after Treasury has posted the
+day's curve. Each run:
+
+1. Downloads only the current year's Treasury file. The other 36 years are
+   already in `data/raw/treasury/` and are never fetched again.
+2. Refreshes a FRED series only if the local copy is more than a few days old.
+   On a typical run every one of them is skipped.
+3. Rebuilds `docs/data/`.
+4. Commits **only if something changed.** The build is deterministic, so a day
+   with no new data produces byte-identical files and no commit.
+
+Both the raw downloads and the rebuilt files are committed, so the repository
+is the archive. Nothing depends on an outside service staying up: if Treasury
+or FRED is unreachable, the run keeps the cached copy and carries on.
+
+You do not need to do anything after the one-time setup above.
+
+**Two things worth knowing.** GitHub switches off scheduled workflows in
+repositories with no activity for 60 days. This one commits on most trading
+days, so the clock keeps resetting, but if the job ever breaks and stays broken
+you would eventually get an email saying it was disabled; re-enabling it is one
+button in the Actions tab. And if Treasury ever adds a maturity, as they did
+with the 1.5-month in 2025, the run prints a warning naming the new column and
+carries on without it, rather than silently dropping data.
+
 ### Installing the updater by hand
 
 If the Actions tab has nothing in it, the `.github` folder didn't upload. Fix
@@ -304,6 +331,21 @@ Treasury and Federal Reserve data are US government works and carry no
 copyright. NBER recession dates are published facts.
 
 ---
+
+## Phones and tablets
+
+It works on both. Touch is confirmed: one finger orbits, two fingers pinch to
+zoom, and a tap pins the readout. There is no hover on a touchscreen, so on a
+phone the readout appears when you tap the surface rather than following your
+finger, and tapping again dismisses it.
+
+The layout stacks below about 820px wide: chart on top, controls beneath.
+The readout becomes a bottom sheet across the full width with the maturities in
+three columns, and the legend starts collapsed so it does not eat a small
+canvas. A tablet in landscape gets the full desktop layout.
+
+If a device has no WebGL at all, the page says so in plain language instead of
+failing with a stack trace.
 
 ## Costs
 
