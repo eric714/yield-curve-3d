@@ -13,6 +13,7 @@ No third-party packages. Python 3.9+ standard library only.
 
 import csv
 import datetime as dt
+import hashlib
 import io
 import json
 import re
@@ -859,7 +860,17 @@ def main():
     with open(os.path.join(OUT, "tenors.bin"), "wb") as fh:
         fh.write(tenor_blob)
 
+    context_text = json.dumps(context, separators=(",", ":"))
+
+    # A fingerprint of the payload, used to keep the four data files in step in
+    # the browser cache. Derived from the content rather than the clock, so an
+    # unchanged build still produces an identical file and no pointless commit.
+    version = hashlib.sha256(
+        blob + tenor_blob + context_text.encode("utf-8")
+    ).hexdigest()[:10]
+
     manifest = {
+        "version": version,
         "firstDate": first,
         "lastDate": last,
         "dayCount": len(days),
@@ -890,7 +901,7 @@ def main():
         json.dump(manifest, fh, separators=(",", ":"))
 
     with open(os.path.join(OUT, "context.json"), "w", encoding="utf-8") as fh:
-        json.dump(context, fh, separators=(",", ":"))
+        fh.write(context_text)
 
     try:
         import build_preview

@@ -440,6 +440,23 @@ canvas. A tablet in landscape gets the full desktop layout.
 If a device has no WebGL at all, the page says so in plain language instead of
 failing with a stack trace.
 
+## Cache consistency
+
+GitHub Pages tells browsers to hold every file for ten minutes, and each file's
+ten minutes starts when that file was served. The four data files are fetched
+separately, so their windows drift apart — enough that a returning visitor
+could get a fresh `manifest.json` describing a stale `surface.bin`. That
+mismatch used to be fatal: the loader checks that the row counts agree and
+threw if they did not.
+
+The manifest now carries a `version`, a fingerprint of the other three files'
+contents, and those three are requested with it attached. Whatever the manifest
+says, you get the matching data: a consistently old set or a consistently new
+one, never a mixture. The fingerprint comes from the content rather than the
+clock, so an unchanged build still produces identical files and no needless
+commit. If a proxy or an extension manages to serve a mismatch anyway, the
+loader clears the cache and retries once instead of dying.
+
 ## Costs
 
 Nothing. GitHub Pages is free for public repositories, and Actions minutes are

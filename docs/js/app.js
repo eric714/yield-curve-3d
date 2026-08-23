@@ -3,7 +3,7 @@
  * in step with what is on screen, and runs the render loop.
  */
 import * as THREE from "three";
-import { load, longDate, monthYear } from "./data.js";
+import { load, longDate, monthYear, StaleDataError } from "./data.js";
 import { Stage, BOX } from "./scene.js";
 import { Layers, HEIGHT_MODES, defaultTenors } from "./layers.js";
 import { Inspector } from "./inspector.js";
@@ -62,7 +62,18 @@ init().catch(showError);
 
 async function init() {
   requireWebGL();
-  data = await load();
+
+  try {
+    data = await load();
+  } catch (err) {
+    if (!(err instanceof StaleDataError)) throw err;
+    // A cache somewhere handed back a mismatched set. Clear it and try once.
+    if (window.caches) {
+      await caches.keys().then((k) => Promise.all(k.map((n) => caches.delete(n))))
+        .catch(() => {});
+    }
+    data = await load();
+  }
 
   state.theme = initialTheme();
   applyCss(THEMES[state.theme]);

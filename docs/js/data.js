@@ -9,18 +9,33 @@
 const BASE = "data/";
 
 export async function load() {
-  const [manifest, context, buffer, tenorBuffer] = await Promise.all([
-    fetch(BASE + "manifest.json").then(requireOk).then((r) => r.json()),
-    fetch(BASE + "context.json").then(requireOk).then((r) => r.json()),
-    fetch(BASE + "surface.bin").then(requireOk).then((r) => r.arrayBuffer()),
-    fetch(BASE + "tenors.bin").then(requireOk).then((r) => r.arrayBuffer()),
+  // The manifest is fetched first and carries a fingerprint of the other three
+  // files, which are then requested with that fingerprint attached.
+  //
+  // This matters because the browser expires each file independently: without
+  // it a returning visitor can end up with a fresh manifest describing a stale
+  // surface, which used to be a fatal mismatch. Tying the three URLs to
+  // whatever the manifest says means you always get a consistent set, old or
+  // new, and never a mixture of the two.
+  const manifest = await fetch(BASE + "manifest.json")
+    .then(requireOk).then((r) => r.json());
+  const tag = manifest.version ? `?v=${manifest.version}` : "";
+
+  const [context, buffer, tenorBuffer] = await Promise.all([
+    fetch(BASE + "context.json" + tag).then(requireOk).then((r) => r.json()),
+    fetch(BASE + "surface.bin" + tag).then(requireOk).then((r) => r.arrayBuffer()),
+    fetch(BASE + "tenors.bin" + tag).then(requireOk).then((r) => r.arrayBuffer()),
   ]);
 
   const cols = manifest.gridCount;
   const raw = new Uint16Array(buffer);
   const rows = raw.length / cols;
   if (rows !== manifest.dayCount) {
-    throw new Error(`surface.bin has ${rows} rows, manifest expects ${manifest.dayCount}`);
+    // Belt and braces. The fingerprint above should make this impossible, but
+    // a proxy or an extension can still serve something unexpected, and a
+    // reload past the cache is a better answer than a dead page.
+    throw new StaleDataError(
+      `surface.bin has ${rows} rows, manifest expects ${manifest.dayCount}`);
   }
 
   // Unpack once into floats. ~440k values, a few milliseconds.
@@ -114,6 +129,8 @@ export async function load() {
 
   };
 }
+
+export class StaleDataError extends Error {}
 
 function requireOk(response) {
   if (!response.ok) {

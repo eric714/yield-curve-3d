@@ -138,7 +138,8 @@ def main():
   // answer those requests from the embedded copies instead.
   const realFetch = window.fetch.bind(window);
   window.fetch = (input, init) => {{
-    const url = String(input && input.url ? input.url : input);
+    // Strip any cache-busting query: the embedded copies are keyed by path.
+    const url = String(input && input.url ? input.url : input).split("?")[0];
     if (Object.prototype.hasOwnProperty.call(DATA, url)) {{
       return Promise.resolve(new Response(bytes(DATA[url]), {{
         status: 200,
