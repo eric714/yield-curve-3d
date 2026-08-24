@@ -457,6 +457,34 @@ clock, so an unchanged build still produces identical files and no needless
 commit. If a proxy or an extension manages to serve a mismatch anyway, the
 loader clears the cache and retries once instead of dying.
 
+## Traffic
+
+The site ships with no analytics switched on. There are no cookies, no
+third-party scripts, and the only outside address in the code is twitter.com,
+reached only when someone clicks Share on X. Local storage holds two things:
+the theme you picked and whether you have seen the walkthrough.
+
+To start counting visits, sign up at [goatcounter.com](https://www.goatcounter.com)
+and put the code you choose into the one marked line near the bottom of
+`docs/index.html`:
+
+```js
+var CODE = "yieldcurve3d";        // was ""
+```
+
+With it empty no script is fetched and nothing at all is sent. GoatCounter sets
+no cookies and stores no personal data, so no consent banner is required, and
+the About panel already says the site uses it.
+
+Three places it deliberately does not run: inside embeds, because a publisher's
+readers did not choose to be counted and their traffic would stop the numbers
+meaning "visits to the site"; on localhost, so your own development does not
+pollute the figures; and in the single-file build, which is meant to work
+offline and should not report back when someone passes it around.
+
+Note that GitHub's own **Insights → Traffic** page counts visits to the
+*repository*, not to the website. GitHub Pages provides no server logs.
+
 ## Costs
 
 Nothing. GitHub Pages is free for public repositories, and Actions minutes are
