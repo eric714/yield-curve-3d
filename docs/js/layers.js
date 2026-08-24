@@ -9,7 +9,7 @@
  */
 import * as THREE from "three";
 import { BOX } from "./scene.js";
-import { ramp, REGIME_COLOURS } from "./colormap.js";
+import { ramp, REGIME_COLORS } from "./colormap.js";
 import { monthYear } from "./data.js";
 import { pchip } from "./interpolate.js";
 
@@ -25,18 +25,18 @@ export const HEIGHT_MODES = {
   vsFunds: { label: "Yield minus Fed funds", unit: "pp", ramp: "diverging",
              note: "How far each maturity sits above or below the overnight "
                  + "policy rate. Under QE the front edge is pinned at zero "
-                 + "while everything behind it is dragged down towards it." },
+                 + "while everything behind it is dragged down toward it." },
   vs3m:    { label: "Yield minus 3-month", unit: "pp", ramp: "diverging",
              note: "The slope of the curve, measured from the 3-month bill. "
                  + "Anything below the zero plane is an inversion." },
 };
 
 const SERIES_STYLE = {
-  WALCL:       { colour: 0x4f8fe8, unit: "$tn", scale: 1e-6, decimals: 2, log: false },
-  SP500:       { colour: 0xe8c25f, unit: "",    scale: 1,    decimals: 0, log: true },
-  NASDAQCOM:   { colour: 0x5ed1a8, unit: "",    scale: 1,    decimals: 0, log: true },
-  VIXCLS:      { colour: 0xe07a9a, unit: "",    scale: 1,    decimals: 1, log: false },
-  THREEFYTP10: { colour: 0xb392e0, unit: "pp",  scale: 1,    decimals: 2, log: false },
+  WALCL:       { color: 0x4f8fe8, unit: "$tn", scale: 1e-6, decimals: 2, log: false },
+  SP500:       { color: 0xe8c25f, unit: "",    scale: 1,    decimals: 0, log: true },
+  NASDAQCOM:   { color: 0x5ed1a8, unit: "",    scale: 1,    decimals: 0, log: true },
+  VIXCLS:      { color: 0xe07a9a, unit: "",    scale: 1,    decimals: 1, log: false },
+  THREEFYTP10: { color: 0xb392e0, unit: "pp",  scale: 1,    decimals: 2, log: false },
 };
 
 /** Every tenor, as index positions. */
@@ -359,8 +359,8 @@ export class Layers {
       }
     }
     this.stage.setValueRange(lo, hi, mode !== "level");
-    this.colourAbs = Math.max(Math.abs(lo), Math.abs(hi), 0.25);
-    this.colourMax = Math.max(hi, 0.25);
+    this.colorAbs = Math.max(Math.abs(lo), Math.abs(hi), 0.25);
+    this.colorMax = Math.max(hi, 0.25);
 
     this.buildSurface(rows, cols, state, mode);
     this.buildCurves(rows, cols, state, mode);
@@ -378,16 +378,16 @@ export class Layers {
       anyFilled: this.anyFilled,
       valueMin: this.stage.valueMin,
       valueMax: this.stage.valueMax,
-      colourAbs: this.colourAbs,
-      colourMax: this.colourMax,
+      colorAbs: this.colorAbs,
+      colorMax: this.colorMax,
       dataMin: lo, dataMax: hi,
     };
   }
 
-  /** Colour for a transformed value, respecting the mode's ramp. */
-  colourFor(v, out) {
-    if (this.mode === "level") ramp(v / this.colourMax, out, "sequential");
-    else ramp(0.5 + (0.5 * v) / this.colourAbs, out, "diverging");
+  /** Color for a transformed value, respecting the mode's ramp. */
+  colorFor(v, out) {
+    if (this.mode === "level") ramp(v / this.colorMax, out, "sequential");
+    else ramp(0.5 + (0.5 * v) / this.colorAbs, out, "diverging");
     const lift = this.theme.surfaceLift;
     if (lift) {
       out[0] += (1 - out[0]) * lift;
@@ -420,22 +420,22 @@ export class Layers {
         pos[p + 1] = stage.y(v);
         pos[p + 2] = z;
 
-        this.colourFor(v, rgb);
+        this.colorFor(v, rgb);
         let r0 = rgb[0], g0 = rgb[1], b0 = rgb[2];
 
         if (this.filled[base + c]) {
           anyFilled = true;
-          // Reconstructed: pull towards a desaturated, dimmer version of
+          // Reconstructed: pull toward a desaturated, dimmer version of
           // itself so it still reads as part of the surface but is visibly
           // not measured data.
           const lum = r0 * 0.3 + g0 * 0.59 + b0 * 0.11;
-          const grey = lum * 0.72;
-          r0 = r0 * 0.35 + grey * 0.65;
-          g0 = g0 * 0.35 + grey * 0.65;
-          b0 = b0 * 0.35 + grey * 0.65;
+          const gray = lum * 0.72;
+          r0 = r0 * 0.35 + gray * 0.65;
+          g0 = g0 * 0.35 + gray * 0.65;
+          b0 = b0 * 0.35 + gray * 0.65;
         }
         if (shaded) {
-          // Recessions dim the surface rather than colouring it, so they use a
+          // Recessions dim the surface rather than coloring it, so they use a
           // channel the QE bands do not and the two can be read at once.
           const k = shade.amount;
           r0 = r0 * (1 - k) + shade.tint[0] * k;
@@ -494,7 +494,7 @@ export class Layers {
           pos[p]     = stage.x(cc, cols);
           pos[p + 1] = stage.y(v) + 0.25;   // lift clear of the surface
           pos[p + 2] = z;
-          this.colourFor(v, rgb);
+          this.colorFor(v, rgb);
           col[p] = rgb[0] * dim; col[p + 1] = rgb[1] * dim; col[p + 2] = rgb[2] * dim;
           p += 3;
           if (p >= pos.length) break outer;
@@ -557,7 +557,7 @@ export class Layers {
     if (!on) return null;
 
     const style = SERIES_STYLE[id] || SERIES_STYLE.WALCL;
-    const base = new THREE.Color(style.colour);
+    const base = new THREE.Color(style.color);
     this.wallEdge.material.color.copy(base).offsetHSL(0, 0, 0.2);
 
     const values = series.values;
@@ -663,7 +663,7 @@ export class Layers {
     const firstISO = dates[rows[0]], lastISO = dates[rows[rows.length - 1]];
     const floor = this.stage.y(this.stage.valueMin);
 
-    const verts = [], colours = [], labels = [], marks = [];
+    const verts = [], colors = [], labels = [], marks = [];
     const c = new THREE.Color();
 
     for (const reg of manifest.regimes) {
@@ -671,12 +671,12 @@ export class Layers {
       const z0 = zFor(reg.start), z1 = zFor(reg.end);
       if (z1 - z0 < 0.4) continue;
 
-      c.setHex(REGIME_COLOURS[reg.kind] || 0x888888);
+      c.setHex(REGIME_COLORS[reg.kind] || 0x888888);
       const x0 = BOX.FF_X - 3, x1 = BOX.WALL_X + 3, y = floor + 0.18;
       const quad = [[x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]];
       for (const i of [0, 1, 2, 0, 2, 3]) {
         verts.push(quad[i][0], quad[i][1], quad[i][2]);
-        colours.push(c.r, c.g, c.b);
+        colors.push(c.r, c.g, c.b);
       }
       if (reg.start >= firstISO) marks.push([x0, floor + 0.3, z0, x1, floor + 0.3, z0, c.getHex()]);
       labels.push({ p: [x1 + 5, floor + 1.5, (z0 + z1) / 2], text: reg.name, cls: "era" });
@@ -685,7 +685,7 @@ export class Layers {
     if (verts.length) {
       const geo = new THREE.BufferGeometry();
       geo.setAttribute("position", new THREE.Float32BufferAttribute(verts, 3));
-      geo.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
+      geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
       this.regimes.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
         vertexColors: true, transparent: true, opacity: 0.2,
         side: THREE.DoubleSide, depthWrite: false,

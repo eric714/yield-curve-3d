@@ -36,7 +36,7 @@ OUT = os.path.join(ROOT, "docs", "data")
 FIRST_YEAR = 1990          # Treasury's daily par yield curve begins 1990-01-02
 # The "compatible" form is the conventional way for a tool to identify itself
 # while still getting past user-agent filtering, which some content delivery
-# networks apply to requests from datacentre addresses.
+# networks apply to requests from datacenter addresses.
 USER_AGENT = ("Mozilla/5.0 (compatible; yieldcurve3d/1.0; "
               "+https://yieldcurve3d.com)")
 
@@ -662,7 +662,7 @@ def align(raw, days, step=False):
 # ---------------------------------------------------------------------------
 # Monetary policy regimes and preset views
 # ---------------------------------------------------------------------------
-# Start and end dates of the Fed's balance sheet programmes. These are matters
+# Start and end dates of the Fed's balance sheet programs. These are matters
 # of public record, taken from the FOMC's own announcements.
 REGIMES = [
     ("QE1",             "2008-11-25", "2010-03-31", "ease",
@@ -705,13 +705,13 @@ EVENTS = [
      "Four years later the long bond is auctioned again and the far edge of "
      "the surface becomes measured data once more."),
     ("2007-08-16", "The credit markets freeze",
-     "One-month bills fall from 5.04 to 3.13 per cent in six sessions as the "
+     "One-month bills fall from 5.04 to 3.13 percent in six sessions as the "
      "commercial paper market shuts. The first crack in the surface."),
     ("2008-09-17", "A money market fund breaks the buck",
-     "Two days after Lehman, the 3-month bill yields 0.08 per cent as cash "
+     "Two days after Lehman, the 3-month bill yields 0.08 percent as cash "
      "floods into government paper at almost any price."),
     ("2008-12-16", "Zero",
-     "The target becomes a range, 0 to 0.25 per cent, for the first time in "
+     "The target becomes a range, 0 to 0.25 percent, for the first time in "
      "the Fed's history."),
     ("2011-08-08", "The US loses its AAA rating",
      "First session after the downgrade. Ten-year yields fall from 2.63 to "
@@ -719,8 +719,8 @@ EVENTS = [
     ("2013-05-22", "Taper tantrum",
      "Bernanke suggests purchases might slow one day. The long end jumps on "
      "no policy change at all."),
-    ("2020-03-09", "The entire curve below one per cent",
-     "Every maturity out to thirty years yields under one per cent. It had "
+    ("2020-03-09", "The entire curve below one percent",
+     "Every maturity out to thirty years yields under one percent. It had "
      "never happened before, and has not happened since."),
     ("2020-03-15", "Emergency cut to zero",
      "A Sunday evening move back to the zero bound, with $700bn of purchases "
@@ -738,19 +738,19 @@ EVENTS = [
     ("2023-05-04", "The deadline crosses the one-month window",
      "The 1-month yield jumps 1.06 points in a single day, the largest move "
      "in this record. That morning's four-week bill matured on 6 June, days "
-     "past the point Treasury said the cash ran out, and sold at 5.84 per "
-     "cent. The week before, one maturing 30 May had gone at 3.83."),
+     "past the point Treasury said the cash ran out, and sold at 5.84 percent"
+     ". The week before, one maturing 30 May had gone at 3.83."),
     ("2023-05-11", "One month costs more than two",
      "The 1-month closes a full point above the 2-month, the widest such "
      "inversion on record. Treasury sold four-week bills maturing 13 June at "
-     "5.61 per cent that morning, and eight-week bills maturing 11 July at "
+     "5.61 percent that morning, and eight-week bills maturing 11 July at "
      "4.68: twice the loan for a point less, to come due clear of the danger."),
     ("2023-05-23", "Nowhere near a deal",
      "Nine days from the deadline and House Republicans say no agreement is "
      "close. The dislocation holds, with June paper still yielding far more "
      "than July paper."),
     ("2023-05-26", "The most expensive four weeks on record",
-     "The 1-month reaches 6.02 per cent, the highest ever published, to lend "
+     "The 1-month reaches 6.02 percent, the highest ever published, to lend "
      "to the United States for four weeks. An agreement in principle lands "
      "over the weekend and the spike is gone within three sessions."),
 ]
@@ -759,7 +759,7 @@ EVENTS = [
 # first thing a visitor should see is what the curve is doing now, on a site
 # that updates every evening. Five years rather than three or four because it
 # still reaches back to the zero floor of 2021, so the whole arc from nothing
-# to six per cent and back is on screen at once.
+# to six percent and back is on screen at once.
 DEFAULT_YEARS = 5
 
 PRESETS = [
@@ -799,7 +799,7 @@ def build_meta(days):
     # Recomputed on every build, so the opening view never goes stale.
     window_start = days[-1].replace(year=days[-1].year - DEFAULT_YEARS)
     rolling = ("Past five years", max(days[0], window_start).isoformat(), last,
-               "Zero to six per cent and most of the way back, in the time it "
+               "Zero to six percent and most of the way back, in the time it "
                "takes to forget that money was ever free.")
     events = [
         {"date": d, "title": t, "note": n}

@@ -1,5 +1,5 @@
 /**
- * Colour ramps for the surface.
+ * Color ramps for the surface.
  *
  * Two are needed. Yield levels are always positive, so they get a sequential
  * ramp running cool to warm. The spread modes straddle zero, where a
@@ -8,7 +8,7 @@
  */
 
 // Low rates read as calm, high rates as hot, with lightness rising through the
-// middle so neighbouring bands stay apart on a shaded 3D surface.
+// middle so neighboring bands stay apart on a shaded 3D surface.
 const SEQUENTIAL = [
   [0.00, 0x0b, 0x1a, 0x4d],
   [0.14, 0x13, 0x4e, 0x9b],
@@ -34,8 +34,8 @@ const DIVERGING = [
 ];
 
 /**
- * three.js works in linear colour space and converts to sRGB on output, so
- * feeding sRGB values straight into a vertex-colour attribute washes the
+ * three.js works in linear color space and converts to sRGB on output, so
+ * feeding sRGB values straight into a vertex-color attribute washes the
  * midtones out. Convert the stops once, up front.
  */
 const toLinear = (c) => {
@@ -72,8 +72,8 @@ export function cssGradient(kind = "sequential") {
     .join(",")})`;
 }
 
-/** Colours for the balance-sheet programmes marked on the floor. */
-export const REGIME_COLOURS = {
+/** Colors for the balance-sheet programs marked on the floor. */
+export const REGIME_COLORS = {
   ease:    0x3aa8e0,
   twist:   0x8f7fe0,
   taper:   0xe0a13a,

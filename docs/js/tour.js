@@ -71,8 +71,8 @@ const STEPS = [
   },
   {
     title: "What is marked on it",
-    body: "Coloured bands on the floor are the Fed's bond-buying and selling "
-        + "programmes, blue for easing and red for tightening. Recessions fall "
+    body: "Colored bands on the floor are the Fed's bond-buying and selling "
+        + "programs, blue for easing and red for tightening. Recessions fall "
         + "across the surface as shade. Small diamonds mark days when "
         + "something happened; put the cursor on one and the panel tells you "
         + "what.",

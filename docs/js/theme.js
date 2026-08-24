@@ -1,8 +1,8 @@
 /**
  * Light and dark palettes.
  *
- * The 3D scene cannot read CSS variables, so every colour it needs lives here
- * as a number and every colour the page needs lives here as a CSS string. One
+ * The 3D scene cannot read CSS variables, so every color it needs lives here
+ * as a number and every color the page needs lives here as a CSS string. One
  * definition, two consumers.
  */
 
@@ -15,17 +15,17 @@ export const THEMES = {
     frameEdge: 0x38465f,
     zeroPlane: 0x5c6f92,
     // three.js divides diffuse by pi, so the intensities have to sum to about
-    // pi for the surface to render at the colour the ramp actually specifies.
+    // pi for the surface to render at the color the ramp actually specifies.
     ambient: [0xc3d0e8, 0.95],
     key: [0xfff4e2, 2.05],
     fill: [0x7d9ad0, 0.55],
-    // Recession shading: how far towards the tint, and what tint.
+    // Recession shading: how far toward the tint, and what tint.
     shadow: { amount: 0.52, tint: [0.09, 0.11, 0.17] },
     surfaceLift: 0,
     recessionRail: 0x2a3247,
     fedFunds: 0xf2a03c,
     fedFundsEdge: 0xffc472,
-    curveLine: 0.28,          // multiplier on the surface colour
+    curveLine: 0.28,          // multiplier on the surface color
     cursor: 0xffffff,
     eventMark: 0xffd479,
     css: {
@@ -51,7 +51,7 @@ export const THEMES = {
     zeroPlane: 0x8792a6,
     // Flatter, brighter lighting: strong directional shading reads as dirt on
     // a pale ground, where on a dark ground it reads as form.
-    // Same total as the dark theme, but weighted towards ambient: strong
+    // Same total as the dark theme, but weighted toward ambient: strong
     // directional shading reads as form on a dark ground and as dirt on a
     // pale one.
     ambient: [0xffffff, 1.78],
@@ -100,7 +100,7 @@ export function remember(name) {
   try { localStorage.setItem(STORE_KEY, name); } catch (err) { /* no-op */ }
 }
 
-/** Push a theme's colours into the document as CSS custom properties. */
+/** Push a theme's colors into the document as CSS custom properties. */
 export function applyCss(theme) {
   const root = document.documentElement;
   for (const [prop, value] of Object.entries(theme.css)) {

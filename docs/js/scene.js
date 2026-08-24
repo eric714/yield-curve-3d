@@ -20,7 +20,7 @@ export const BOX = {
   RAIL_X1: 126,     // never competes with the QE bands across the floor
 };
 
-// Maturities that get a tick and a label. The rest of the grid is unlabelled.
+// Maturities that get a tick and a label. The rest of the grid is unlabeled.
 const MATURITY_TICKS = [1 / 12, 0.25, 0.5, 1, 2, 5, 10, 20, 30];
 
 // Camera presets as azimuth (degrees around the vertical axis, 0 = looking
@@ -168,7 +168,7 @@ export class Stage {
    *
    * Zero is kept on the axis when the data already runs near it, or when the
    * mode makes the sign meaningful. Otherwise the box is fitted to the data:
-   * a three-week window at four per cent should not be drawn as a flat sheet
+   * a three-week window at four percent should not be drawn as a flat sheet
    * floating at the top of an empty box.
    */
   setValueRange(dataMin, dataMax, includeZero = false) {
@@ -219,7 +219,7 @@ export class Stage {
     const push = (a, b) => pts.push(a[0], a[1], a[2], b[0], b[1], b[2]);
     const { W, D } = BOX;
 
-    // Floor lines running along time, one per labelled maturity.
+    // Floor lines running along time, one per labeled maturity.
     for (const m of maturityTicks) {
       const x = this.xForMaturity(m, maturities);
       push([x, 0, 0], [x, 0, D]);

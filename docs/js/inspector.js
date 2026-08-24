@@ -65,7 +65,7 @@ export class Inspector {
       extras.push(["NBER", "Recession"]);
     }
     const regime = data.manifest.regimes.find((r) => iso >= r.start && iso <= r.end);
-    if (regime && state.showRegimes) extras.push(["Fed programme", regime.name]);
+    if (regime && state.showRegimes) extras.push(["Fed program", regime.name]);
 
     // Events surface here rather than as labels in the scene, so a 36-year
     // view stays clean and the words appear exactly when you look for them.

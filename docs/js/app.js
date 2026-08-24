@@ -597,8 +597,8 @@ function updateLegend() {
   const host = $("#legend-ticks");
   host.innerHTML = "";
   const steps = 5;
-  const lo = mode.ramp === "diverging" ? -summary.colourAbs : 0;
-  const hi = mode.ramp === "diverging" ? summary.colourAbs : summary.colourMax;
+  const lo = mode.ramp === "diverging" ? -summary.colorAbs : 0;
+  const hi = mode.ramp === "diverging" ? summary.colorAbs : summary.colorMax;
   for (let i = 0; i < steps; i++) {
     const v = lo + ((hi - lo) * i) / (steps - 1);
     const span = document.createElement("span");

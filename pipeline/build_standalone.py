@@ -169,7 +169,7 @@ def main():
                         f"<style>\n{css}\n</style>")
     html = re.sub(r'<script type="importmap">.*?</script>', "", html, flags=re.S)
     html = html.replace('<script type="module" src="js/app.js"></script>', loader)
-    # The licence file is not bundled, so drop the link but keep the credit.
+    # The license file is not bundled, so drop the link but keep the credit.
     html = html.replace('<a href="vendor/THREE-LICENSE.txt">three.js</a>', "three.js")
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)

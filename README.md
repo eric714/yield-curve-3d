@@ -3,7 +3,7 @@
 An interactive 3D view of every US Treasury yield curve since 1990, with the
 Fed funds target along the front edge, a choice of series on the back wall,
 recessions falling across the surface as shade, and the Fed's QE and QT
-programmes marked on the floor.
+programs marked on the floor.
 
 Live at **[yieldcurve3d.com](https://yieldcurve3d.com)**.
 
@@ -16,12 +16,12 @@ nothing.
   funds* is where QE becomes obvious: the front edge pins to zero while
   everything behind it is dragged down. *Yield minus 3-month* turns the whole
   surface into curve slope, where anything below the zero plane is an
-  inversion. The spread views switch to a diverging colour scale so the sign
+  inversion. The spread views switch to a diverging color scale so the sign
   change is visible.
 - **Read a whole day at once.** Move the pointer across the scene and the
   readout gives you every tenor Treasury published that day, the policy rate,
   2s10s and 10y-3m, whatever is on the back wall, and whether the day sits
-  inside a recession or a Fed programme. Click to pin it. Escape clears it.
+  inside a recession or a Fed program. Click to pin it. Escape clears it.
 - **Put something behind the surface**: the Fed balance sheet, the S&P 500 back
   to 1990, the NASDAQ, the VIX, or the 10-year term premium.
 - **Share the exact view.** Every control writes to the URL, so a link restores
@@ -260,7 +260,7 @@ Three different repairs, because the gaps aren't the same kind of problem:
 Everything reconstructed this way is shaded paler on the surface, and the
 hover readout says so explicitly. You can turn the shading off under **Show**.
 
-The result is checked for artefacts: across roughly 440,000 grid points there
+The result is checked for artifacts: across roughly 440,000 grid points there
 are 54 single-day spikes and 5 kinks along the maturity axis, and every one of
 them is a real market event — the August 2007 credit freeze, the week Lehman
 failed, and the April 2023 debt-ceiling scare, when one-month bills briefly
@@ -274,8 +274,8 @@ different visual channel and they can all be read at once:
 - **Recessions** dim the surface, like a cloud shadow crossing it, and dim the
   back-wall series with it. They also get a narrow rail in their own lane past
   the back wall, for reading exact start and end dates. Because they work in
-  lightness, they never fight the QE bands for colour.
-- **QE and QT programmes** are coloured bands across the floor, blue for
+  lightness, they never fight the QE bands for color.
+- **QE and QT programs** are colored bands across the floor, blue for
   easing, red for tightening, with a brighter rule at each start date.
 - **Events** are markers only, never text. Twenty days where the surface
   visibly does something get a small diamond in the margin; the words appear
@@ -298,7 +298,7 @@ is worth knowing: the 1-month yield is derived from bills maturing about four
 weeks out, so as that window slid forward it crossed the date Treasury said
 the cash would run out, and the yield on those particular bills jumped while
 bills maturing safely past the danger got *cheaper*. On 11 May the four-week
-auction cleared at 5.61 per cent and the eight-week at 4.68: twice the loan
+auction cleared at 5.61 percent and the eight-week at 4.68: twice the loan
 for a point less.
 
 ---
@@ -309,20 +309,20 @@ for a point less.
 section in `pipeline/build_data.py`. It is a rolling window recomputed on every
 build, so the first thing a visitor sees is always current. Five was chosen
 over four because it still reaches the zero floor of 2021: a five-year window
-spans 0.01 to 6.02 per cent, where four years starts at 2.82 and misses the
+spans 0.01 to 6.02 percent, where four years starts at 2.82 and misses the
 climb entirely. Worth revisiting once 2021 falls out of range.
 
 **Add a period to the buttons.** Open `pipeline/build_data.py`, find the
 `PRESETS` list, add a line in the same shape as the others, and re-run the
-script. Same for `REGIMES`, which draws the coloured bands on the floor, and
+script. Same for `REGIMES`, which draws the colored bands on the floor, and
 `EVENTS`, which places the markers.
 
-**Change the light or dark palette.** `docs/js/theme.js`. Every colour the page
+**Change the light or dark palette.** `docs/js/theme.js`. Every color the page
 and the 3D scene use is defined there once, in one object per theme.
 
-**Change the colours.** `docs/js/colormap.js`, the `STOPS` list at the top.
+**Change the colors.** `docs/js/colormap.js`, the `STOPS` list at the top.
 
-**Change the page's look.** `docs/style.css`. The colours are all defined at
+**Change the page's look.** `docs/style.css`. The colors are all defined at
 the very top.
 
 **Change how wide or deep the box is.** `BOX` at the top of `docs/js/scene.js`.
@@ -466,9 +466,9 @@ free too. A domain name is optional.
 
 Shown on the site itself, and repeated here:
 
-> **About the data.** This is an educational visualisation of US Treasury yield
+> **About the data.** This is an educational visualization of US Treasury yield
 > data. While we try to present the data accurately, errors, delays, missing
-> data or visualisation artefacts may occur. Always verify important
+> data or visualization artifacts may occur. Always verify important
 > information with the original data source.
 >
 > **For educational and informational purposes only. Not investment advice.**
@@ -479,13 +479,13 @@ Shown on the site itself, and repeated here:
 
 "The Shape of Money" is original to this project. It is not borrowed from the
 New York Times piece that inspired the idea, from any repository, or from
-anywhere else. Nothing here is derived from another visualisation: the only
+anywhere else. Nothing here is derived from another visualization: the only
 third-party code in the project is three.js, in `docs/vendor/`, under its own
-MIT licence.
+MIT license.
 
-## Licence
+## License
 
 The code here is MIT licensed — see `LICENSE`. It is original work; it is not
-derived from any other visualisation. three.js is bundled under its own MIT
-licence (`docs/vendor/THREE-LICENSE.txt`), which requires that the licence file
+derived from any other visualization. three.js is bundled under its own MIT
+license (`docs/vendor/THREE-LICENSE.txt`), which requires that the license file
 stays with it.

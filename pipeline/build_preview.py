@@ -57,13 +57,13 @@ class Canvas:
         self.w, self.h = w, h
         self.pixels = bytearray(background * (w * h))
 
-    def triangle(self, p0, p1, p2, colour):
+    def triangle(self, p0, p1, p2, color):
         """Fill a projected triangle, clipped to the canvas."""
         pts = sorted((p0, p1, p2), key=lambda p: p[1])
         (x0, y0), (x1, y1), (x2, y2) = pts
         if y2 - y0 < 1e-9:
             return
-        r, g, b = (int(c) for c in colour)
+        r, g, b = (int(c) for c in color)
         buf = self.pixels
 
         top, bottom = max(0, int(y0)), min(self.h - 1, int(math.ceil(y2)))
@@ -188,11 +188,11 @@ def main():
         shade = 0.55 + 0.55 * lit
 
         value = (grid[r][c] + grid[r][c + 1] + grid[r + 1][c] + grid[r + 1][c + 1]) / 4
-        colour = tuple(min(255, ch * shade) for ch in ramp(value / peak))
+        color = tuple(min(255, ch * shade) for ch in ramp(value / peak))
 
         p0, p1, p2, p3 = screen[r][c], screen[r][c + 1], screen[r + 1][c + 1], screen[r + 1][c]
-        canvas.triangle(p0, p1, p2, colour)
-        canvas.triangle(p0, p2, p3, colour)
+        canvas.triangle(p0, p1, p2, color)
+        canvas.triangle(p0, p2, p3, color)
 
     size = canvas.to_png(OUT)
     first, last = manifest["dates"][days[0]], manifest["lastDate"]
