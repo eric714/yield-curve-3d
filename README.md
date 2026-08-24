@@ -272,7 +272,12 @@ Three different things want to mark the same time axis, so each uses a
 different visual channel and they can all be read at once:
 
 - **Recessions** dim the surface, like a cloud shadow crossing it, and dim the
-  back-wall series with it. They also get a narrow rail in their own lane past
+  back-wall series with it. The bands run from the NBER peak month to the
+  trough month, which needs two of FRED's daily series: `USRECDP` starts at the
+  peak but stops before the trough, `USRECD` starts after the peak but runs to
+  the end of it. Either one alone puts a band a month out from the dates NBER
+  publishes, so the pipeline takes the start from the first and the end from
+  the second. They also get a narrow rail in their own lane past
   the back wall, for reading exact start and end dates. Because they work in
   lightness, they never fight the QE bands for color.
 - **QE and QT programs** are colored bands across the floor, blue for

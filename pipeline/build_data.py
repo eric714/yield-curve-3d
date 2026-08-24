@@ -88,7 +88,12 @@ FRED_SERIES = {
     "NASDAQCOM": "NASDAQ Composite Index",
     "VIXCLS":    "CBOE Volatility Index",
     "SP500":       "S&P 500 (FRED, last 10 years)",
-    "USRECD":      "NBER recession indicator, daily",
+    # Two variants, because neither alone spans what NBER actually published.
+    # USRECDP includes the peak month but drops the trough; USRECD does the
+    # reverse. Taking the start from one and the end from the other gives the
+    # dates everybody quotes: July 1990 to March 1991, and so on.
+    "USRECDP":     "NBER recession indicator, daily, peak included",
+    "USRECD":      "NBER recession indicator, daily, trough included",
     "THREEFYTP10": "10-year Treasury term premium (ACM)",
 }
 
@@ -605,28 +610,49 @@ def build_context(days):
 
 
 def recession_ranges(first, last):
-    """Turn the NBER daily indicator into start/end pairs.
+    """Recession spans as NBER publishes them, from peak month to trough month.
 
-    The published series runs back to 1854; only the spans that touch the
-    chart's date range are kept.
+    FRED offers two daily variants and neither covers the whole span on its
+    own: USRECDP starts at the peak but stops before the trough month, USRECD
+    starts after the peak but runs to the end of the trough. The published
+    dates are the union, so take the start from one and the end from the other.
     """
-    flags = read_fred("USRECD")
-    if not flags:
+    def spans(series_id):
+        flags = read_fred(series_id)
+        out, start, prev = [], None, None
+        for day in sorted(flags):
+            inside = flags[day] > 0.5
+            if inside and start is None:
+                start = day
+            elif not inside and start is not None:
+                out.append((start, prev))
+                start = None
+            prev = day
+        if start is not None:
+            out.append((start, prev))
+        return out
+
+    peaks, troughs = spans("USRECDP"), spans("USRECD")
+    if not peaks:
+        peaks = troughs
+    if not troughs:
+        troughs = peaks
+    if not peaks:
         return []
-    ranges, start, prev = [], None, None
-    for day in sorted(flags):
-        inside = flags[day] > 0.5
-        if inside and start is None:
-            start = day
-        elif not inside and start is not None:
-            ranges.append((start, prev))
-            start = None
-        prev = day
-    if start is not None:
-        ranges.append((start, prev))
+
+    merged = []
+    for begin, fallback_end in peaks:
+        # The matching trough span is the one that starts just after this peak.
+        end = fallback_end
+        for other_begin, other_end in troughs:
+            if begin <= other_begin <= fallback_end + dt.timedelta(days=45):
+                end = max(end, other_end)
+                break
+        merged.append((begin, end))
+
     return [
         {"start": a.isoformat(), "end": b.isoformat()}
-        for a, b in ranges if b >= first and a <= last
+        for a, b in merged if b >= first and a <= last
     ]
 
 
@@ -894,7 +920,7 @@ def main():
             "balanceSheet": "Federal Reserve Board via FRED (WALCL)",
             "markets": "S&P 500 from the supplied workbook spliced to FRED; "
                        "NASDAQ, VIX and term premium from FRED",
-            "recessions": "NBER via FRED (USRECD)",
+            "recessions": "NBER via FRED (USRECDP and USRECD)",
         },
     }
     with open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8") as fh:
