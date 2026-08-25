@@ -113,6 +113,23 @@ async function init() {
 
   syncControls();
 
+  // Two saved links usually differ only after the "#", and a fragment-only
+  // navigation does not reload the page, so readUrl never ran a second time:
+  // pasting a link into a tab that already had the site open changed the
+  // address bar and nothing else. writeUrl uses replaceState, which does not
+  // fire this event, so there is no loop.
+  window.addEventListener("hashchange", () => {
+    if (!readUrl()) return;
+    clearPreset();
+    syncControls();
+    const theme = THEMES[state.theme];
+    stage.setTheme(theme);
+    layers.setTheme(theme);
+    $("#legend-bar").style.background = cssGradient();
+    stage.goTo(state.view, true);
+    dirty = true;
+  });
+
   // Reveal and size the canvas before framing the camera, otherwise the
   // aspect ratio is still zero and the opening shot is mis-framed.
   $("#app").hidden = false;
@@ -215,6 +232,10 @@ function readUrl() {
   if (params.get("w")) state.contextSeries = params.get("w");
   if (params.get("v")) state.view = params.get("v");
   if (params.get("t") === "light" || params.get("t") === "dark") state.theme = params.get("t");
+  // A link without tn means every maturity. Leaving the old selection in place
+  // made one link inherit the last one's trimmed axis, which is invisible
+  // until you notice the surface stops at ten years.
+  state.tenors = null;
   if (params.has("tn")) {
     const mask = parseInt(params.get("tn"), 10);
     if (Number.isFinite(mask)) {
