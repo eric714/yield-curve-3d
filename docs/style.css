@@ -243,6 +243,7 @@ select{
 .sw-qe{background:linear-gradient(90deg,#3aa8e0,#e05a5a)}
 .sw-rec{background:currentColor;opacity:.35}
 .sw-ev{background:var(--accent)}
+.sw-infl{background:#4bd0e0;opacity:.6}
 .sw-ff{background:var(--accent)}
 .views{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .views button{

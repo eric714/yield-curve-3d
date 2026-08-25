@@ -23,6 +23,7 @@ export const THEMES = {
     shadow: { amount: 0.52, tint: [0.09, 0.11, 0.17] },
     surfaceLift: 0,
     recessionRail: 0x2a3247,
+    inflationSheet: 0x4bd0e0,
     fedFunds: 0xf2a03c,
     fedFundsEdge: 0xffc472,
     curveLine: 0.28,          // multiplier on the surface color
@@ -62,6 +63,7 @@ export const THEMES = {
     surfaceLift: 0.10,
     shadow: { amount: 0.4, tint: [0.42, 0.45, 0.52] },
     recessionRail: 0xb6bfcd,
+    inflationSheet: 0x1b93a8,
     fedFunds: 0xd97f14,
     fedFundsEdge: 0xa85e05,
     curveLine: 0.55,

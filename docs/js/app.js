@@ -25,6 +25,7 @@ const TOGGLES = {
   ev:     { key: "showEvents",     el: "#opt-events" },
   ff:     { key: "showFedFunds",   el: "#opt-fedfunds" },
   lines:  { key: "showLines",      el: "#opt-lines" },
+  infl:   { key: "showInflation",  el: "#opt-inflation" },
 };
 
 /**
@@ -48,6 +49,7 @@ const state = {
   showEvents: true,
   showFedFunds: true,
   showLines: true,
+  showInflation: false,     // a second reading of the chart, not the default
   legendOpen: true,
   tenors: null,          // null means every maturity
 };
@@ -171,6 +173,14 @@ function rebuild() {
     $("#context-note").textContent = state.contextSeries === "none"
       ? "The back wall is empty."
       : "No data for this series in the selected range.";
+  }
+  if (summary.inflation) {
+    extraLabels.push({
+      p: [summary.inflation.x + 3,
+          stage.y(summary.inflation.high - layers.offsetFor(state.heightMode, state.to)) + 3,
+          BOX.D * 0.25],
+      text: "Inflation", cls: "axis-title",
+    });
   }
   if (state.showRecessions && (data.manifest.recessions || []).some(
       (r) => r.end >= data.dates[state.from] && r.start <= data.dates[state.to])) {

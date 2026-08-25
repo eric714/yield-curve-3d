@@ -131,6 +131,25 @@ export class Layers {
     this.wallEdge = new THREE.Line(this.wallLineGeo, new THREE.LineBasicMaterial({}));
     this.group.add(this.wall, this.wallEdge);
 
+    /* ------------------------------------------------- inflation sheet */
+    this.inflGeo = this.stripGeometry(MAX_ROWS);
+    this.inflPos = this.inflGeo.attributes.position.array;
+    // Light enough to tint what it covers rather than hide it. The line along
+    // its leading edge is what actually tells you the level; the wash only
+    // says which side of it you are on.
+    this.inflation = new THREE.Mesh(this.inflGeo, new THREE.MeshBasicMaterial({
+      transparent: true, opacity: 0.11, side: THREE.DoubleSide, depthWrite: false,
+    }));
+    this.inflation.renderOrder = 3;
+    this.inflEdgeGeo = new THREE.BufferGeometry();
+    this.inflEdgePos = new Float32Array(MAX_ROWS * 3);
+    this.inflEdgeGeo.setAttribute("position",
+      new THREE.BufferAttribute(this.inflEdgePos, 3));
+    this.inflationEdge = new THREE.Line(this.inflEdgeGeo,
+      new THREE.LineBasicMaterial({ transparent: true, opacity: 1, depthTest: false }));
+    this.inflationEdge.renderOrder = 4;
+    this.group.add(this.inflation, this.inflationEdge);
+
     /* ------------------------- floors: QE bands, recessions, events --- */
     this.regimes = new THREE.Group();
     this.recessions = new THREE.Group();
@@ -192,6 +211,8 @@ export class Layers {
     this.fedFunds.material.color.setHex(theme.fedFunds);
     this.fedFundsEdge.material.color.setHex(theme.fedFundsEdge);
     this.cursorCurve.material.color.setHex(theme.cursor);
+    this.inflation.material.color.setHex(theme.inflationSheet);
+    this.inflationEdge.material.color.setHex(theme.inflationSheet);
     this.cursorFloor.material.color.setHex(theme.cursor);
   }
 
@@ -213,6 +234,12 @@ export class Layers {
 
     this.threeMonth = new Float32Array(rows);
     for (let i = 0; i < rows; i++) this.threeMonth[i] = this.data.tenorAt(i, 0.25);
+
+    // Inflation is monthly and already held flat between readings, so the
+    // sheet steps rather than sloping. That is the real reporting cadence and
+    // pretending otherwise would be an invention.
+    const cpi = context.series.CPIAUCSL;
+    this.inflationRate = cpi ? cpi.values : null;
 
     this.inRecession = new Uint8Array(rows);
     for (const span of manifest.recessions || []) {
@@ -364,6 +391,15 @@ export class Layers {
         if (v > hi) hi = v;
       }
     }
+    if (state.showInflation && this.inflationRate) {
+      for (const day of rows) {
+        const raw = this.inflationRate[day];
+        if (raw == null) continue;
+        const v = raw - this.offsetFor(mode, day);
+        if (v < lo) lo = v;
+        if (v > hi) hi = v;
+      }
+    }
     this.stage.setValueRange(lo, hi, mode !== "level");
     this.colorAbs = Math.max(Math.abs(lo), Math.abs(hi), 0.25);
     this.colorMax = Math.max(hi, 0.25);
@@ -373,11 +409,12 @@ export class Layers {
     const ff = this.buildFedFunds(rows, state, mode);
     const wall = this.buildWall(rows, state);
     const regimeLabels = this.buildRegimes(rows, state);
+    const inflation = this.buildInflation(rows, state, mode);
     this.buildRecessions(rows, state);
     const events = this.buildEvents(rows, state);
 
     return {
-      rows, mode, wall, ff, regimeLabels, events,
+      rows, mode, wall, ff, regimeLabels, events, inflation,
       grid: this.gridM,
       maturityTicks: this.maturityTicks(selected),
       selected,
@@ -640,6 +677,60 @@ export class Layers {
       changePct: first ? ((last - first) / first) * 100 : null,
       wallTop: WALL_H,
     };
+  }
+
+  /* ---------------------------------------------- inflation as sea level */
+  /**
+   * A translucent sheet at the height of the inflation rate, spanning every
+   * maturity because inflation applies to all of them equally.
+   *
+   * Where the surface rises above it a lender beat inflation; where the
+   * surface is submerged, they did not. The gap is the real yield, read
+   * directly rather than worked out. It shares the vertical axis honestly
+   * because inflation is already measured in the same units as a yield.
+   */
+  buildInflation(rows, state, mode) {
+    // Boolean(), not the bare expression: the array is truthy, and assigning
+    // it to .visible happens to render but is plainly not what was meant.
+    const on = Boolean(state.showInflation && this.inflationRate);
+    this.inflation.visible = on;
+    this.inflationEdge.visible = on;
+    if (!on) return null;
+
+    const stage = this.stage;
+    const nRows = rows.length;
+    const pos = this.inflPos, line = this.inflEdgePos;
+    const x0 = BOX.FF_X - 3, x1 = BOX.W + 4;
+    let p = 0, l = 0, seen = 0, lo = Infinity, hi = -Infinity;
+
+    for (let r = 0; r < nRows; r++) {
+      const day = rows[r];
+      const raw = this.inflationRate[day];
+      const z = stage.z(r, nRows);
+      // Measured the same way the surface is, so the comparison holds in
+      // every height mode: against the policy rate, this becomes the real
+      // policy rate, which is a fair thing to look at.
+      const value = raw == null ? null : raw - this.offsetFor(mode, day);
+      const y = value == null ? stage.y(stage.valueMin) : stage.y(value);
+      if (value != null) { seen++; lo = Math.min(lo, raw); hi = Math.max(hi, raw); }
+
+      pos[p] = x0; pos[p + 1] = y; pos[p + 2] = z; p += 3;
+      pos[p] = x1; pos[p + 1] = y; pos[p + 2] = z; p += 3;
+      line[l] = x0; line[l + 1] = y + 0.06; line[l + 2] = z; l += 3;
+    }
+    if (!seen) {
+      this.inflation.visible = this.inflationEdge.visible = false;
+      return null;
+    }
+
+    this.inflGeo.setDrawRange(0, (nRows - 1) * 6);
+    this.inflGeo.attributes.position.needsUpdate = true;
+    this.inflGeo.computeBoundingSphere();
+    this.inflEdgeGeo.setDrawRange(0, l / 3);
+    this.inflEdgeGeo.attributes.position.needsUpdate = true;
+    this.inflEdgeGeo.computeBoundingSphere();
+
+    return { low: lo, high: hi, x: x1 };
   }
 
   /* --------------------------------------------- floor: dates helper */

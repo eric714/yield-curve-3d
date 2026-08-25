@@ -282,6 +282,15 @@ different visual channel and they can all be read at once:
   lightness, they never fight the QE bands for color.
 - **QE and QT programs** are colored bands across the floor, blue for
   easing, red for tightening, with a brighter rule at each start date.
+- **Inflation as sea level** is a translucent sheet at the height of the
+  inflation rate, spanning every maturity because inflation applies to all of
+  them equally. Where the surface rises above it a lender beat inflation; where
+  the surface is submerged, they did not, and the gap is the real yield read
+  directly rather than worked out. It is the one series that can share the
+  vertical axis honestly, since it is already measured in the same units as a
+  yield. Off by default: it is a second reading of the chart, and switching it
+  on widens the axis, because CPI reached minus two per cent in 2009 and
+  clipping that would hide the best real return in the record.
 - **Events** are markers only, never text. Twenty days where the surface
   visibly does something get a small diamond in the margin; the words appear
   in the readout when the date cursor reaches one, and in the sidebar list,
