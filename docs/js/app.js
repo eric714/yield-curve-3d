@@ -611,13 +611,15 @@ function shortSeriesName() {
   return {
     WALCL: "Fed balance sheet", SP500: "S&P 500", NASDAQCOM: "NASDAQ Composite",
     VIXCLS: "VIX", THREEFYTP10: "Term premium",
+    CPIAUCSL: "Inflation", T10YIE: "Expected inflation",
+    M2SL: "Money supply growth",
   }[state.contextSeries] || "";
 }
 
 function contextCaption(wall) {
   const change = wall.changePct;
   const base = `${wall.firstText} → ${wall.lastText} over this range`;
-  if (change === null || !isFinite(change) || wall.id === "THREEFYTP10") return `${base}.`;
+  if (change === null || !isFinite(change) || wall.style.rate) return `${base}.`;
   return `${base}, ${change >= 0 ? "up" : "down"} ${Math.abs(change).toFixed(0)}%.`;
 }
 

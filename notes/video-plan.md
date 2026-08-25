@@ -72,7 +72,7 @@ any video where you switch modes.
 
 # Part 2 — The videos
 
-Fourteen. Record 1, 2, 6 and 7 before publishing anything.
+Seventeen. Record 1, 2, 6 and 7 before publishing anything.
 
 Every link loads the exact view. Paste it, hit record.
 
@@ -243,6 +243,8 @@ without claiming the chart proves one caused the other.
   that the long end stayed remarkably low for remarkably long."**
 - Operation Twist as the interesting case: the balance sheet stays flat while
   the long end still falls. *Wall visibly level, surface still moving.*
+- Close by pointing forward: the Fed has also run this in reverse, twice.
+  *Sets up video 15.*
 
 ## 9. The taper tantrum — 5 min
 **One idea:** the long end jumped on no policy change at all.
@@ -342,6 +344,80 @@ holes were filled.
 - Everything reconstructed is shaded, and the readout says so on every day.
 - Close on the standard: **"If a chart will not tell you where it guessed, do
   not trust the parts where it did."**
+
+## 15. QT: running the tape backwards — 6 min
+**One idea:** the Fed has also *sold*, twice, and the second time was three
+times the size of the first.
+`#from=2016-01-04&to=2026-08-24&m=level&w=WALCL&v=default&t=dark&s=qe,rec,ev,ff,lines`
+
+- **"Everyone knows the Fed printed money. Far fewer people know it has spent
+  the last four years destroying it."**
+- Recap QE in fifteen seconds — assume this is someone's first video.
+- What QT is: the Fed stops replacing bonds as they mature, so the balance
+  sheet shrinks without anyone selling anything.
+- **MONEY SHOT: scrub forward with the balance sheet on the back wall.** The
+  wall climbs, plateaus, then visibly falls away.
+- QT1, October 2017 to July 2019: $4.46tn down to $3.78tn. A 15 per cent cut.
+  *Red floor band.*
+- Why it stopped early: money markets seized up in September 2019. The Fed had
+  drained more than the system could spare and had to reverse.
+- QT2, from June 2022: $8.92tn down to $6.75tn. **$2.17 trillion, three times
+  the size of QT1**, and it ran straight through the deepest inversion in forty
+  years.
+- Close on the honest uncertainty: nobody agrees how much of the 2022–24 curve
+  shape was QT and how much was the hiking cycle. *Toggle the QE and QT bands
+  off and on.*
+
+## 16. Why rates were 8% in 1990 — 6 min
+**One idea:** the height of the whole surface is mostly a story about
+inflation.
+`#from=1990-01-02&to=2026-08-24&m=level&w=CPIAUCSL&v=default&t=dark&s=qe,rec,ev,ff,lines`
+
+- **"In 1990 the government paid eight per cent to borrow. In 2021 it paid
+  almost nothing. Same country, same borrower. What changed?"**
+- The intuition first: if you lend for ten years and prices rise 5 per cent a
+  year, you need more than 5 per cent just to break even.
+- *Put inflation on the back wall.* **MONEY SHOT: the wall and the surface fall
+  together across three decades.**
+- 1990: CPI running at 5.2 per cent, the 30-year at 8.00. *Pin it.*
+- 2021: CPI 1.7, the 30-year under 2. *Pin it.*
+- 2022: inflation hits 9.0 per cent and the surface climbs after it.
+- *Switch the wall to the 10-year breakeven.* **"This one is better still: it
+  is the bond market's own inflation forecast, worked out from the difference
+  between ordinary Treasuries and inflation-protected ones. It is a number the
+  market sets, not one a statistician measures."**
+- Close: the level is inflation, the shape is expectation. Two different
+  stories on one chart.
+
+## 17. Does printing money cause inflation? — 7 min ⭐
+**One idea:** test Friedman's claim against sixty-five years of data, and
+report what it says — including where it does not hold.
+`#from=1990-01-02&to=2026-08-24&m=level&w=M2SL&v=default&t=dark&s=qe,rec,ev,ff,lines`
+
+- **"Milton Friedman said inflation is always and everywhere a monetary
+  phenomenon. That is testable, so let us test it."**
+- State the claim fairly: more money chasing the same goods means higher
+  prices.
+- **The case against, first — this ordering matters for credibility.** *Balance
+  sheet on the wall, 2008 to 2015.* The Fed roughly doubled its balance sheet
+  and inflation averaged 1.6 per cent. **"By the strong version of the claim,
+  this should have been catastrophic. It was not."**
+- **MONEY SHOT: switch the wall to money supply growth.** *Scrub to 2021.* M2
+  grew **26.8 per cent in a single year**, which had never happened before.
+- Sixteen months later, inflation peaked at **9.0 per cent.**
+- The reconciliation, and this is the actual insight: **QE created bank
+  reserves. The 2020 stimulus created deposits.** Reserves sit inside the
+  banking system; deposits are money in people's accounts. Friedman was talking
+  about the second kind.
+- The broader test: across 1960 to now, of 104 months when M2 grew faster than
+  10 per cent, **82 per cent were followed within one to three years by
+  inflation above 5 per cent.** The correlation peaks at a lag of about two
+  years, at 0.42.
+- **The honest close:** 0.42 is a real relationship and not a law. It is strong
+  enough that ignoring money is foolish and weak enough that "the only thing
+  that causes inflation" is too strong. *Show the surface with the money wall
+  behind it.* **"The chart cannot settle this. It can show you the two
+  experiments and let you argue better."**
 
 ---
 

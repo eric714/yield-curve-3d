@@ -34,10 +34,15 @@ export const HEIGHT_MODES = {
 
 const SERIES_STYLE = {
   WALCL:       { color: 0x4f8fe8, unit: "$tn", scale: 1e-6, decimals: 2, log: false },
+  // rate: the series is already a percentage, so quoting a percentage change
+  // of it ("3% to 5%, up 67%") is noise rather than information.
   SP500:       { color: 0xe8c25f, unit: "",    scale: 1,    decimals: 0, log: true },
   NASDAQCOM:   { color: 0x5ed1a8, unit: "",    scale: 1,    decimals: 0, log: true },
   VIXCLS:      { color: 0xe07a9a, unit: "",    scale: 1,    decimals: 1, log: false },
-  THREEFYTP10: { color: 0xb392e0, unit: "pp",  scale: 1,    decimals: 2, log: false },
+  THREEFYTP10: { color: 0xb392e0, unit: "pp",  scale: 1,    decimals: 2, log: false, rate: true },
+  CPIAUCSL:    { color: 0xe86f4f, unit: "%",   scale: 1,    decimals: 1, log: false, rate: true },
+  M2SL:        { color: 0x6fc4d8, unit: "%",   scale: 1,    decimals: 1, log: false, rate: true },
+  T10YIE:      { color: 0xd4a05e, unit: "%",   scale: 1,    decimals: 2, log: false, rate: true },
 };
 
 /** Every tenor, as index positions. */
@@ -626,7 +631,7 @@ export class Layers {
       (v * style.scale).toLocaleString("en-US", {
         minimumFractionDigits: style.decimals,
         maximumFractionDigits: style.decimals,
-      }) + (style.unit ? ` ${style.unit}` : "");
+      }) + (style.unit ? (style.unit === "%" ? "%" : ` ${style.unit}`) : "");
 
     return {
       id, label: series.label, max, min, first, last, style,

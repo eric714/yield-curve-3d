@@ -117,6 +117,9 @@ function shortName(id) {
     NASDAQCOM: "NASDAQ",
     VIXCLS: "VIX",
     THREEFYTP10: "Term premium",
+    CPIAUCSL: "Inflation",
+    T10YIE: "Expected inflation",
+    M2SL: "Money supply growth",
   }[id] || id;
 }
 

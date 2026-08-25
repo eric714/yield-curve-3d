@@ -95,6 +95,9 @@ FRED_SERIES = {
     "USRECDP":     "NBER recession indicator, daily, peak included",
     "USRECD":      "NBER recession indicator, daily, trough included",
     "THREEFYTP10": "10-year Treasury term premium (ACM)",
+    "CPIAUCSL":    "Inflation, CPI year over year",
+    "M2SL":        "Money supply growth, M2 year over year",
+    "T10YIE":      "10-year breakeven inflation rate",
 }
 
 # S&P 500 index values are the property of S&P Dow Jones Indices, and the daily
@@ -376,6 +379,24 @@ def build_sp500():
     return merged
 
 
+def year_over_year(series_id):
+    """A monthly level series converted to its percentage change on a year ago.
+
+    The level of CPI or M2 says nothing on its own; the rate of change is the
+    thing people mean when they say inflation or money growth.
+    """
+    raw = read_fred(series_id)
+    out = {}
+    for day, value in raw.items():
+        try:
+            prior = day.replace(year=day.year - 1)
+        except ValueError:                      # 29 February
+            prior = day.replace(year=day.year - 1, day=28)
+        if prior in raw and raw[prior]:
+            out[day] = (value / raw[prior] - 1) * 100
+    return out
+
+
 def read_fred(series_id):
     """-> {date: float}, skipping the '.' placeholders FRED uses for gaps."""
     path = os.path.join(RAW_FRED, f"{series_id}.csv")
@@ -589,8 +610,17 @@ def build_context(days):
     sp500 = build_sp500()
     for series_id, mode in [("WALCL", "step"), ("SP500", "daily"),
                             ("NASDAQCOM", "daily"), ("VIXCLS", "daily"),
-                            ("THREEFYTP10", "daily")]:
-        raw = sp500 if series_id == "SP500" else read_fred(series_id)
+                            ("THREEFYTP10", "daily"),
+                            ("CPIAUCSL", "step"), ("M2SL", "step"),
+                            ("T10YIE", "daily")]:
+        if series_id == "SP500":
+            raw = sp500
+        elif series_id in ("CPIAUCSL", "M2SL"):
+            # Monthly, and held flat until the next reading rather than
+            # interpolated, so the reader sees the real reporting cadence.
+            raw = year_over_year(series_id)
+        else:
+            raw = read_fred(series_id)
         if not raw:
             continue
         aligned = align(raw, days, step=(mode == "step"))
@@ -920,6 +950,8 @@ def main():
             "balanceSheet": "Federal Reserve Board via FRED (WALCL)",
             "markets": "S&P 500 from the supplied workbook spliced to FRED; "
                        "NASDAQ, VIX and term premium from FRED",
+            "inflation": "CPI and M2 year-over-year growth, and the 10-year "
+                         "breakeven rate, from FRED",
             "recessions": "NBER via FRED (USRECDP and USRECD)",
         },
     }
