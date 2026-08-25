@@ -52,12 +52,25 @@ export class Inspector {
     if (funds) extras.push(["Fed funds target", funds]);
     extras.push(["10yr − 2yr", spread(10, 2)]);
     extras.push(["10yr − 3mo", spread(10, 0.25)]);
+
+    // Inflation is shown whatever else is selected. A yield means little
+    // without it, and the real return is the number a lender actually cares
+    // about. CPI is monthly, so this is the most recent published reading.
+    const inflation = data.context.series.CPIAUCSL?.values[day];
+    const tenYear = at(10);
+    if (inflation != null) {
+      extras.push(["Inflation (CPI)", `${inflation.toFixed(1)}%`]);
+      if (tenYear != null) {
+        extras.push(["10yr after inflation", signed(tenYear - inflation)]);
+      }
+    }
+
     if (state.heightMode !== "level") {
       extras.push(["Height shows", mode.label]);
     }
 
     const wall = summary?.wall;
-    if (wall) {
+    if (wall && wall.id !== "CPIAUCSL") {
       const v = data.context.series[wall.id]?.values[day];
       extras.push([shortName(wall.id), wall.format(v)]);
     }
