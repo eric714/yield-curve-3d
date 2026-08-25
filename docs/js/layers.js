@@ -23,9 +23,10 @@ export const HEIGHT_MODES = {
   level:   { label: "Yield", unit: "%", ramp: "sequential",
              note: "The yield itself. The view the surface was built for." },
   vsFunds: { label: "Yield minus Fed funds", unit: "pp", ramp: "diverging",
-             note: "How far each maturity sits above or below the overnight "
-                 + "policy rate. Under QE the front edge is pinned at zero "
-                 + "while everything behind it is dragged down toward it." },
+             note: "Each maturity measured against the rate the Fed is "
+                 + "charging that day, so the zero plane is the Fed itself. "
+                 + "Most revealing while the Fed is moving: a surface below "
+                 + "zero means the market is betting on cuts." },
   vs3m:    { label: "Yield minus 3-month", unit: "pp", ramp: "diverging",
              note: "The slope of the curve, measured from the 3-month bill. "
                  + "Anything below the zero plane is an inversion." },
