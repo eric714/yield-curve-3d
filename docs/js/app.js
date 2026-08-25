@@ -630,7 +630,7 @@ function updateLegend() {
 /**
  * A key for everything currently drawn, and nothing that is not.
  *
- * The colour ramp only ever explained the surface. The ribbon, the sheet, the
+ * The color ramp only ever explained the surface. The ribbon, the sheet, the
  * bands, the shading and the markers all carry meaning in colour and none of
  * them said so anywhere.
  */
@@ -660,7 +660,10 @@ function updateLegendKeys() {
     keys.push([hex(theme.eventMark), "Notable days", false]);
   }
   if (state.showLines) {
-    keys.push(["currentColor", "One line per trading day", true]);
+    const stride = summary.curveStride || 1;
+    keys.push(["currentColor", stride === 1
+      ? "One line per trading day"
+      : `One line every ${stride} trading days`, true]);
   }
 
   const host = $("#legend-keys");

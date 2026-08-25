@@ -419,6 +419,7 @@ export class Layers {
 
     return {
       rows, mode, wall, ff, regimeLabels, events, inflation,
+      curveStride: this.curveStride,
       grid: this.gridM,
       maturityTicks: this.maturityTicks(selected),
       selected,
@@ -519,16 +520,22 @@ export class Layers {
   /* ------------------------------------------------------ daily curves */
   buildCurves(rows, cols, state, mode) {
     this.curves.visible = state.showLines;
-    if (!state.showLines) return;
+    if (!state.showLines) { this.curveStride = 0; return; }
 
     const { data, stage, theme } = this;
     const nRows = rows.length;
+    // Past about a year there are more trading days than we can draw as
+    // separate lines, so this samples them. The legend quotes the real gap
+    // rather than letting the lines imply a resolution they do not have.
+    // The stride counts resampled rows, and a row can already span several
+    // trading days, so the gap has to be measured in days at the end.
     const stride = Math.max(1, Math.round(nRows / TARGET_CURVE_LINES));
     const pos = this.linePos, col = this.lineCol;
     const rgb = [0, 0, 0];
     const dim = theme.curveLine;
     let p = 0;
 
+    let drawn = 0;
     outer:
     for (let r = 0; r < nRows; r += stride) {
       const day = rows[r];
@@ -547,7 +554,12 @@ export class Layers {
           if (p >= pos.length) break outer;
         }
       }
+      drawn += 1;   // only once the line is whole; the buffer can cut one short
     }
+
+    // Measured in trading days, which is the unit the legend quotes.
+    const span = rows[nRows - 1] - rows[0] + 1;
+    this.curveStride = drawn > 1 ? Math.max(1, Math.round(span / drawn)) : 1;
 
     this.lineGeo.setDrawRange(0, p / 3);
     this.lineGeo.attributes.position.needsUpdate = true;

@@ -412,7 +412,7 @@ pattern.
 ## What the site opens with
 
 Nothing but the surface. The Fed funds ribbon, the QE and QT bands, the
-recession shading, the event markers, the daily curve lines, the sea level
+recession shading, the event markers, the individual curve lines, the sea level
 sheet and the back wall all start switched off. A first-time visitor meets one
 surface and one idea, and every layer after that is a question they chose to
 ask. The walkthrough switches them on as it explains them, so the chart builds
