@@ -240,6 +240,12 @@ def sync_treasury(today):
     return today.year in fetched
 
 
+# Series that ended and will never gain another observation. Without this they
+# look permanently stale and get downloaded on every single run: DFEDTAR
+# stopped in December 2008, so that is roughly 6,500 pointless requests a year.
+COMPLETE_SERIES = {"DFEDTAR"}
+
+
 def last_observation(path):
     """Date of the final row in a cached FRED CSV, or None."""
     try:
@@ -257,6 +263,9 @@ def sync_fred(today):
     for series_id in FRED_SERIES:
         path = os.path.join(RAW_FRED, f"{series_id}.csv")
         last = last_observation(path)
+        if last is not None and series_id in COMPLETE_SERIES:
+            print(f"  fred {series_id}: complete through {last}, never refetched")
+            continue
         if last is not None and last >= stale_after:
             print(f"  fred {series_id}: current through {last}, skipped")
             continue

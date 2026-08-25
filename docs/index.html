@@ -89,6 +89,7 @@
           <div id="legend-bar"></div>
           <div id="legend-ticks"></div>
           <p id="legend-recon"><span class="chip"></span> paler shading marks reconstructed data</p>
+          <ul id="legend-keys"></ul>
         </div>
       </div>
     </div>
@@ -136,7 +137,7 @@
     <section class="block" id="wall-block">
       <h2>Behind the surface</h2>
       <select id="context-series" aria-label="Series shown on the back wall">
-        <option value="WALCL" selected>Federal Reserve balance sheet</option>
+        <option value="WALCL">Federal Reserve balance sheet</option>
         <option value="NASDAQCOM">NASDAQ Composite</option>
         <option value="SP500">S&amp;P 500</option>
         <option value="VIXCLS">VIX (volatility)</option>
@@ -144,7 +145,7 @@
         <option value="CPIAUCSL">Inflation (CPI, year on year)</option>
         <option value="T10YIE">Expected inflation (10-year breakeven)</option>
         <option value="M2SL">Money supply growth (M2, year on year)</option>
-        <option value="none">Nothing</option>
+        <option value="none" selected>Nothing</option>
       </select>
       <p id="context-note" class="note"></p>
     </section>
@@ -159,12 +160,12 @@
 
     <section class="block" id="show-block">
       <h2>Show</h2>
-      <label class="check"><input type="checkbox" id="opt-regimes" checked> <span class="sw sw-qe"></span> QE and QT periods</label>
-      <label class="check"><input type="checkbox" id="opt-recessions" checked> <span class="sw sw-rec"></span> Recessions</label>
-      <label class="check"><input type="checkbox" id="opt-events" checked> <span class="sw sw-ev"></span> Event markers</label>
-      <label class="check"><input type="checkbox" id="opt-inflation"> <span class="sw sw-infl"></span> Inflation as sea level</label>
-      <label class="check"><input type="checkbox" id="opt-fedfunds" checked> <span class="sw sw-ff"></span> Fed funds target</label>
-      <label class="check"><input type="checkbox" id="opt-lines" checked> Daily curve lines</label>
+      <label class="check"><input type="checkbox" id="opt-regimes"> <span class="sw sw-qe"></span> QE and QT periods</label>
+      <label class="check"><input type="checkbox" id="opt-recessions"> <span class="sw sw-rec"></span> Recessions</label>
+      <label class="check"><input type="checkbox" id="opt-events"> <span class="sw sw-ev"></span> Event markers</label>
+      <label class="check"><input type="checkbox" id="opt-inflation"> <span class="sw sw-infl"></span> Inflation (CPI) as sea level</label>
+      <label class="check"><input type="checkbox" id="opt-fedfunds"> <span class="sw sw-ff"></span> Fed funds target</label>
+      <label class="check"><input type="checkbox" id="opt-lines"> Daily curve lines</label>
     </section>
 
     <section class="block">

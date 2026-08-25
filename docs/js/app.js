@@ -40,15 +40,17 @@ const state = {
   from: 0,
   to: 0,
   heightMode: "level",
-  contextSeries: "WALCL",
+  contextSeries: "none",
   view: "default",
   theme: "dark",
   preset: null,
-  showRegimes: true,
-  showRecessions: true,
-  showEvents: true,
-  showFedFunds: true,
-  showLines: true,
+  // All off. A first-time visitor should meet one surface and one idea; every
+  // layer after that is a question they chose to ask.
+  showRegimes: false,
+  showRecessions: false,
+  showEvents: false,
+  showFedFunds: false,
+  showLines: false,
   showInflation: false,     // a second reading of the chart, not the default
   legendOpen: true,
   tenors: null,          // null means every maturity
@@ -179,7 +181,7 @@ function rebuild() {
       p: [summary.inflation.x + 3,
           stage.y(summary.inflation.high - layers.offsetFor(state.heightMode, state.to)) + 3,
           BOX.D * 0.25],
-      text: "Inflation", cls: "axis-title",
+      text: "Inflation (CPI)", cls: "axis-title",
     });
   }
   if (state.showRecessions && (data.manifest.recessions || []).some(
@@ -553,6 +555,13 @@ function buildTour() {
         state.heightMode = change.heightMode;
         $("#height-mode").value = change.heightMode;
       }
+      if (change.show) {
+        for (const [key, value] of Object.entries(change.show)) {
+          state[key] = value;
+          const spec = Object.values(TOGGLES).find((t) => t.key === key);
+          if (spec) $(spec.el).checked = value;
+        }
+      }
       if (change.contextSeries) {
         state.contextSeries = change.contextSeries;
         $("#context-series").value = change.contextSeries;
@@ -603,6 +612,7 @@ function updateLegend() {
 
   // Only mention reconstructed data when some is actually on screen.
   $("#legend-recon").hidden = !summary.anyFilled;
+  updateLegendKeys();
 
   const host = $("#legend-ticks");
   host.innerHTML = "";
@@ -617,11 +627,54 @@ function updateLegend() {
   }
 }
 
+/**
+ * A key for everything currently drawn, and nothing that is not.
+ *
+ * The colour ramp only ever explained the surface. The ribbon, the sheet, the
+ * bands, the shading and the markers all carry meaning in colour and none of
+ * them said so anywhere.
+ */
+function updateLegendKeys() {
+  const theme = THEMES[state.theme];
+  const hex = (n) => `#${n.toString(16).padStart(6, "0")}`;
+  const keys = [];
+
+  if (state.showFedFunds) {
+    keys.push([hex(theme.fedFunds), "Fed funds target, along the front edge", false]);
+  }
+  if (state.showInflation && summary.inflation) {
+    keys.push([hex(theme.inflationSheet),
+               "Inflation (CPI, year on year) as sea level", false]);
+  }
+  if (summary.wall) {
+    keys.push([hex(summary.wall.style.color), `${shortSeriesName()}, on the back wall`, false]);
+  }
+  if (state.showRegimes) {
+    keys.push(["linear-gradient(90deg,#3aa8e0,#e05a5a)",
+               "Fed bond buying (blue) and selling (red)", false]);
+  }
+  if (state.showRecessions) {
+    keys.push([hex(theme.recessionRail), "Recessions, as shading on the surface", false]);
+  }
+  if (state.showEvents) {
+    keys.push([hex(theme.eventMark), "Notable days", false]);
+  }
+  if (state.showLines) {
+    keys.push(["currentColor", "One line per trading day", true]);
+  }
+
+  const host = $("#legend-keys");
+  host.innerHTML = keys.map(([color, label, isLine]) =>
+    `<li><span class="k${isLine ? " line" : ""}" style="background:${color}"></span>` +
+    `${escapeHtml(label)}</li>`).join("");
+  host.hidden = keys.length === 0;
+}
+
 function shortSeriesName() {
   return {
     WALCL: "Fed balance sheet", SP500: "S&P 500", NASDAQCOM: "NASDAQ Composite",
     VIXCLS: "VIX", THREEFYTP10: "Term premium",
-    CPIAUCSL: "Inflation", T10YIE: "Expected inflation",
+    CPIAUCSL: "Inflation (CPI)", T10YIE: "Expected inflation (breakeven)",
     M2SL: "Money supply growth",
   }[state.contextSeries] || "";
 }

@@ -165,6 +165,14 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
   display:flex;align-items:center;gap:.4rem;
   margin-top:.5rem;font-size:10.5px;color:var(--ink-faint);
 }
+#legend-keys{list-style:none;margin:.5rem 0 0;padding:.5rem 0 0;border-top:1px solid var(--line)}
+#legend-keys li{
+  display:flex;align-items:center;gap:.45rem;
+  font-size:10.5px;color:var(--ink-faint);padding:1px 0;
+}
+#legend-keys .k{width:16px;height:9px;border-radius:3px;flex:0 0 16px}
+#legend-keys .k.line{height:2px;border-radius:2px}
+
 #legend-recon .chip{
   width:16px;height:9px;border-radius:3px;flex:0 0 16px;
   background:linear-gradient(90deg,#7f8794,#9aa2ae);

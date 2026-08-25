@@ -16,7 +16,11 @@ import { pchip } from "./interpolate.js";
 // Cap on mesh rows. Longer ranges are sampled down; at 36 years this is about
 // one row every two trading days, far finer than a screen pixel.
 const MAX_ROWS = 1200;
-const TARGET_CURVE_LINES = 72;
+// Enough that a short range reads as a stack of individual daily curves,
+// which is the point of them. At 72 they were one line every sixteen days
+// across the full record and changed a tenth of one per cent of the pixels,
+// so the toggle appeared to do nothing at all.
+const TARGET_CURVE_LINES = 260;
 const WALL_H = BOX.H * 0.8;
 
 export const HEIGHT_MODES = {

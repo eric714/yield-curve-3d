@@ -401,6 +401,25 @@ repeated from folklore. All four recessions in this record were preceded by a
 the 1,052 inverted days had no recession within two years of them, almost all
 from the long inversion of 2022 to 2024, so the step says that too.
 
+## What the site opens with
+
+Nothing but the surface. The Fed funds ribbon, the QE and QT bands, the
+recession shading, the event markers, the daily curve lines, the sea level
+sheet and the back wall all start switched off. A first-time visitor meets one
+surface and one idea, and every layer after that is a question they chose to
+ask. The walkthrough switches them on as it explains them, so the chart builds
+up rather than needing to be stripped back.
+
+The legend lists whatever is currently drawn and nothing that is not, so any
+color on screen is accounted for somewhere.
+
+## Local development
+
+`python3 pipeline/serve.py` serves `docs/` with caching disabled. The built-in
+`http.server` lets the browser hold on to JavaScript modules, which means an
+edit is silently ignored and you end up drawing conclusions from code that is
+no longer running.
+
 ## Embedding it somewhere else
 
 Add `?embed=1` to the address and the page strips back to the chart alone: no

@@ -26,7 +26,7 @@ export const THEMES = {
     inflationSheet: 0x4bd0e0,
     fedFunds: 0xf2a03c,
     fedFundsEdge: 0xffc472,
-    curveLine: 0.28,          // multiplier on the surface color
+    curveLine: 0.16,          // multiplier on the surface color
     cursor: 0xffffff,
     eventMark: 0xffd479,
     css: {
@@ -66,7 +66,7 @@ export const THEMES = {
     inflationSheet: 0x1b93a8,
     fedFunds: 0xd97f14,
     fedFundsEdge: 0xa85e05,
-    curveLine: 0.55,
+    curveLine: 0.42,
     cursor: 0x1a2233,
     eventMark: 0x9a6a10,
     css: {

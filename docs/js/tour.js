@@ -58,7 +58,7 @@ const STEPS = [
         + "September the two-year sat 1.38 points under the policy rate. "
         + "Eight days later the Fed cut.",
     apply: { preset: "Global financial crisis", view: "default",
-             heightMode: "vsFunds" },
+             heightMode: "vsFunds", show: { showFedFunds: true } },
     spotlight: "#height-block",
   },
   {
@@ -78,6 +78,7 @@ const STEPS = [
         + "across the surface as shade. Small diamonds mark days when "
         + "something happened; put the cursor on one and the panel tells you "
         + "what.",
+    apply: { show: { showRegimes: true, showRecessions: true, showEvents: true } },
     spotlight: "#show-block",
   },
   {
