@@ -20,10 +20,12 @@ nothing.
   change is visible.
 - **Read a whole day at once.** Move the pointer across the scene and the
   readout gives you every tenor Treasury published that day, the policy rate,
-  2s10s and 10y-3m, whatever is on the back wall, and whether the day sits
-  inside a recession or a Fed program. Click to pin it. Escape clears it.
+  2s10s and 10y-3m, CPI inflation and the 10-year yield after it, whatever is
+  on the back wall, and whether the day sits inside a recession or a Fed
+  program. Click to pin it. Escape clears it.
 - **Put something behind the surface**: the Fed balance sheet, the S&P 500 back
-  to 1990, the NASDAQ, the VIX, or the 10-year term premium.
+  to 1990, the NASDAQ, the VIX, the 10-year term premium, expected inflation
+  from the 10-year breakeven, or M2 growth. It starts empty.
 - **Share the exact view.** Every control writes to the URL, so a link restores
   the dates, the height mode, the back wall, the camera and the theme.
 - **Choose the maturities.** Switch any of the fourteen tenors off and the
@@ -388,18 +390,24 @@ and jumps to 2022 to show an inverted curve rather than describing one.
 The first five steps teach the chart; the rest teach the panel. Each control
 step rings the section it is talking about and puts the chart into a state
 where that control matters: the height step drops you into 2008 with the
-surface measured against the Fed funds rate, because quantitative easing is
-close to invisible on a plain yield surface and obvious on that one. It assumes
-no knowledge of bonds throughout.
+surface measured against the Fed funds rate, which turns the flat plane into
+the Fed itself and shows how far the market had already moved away from it. In
+2007, 95% of the published curve sat below the policy rate months before the
+first cut. It assumes no knowledge of bonds throughout.
 
 It runs once, remembers that in the browser, and the question mark in the top
 corner replays it. Embedded copies never show it.
 
 The claim in the inversion step was checked against the data rather than
-repeated from folklore. All four recessions in this record were preceded by a
-2-year/10-year inversion, between five and twenty-four months ahead. But 571 of
-the 1,052 inverted days had no recession within two years of them, almost all
-from the long inversion of 2022 to 2024, so the step says that too.
+repeated from folklore, and the check is why the step is narrower than the
+folklore. Two of the four recessions here were preceded by a long 2-year/10-year
+inversion: 227 inverted days before 2001 and 238 before 2008. The other two were
+not, in any meaningful sense. The record opens in January 1990 and so misses most
+of the 1989 inversion, leaving 16 days before the 1990 recession; 2020 was
+preceded by 3. And 568 of the 1,052 inverted days in the record had no recession
+within two years of them, 539 of those from the long inversion of 2022 to 2024.
+So the step claims the two it can support and says the 2022 inversion broke the
+pattern.
 
 ## What the site opens with
 

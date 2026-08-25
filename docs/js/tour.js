@@ -29,17 +29,20 @@ const STEPS = [
     apply: { view: "front" },
   },
   {
-    title: "Time runs back into the distance",
-    body: "Turn it and you see the days stacked one behind another. Drag "
-        + "anywhere on the chart to rotate it, and scroll to zoom.",
+    title: "Time runs left to right",
+    body: "Turn it square on and the whole history lies across the screen, "
+        + "one ridge per trading day, with the maturities receding away from "
+        + "you. Drag anywhere on the chart to rotate it, and scroll to zoom.",
     apply: { view: "side" },
   },
   {
     title: "When it slopes the wrong way",
-    body: "Sometimes two-year money costs more than ten-year, and the surface "
-        + "tips backwards. That is an inversion. One came before all four "
-        + "recessions in this record, though the long inversion from 2022 was "
-        + "not followed by one.",
+    body: "Sometimes two-year money costs more than ten-year, and the curve "
+        + "slopes down to the right instead of up. That is an inversion, and "
+        + "it has a reputation as a recession warning. It earned that twice "
+        + "here, ahead of 2001 and ahead of 2008. Then the 2022 inversion ran "
+        + "more than two years, the longest in the record, and no recession "
+        + "followed.",
     apply: { preset: "Inflation shock", view: "front" },
   },
   {
@@ -63,10 +66,12 @@ const STEPS = [
   },
   {
     title: "Something behind the surface",
-    body: "The back wall carries a second series for context. By default it is "
-        + "the Federal Reserve's balance sheet, climbing as it bought bonds. "
-        + "You can swap it for the S&P 500, the NASDAQ, the VIX, or the "
-        + "ten-year term premium.",
+    body: "The back wall carries a second series for context. Here it is the "
+        + "Federal Reserve's balance sheet, climbing as it bought bonds. You "
+        + "can swap it for the S&P 500, the NASDAQ, the VIX, the ten-year "
+        + "term premium, expected inflation, or the growth rate of the money "
+        + "supply. It starts empty, so nothing is on the wall until you put "
+        + "it there.",
     apply: { preset: "Everything", view: "default", heightMode: "level",
              contextSeries: "WALCL" },
     spotlight: "#wall-block",
@@ -82,6 +87,19 @@ const STEPS = [
     spotlight: "#show-block",
   },
   {
+    title: "Inflation, as a sea level",
+    body: "A yield is what you are paid; inflation is what it is worth when "
+        + "you get it. This sheet floats at the rate consumer prices were "
+        + "rising, so anything under it lost money in real terms. In the "
+        + "whole of 2022 there was not a single day when any Treasury, out "
+        + "to thirty years, paid more than inflation.",
+    apply: { preset: "Inflation shock", view: "default", heightMode: "level",
+             contextSeries: "none",
+             show: { showInflation: true, showRegimes: false,
+                     showRecessions: false, showEvents: false } },
+    spotlight: "#show-block",
+  },
+  {
     title: "Choose the maturities",
     body: "Switch any of them off and the curve is redrawn through the ones "
         + "left, so the surface stays continuous instead of developing holes. "
@@ -93,7 +111,11 @@ const STEPS = [
     body: "These buttons jump to the famous episodes: try the global financial "
         + "crisis. Drag either end of the date slider to change the range, or "
         + "the bar between them to move the whole window through history.",
-    apply: { preset: "Past five years", view: "default", heightMode: "level" },
+    apply: { preset: "Past five years", view: "default", heightMode: "level",
+             contextSeries: "none",
+             show: { showRegimes: false, showRecessions: false,
+                     showEvents: false, showFedFunds: false,
+                     showLines: false, showInflation: false } },
     spotlight: "#presets",
   },
 ];
