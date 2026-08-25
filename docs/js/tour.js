@@ -51,12 +51,14 @@ const STEPS = [
   },
   {
     title: "Height can mean other things",
-    body: "This is 2008 to 2010, and the height is now the yield minus the "
-        + "Fed's own overnight rate. The near edge pins to zero, because that "
-        + "is the Fed. Everything behind shows how far the market sat above "
-        + "it. Quantitative easing is hard to see any other way: on a plain "
-        + "yield surface these years look flat and dead.",
-    apply: { preset: "QE1", view: "default", heightMode: "vsFunds" },
+    body: "Now the height is each maturity measured against the rate the Fed "
+        + "was charging that day, so the flat plane is the Fed itself. "
+        + "Through 2007 almost the whole surface sits below it: the bond "
+        + "market was betting on cuts months before the Fed made any. On 10 "
+        + "September the two-year sat 1.38 points under the policy rate. "
+        + "Eight days later the Fed cut.",
+    apply: { preset: "Global financial crisis", view: "default",
+             heightMode: "vsFunds" },
     spotlight: "#height-block",
   },
   {
