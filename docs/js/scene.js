@@ -27,9 +27,13 @@ const MATURITY_TICKS = [1 / 12, 0.25, 0.5, 1, 2, 5, 10, 20, 30];
 // straight down the time axis), elevation, and distance as a multiple of the
 // framing radius. Expressed this way they stay correct if the box changes size.
 const VIEWS = {
-  default: { az: 41, el: 27, dist: 1.06, target: [0, 6, 0] },
-  front:   { az: 0,  el: 11, dist: 0.94, target: [0, 1, 0] },
-  side:    { az: 90, el: 14, dist: 1.02, target: [0, 4, 0] },
+  // Time reads left to right, the way every other time series does, with the
+  // short maturities nearest and the long end receding. Looking down the
+  // maturity axis instead put 1990 at the back and made the first impression a
+  // shape rather than a chronology.
+  default: { az: -62, el: 27, dist: 1.04, target: [0, 6, 0] },
+  front:   { az: 0,  el: 11, dist: 0.94, target: [0, 1, 0] },   // one day, end on
+  side:    { az: -90, el: 14, dist: 1.02, target: [0, 4, 0] },  // along time
   top:     { az: 0,  el: 87, dist: 1.00, target: [0, 0, 0] },
 };
 
@@ -369,8 +373,17 @@ export class Stage {
       // overlay's clipping, which reads worse than not showing it at all.
       const margin = label.text.length > 10 ? 78 : 30;
       if (px < margin || px > w - margin || py < 12 || py > h - 12) continue;
+
+      // Drop anything that would land on a label already placed. Axis labels
+      // come first and so win; era names are the ones that pile up, and a
+      // legible three beats an unreadable six.
+      const halfW = label.text.length * 3.4 + 4;
+      const clash = placed.some(
+        (q) => Math.abs(q.x - px) < halfW + q.halfW && Math.abs(q.y - py) < 13);
+      if (clash) continue;
+
       this.labels.add(px, py, label.text, label.cls);
-      placed.push({ x: px, y: py, text: label.text, cls: label.cls || "" });
+      placed.push({ x: px, y: py, halfW, text: label.text, cls: label.cls || "" });
     }
     this.labels.end();
     return placed;
