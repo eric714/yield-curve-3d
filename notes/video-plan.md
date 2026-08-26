@@ -119,7 +119,38 @@ anyway — the toggle is a beat.
 
 # Part 3 — The videos
 
-Eighteen. Record 1, 2, 7 and 17 before publishing anything.
+Twenty of them, about two hours of finished footage. **That is a back catalog,
+not a to-do list**, and treating it as a to-do list is the most likely way this
+never gets made. Work in tiers.
+
+### Tier 1 — the launch set. Make these five, in this order, before anything else.
+
+| # | Video | Why it goes here |
+|---|---|---|
+| **1** | What a yield curve actually is | Nobody can watch anything else first |
+| **2** | Steep, flat, inverted | The hook, and the idea people have heard of |
+| **17** | The two years when lending lost money | The best visual on the site: the surface sinking under the sheet |
+| **7** | The bond market moves before the Fed | The strongest claim, told through one date |
+| **19** | Does any of this actually predict anything? | The credibility video, and the answer to the question everyone asks |
+
+Five videos, about 35 minutes. **If you make only these, the channel works.**
+They introduce the chart, deliver its best picture, make its strongest claim,
+and then audit that claim honestly. That last one is what separates this from
+every other explainer, so do not leave it for later.
+
+### Tier 2 — the ones with a story nobody else is telling.
+
+**20** (the Sahm rule), **12** (the debt-ceiling week), **18** (Friedman and the
+money supply), **8** (QE told honestly). Distinctive, quotable, and each rests
+on a number that took real work to verify.
+
+### Tier 3 — the historical episodes.
+
+**3, 4, 5, 6, 9, 10, 11, 13, 14, 15, 16.** These share one format: pick an
+episode, scrub through it, pin two days. That is a fine format and a bad
+sequence — seven of them in a row is a channel about the 1990s, not about the
+chart. Space them between Tier 1 and 2 releases, and drop any that does not
+have a number you would put on screen.
 
 Every link loads the exact view. Paste it, hit record.
 
@@ -254,9 +285,14 @@ different rate for each; that set of rates on one day is the curve.
   reached +4.70 points on 11 January 2010, the widest in the record.**
   *Sets up video 8.*
 
-## 7. The bond market forecasts the Fed — 7 min ⭐
+## 7. The bond market moves before the Fed does — 7 min ⭐
 **One idea:** the market prices cuts months before the Fed makes them, and you
 can see it as a shape.
+
+**Title note:** it used to be called "forecasts the Fed" and that word does not
+survive the evidence. The relationship is overwhelming looking backwards and
+only marginal as a forecast. "Moves before" is what the data supports. See
+video 19.
 `#from=2007-06-01&to=2009-12-31&m=vsFunds&w=none&v=default&t=dark&s=ff`
 
 - **"In September 2007 the bond market knew the Fed was about to cut. The Fed
@@ -275,10 +311,13 @@ can see it as a shape.
   trading days** before those cuts.
 - It repeats: **179 of 272** days before the 2001 recession, **325 of 334**
   before the 2024 cuts.
-- **Say the limitation out loud:** this mode tells you almost nothing when the
-  Fed is parked at zero, because subtracting a constant changes nothing. It is
-  a tool for periods when policy is moving — which is exactly why the next
-  video does not use it.
+- **Say the limitation out loud, twice.** First: this mode tells you almost
+  nothing when the Fed is parked at zero, because subtracting a constant
+  changes nothing. It is a tool for periods when policy is moving — which is
+  exactly why the next video does not use it.
+- Second, and do not skip it: **"Everything I have just shown you is looking
+  backwards. Whether you could have used it in advance is a different question,
+  and a harder one. That is video 19."** *Point forward to it.*
 
 ## 8. QE, told honestly — 7 min ⭐
 **One idea:** what the Fed actually did, and what the curve did alongside it,
@@ -533,34 +572,87 @@ including where it does not hold.
   causes inflation" is too strong. **"The chart cannot settle this. It can show
   you the two experiments and let you argue better."**
 
-## 19. Two warnings that never arrived — 6 min ⭐
-**One idea:** the two most famous recession indicators both fired in this
-cycle, and neither was followed by a recession.
-`#from=2018-01-02&to=2026-08-26&m=level&w=UNRATE&v=default&t=dark&s=infl,ev,rec`
+## 19. Does any of this actually predict anything? — 8 min ⭐⭐
+**One idea:** the honest audit. The curve predicts the Fed and does not predict
+the stock market, and here is the difference between a real relationship and a
+useful one.
+`#from=1990-01-02&to=2026-08-26&m=level&w=UNRATE&v=default&t=dark&s=infl`
 
-- **"There are two famous recession alarms. Both went off. Nothing happened.
-  That is the most interesting thing in this data right now."**
-- Alarm one, the curve. *Switch to Mode 3 briefly.* Inverted from July 2022 to
-  September 2024 — **543 trading days, the longest run in the record.**
-- Alarm two, the Sahm rule. *Point at the event marker in July 2024.* Explain
-  it in one sentence: when the three-month average unemployment rate rises half
-  a point above its low of the past year, the economy has historically already
-  been in recession.
-- **MONEY SHOT: the unemployment rate on the back wall.** Scrub 2023 into 2025.
-  The wall lifts just enough to trip the rule, then settles back. It reads
-  **0.00 today.**
-- **The honest scorecard, and put it on screen:**
-  the Sahm rule has fired eleven times since 1960 and nine landed inside a
-  recession — but it is *coincident*, firing one to seven months *after* the
-  recession began. It has never once led. The curve leads by thirteen to
-  twenty-three months but cries wolf constantly: **568 of the 1,052 inverted
-  days in this record had no recession within two years.**
-- So they are complements, not rivals: one warns early and is often wrong, the
-  other confirms late and is rarely wrong.
-- **The close, and do not soften it:** in 2024 the early-and-noisy one and the
-  late-and-reliable one agreed, and both were wrong. **"Two indicators built
-  from different data, and the same cycle broke them both. That is worth more
-  than another chart telling you what you already believe."**
+This is the most defensible thing on the site and the answer to the question
+every viewer is actually asking. Full workings in `notes/methods.md`; point
+people there in the description.
+
+- **"Every chart like this eventually gets the same question: can I make money
+  with it? I tested that properly, and the answer is no — but something more
+  interesting is true."**
+- Set the standard first: **"I am going to show you the test that failed
+  before the one that worked, because that is the only way you should trust
+  either."**
+- **The failure.** Does the curve predict stocks? *Show the inversion preset.*
+  The folklore says an inversion means sell.
+- **MONEY SHOT ONE — put the numbers on screen and leave them up.**
+  S&P return in the twelve months after an inversion: **+9.3% on average.**
+  Unconditional twelve-month baseline: **+10.3%.** Correlation between the
+  slope and forward returns: **r = −0.097**, which is **under 1%** of the
+  variation. **"It is not a weak signal. It is not a signal."**
+- **The thing that does work.** Same test, different target: the Fed.
+- **MONEY SHOT TWO.** Of the forecast error in where the policy rate goes a
+  year out, the shape of the curve accounts for about **29 per cent.** Every
+  economic indicator combined — unemployment, payrolls, inflation — accounts
+  for about **five.**
+- Why that is not as strange as it sounds: the two-year yield *is* the market's
+  forecast of the Fed's reaction to that data. It already contains the
+  economics. *Put unemployment on the wall and the sea level up while you say
+  this — both halves of the mandate, already priced into the surface.*
+- It survives everything: conditioning on seven variables, robust standard
+  errors, dropping the zero-rate years, and all four Fed chairs separately.
+- **Then take it back down, on camera.** Out of sample, forecasting one month
+  ahead, the improvement is real — R² from 0.20 to 0.34 — but **not
+  statistically significant** (p ≈ 0.06). Twelve of twenty-four tests survive
+  multiple-testing correction. Both out-of-sample tests are among the twelve
+  that do not.
+- **The close, and this is the whole channel's credibility in one line:**
+  **"There is a difference between a relationship that is certainly there and
+  one you can act on. This is the first kind. Anyone who tells you the second
+  kind is easy is selling you something."**
+
+## 20. The recession alarm that is never early — 6 min ⭐
+**One idea:** the Sahm rule, what it actually measures, and why 2024 broke it
+in the same cycle the yield curve broke.
+`#from=2006-01-03&to=2026-08-26&m=level&w=UNRATE&v=default&t=dark&s=ev,rec`
+
+- **"There is a recession indicator with an almost perfect record. It has
+  fired eleven times since 1960 and nine of those were recessions. It also has
+  never once warned anybody in advance, and in 2024 it was wrong."**
+- What it is, slowly, because most people have not met it: take the
+  unemployment rate, average it over three months, and compare that to the
+  lowest three-month average of the previous year. **When the gap reaches half
+  a percentage point, the rule triggers.** *Unemployment is on the back wall —
+  trace the shape you are describing.*
+- Why Claudia Sahm built it: not to forecast, but to **start stimulus
+  automatically** the moment a downturn was detectable, without waiting for
+  economists to agree. That design choice is the whole video.
+- *Turn on event markers.* Six triggers inside this record. *Click through
+  them: 1990, 2001, 2003, 2008, 2020, 2024.*
+- **MONEY SHOT: the scorecard on screen.** Nine of eleven triggers landed
+  inside a recession — but every single one fired **one to seven months after
+  it had already begun.** **"It has never been early. Not once. It is a smoke
+  detector, not a weather forecast."**
+- Now the comparison, and this is why it belongs on this site. *Scrub back to
+  each trigger with the surface up.* The curve had inverted **thirteen to
+  twenty-three months earlier** — but it cries wolf: **568 of the 1,052
+  inverted days in this record had no recession within two years.**
+- So: one alarm is early and noisy, the other is late and reliable. Neither is
+  a forecast on its own.
+- **2024, and let it land.** *Pin July 2024.* The Sahm rule triggers. The curve
+  had been inverted since 2022 — **543 trading days, the longest run ever
+  recorded.** Both alarms, agreeing, for the first time in years.
+- **No recession followed.** *Scrub forward.* Unemployment settles back; the
+  reading is **0.00 today**; the curve un-inverts in September 2024.
+- **The close:** **"The early-and-noisy one and the late-and-reliable one
+  agreed, and both were wrong. Two indicators, built from completely different
+  data, broken by the same cycle. That is worth more than another chart
+  confirming what you already think."**
 
 ---
 
