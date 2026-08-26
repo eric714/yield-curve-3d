@@ -50,6 +50,11 @@ indicator combined accounts for about 5%.** A one-standard-deviation shock to
 the gap moves the policy rate 0.42pp cumulatively over eighteen months, peaking
 in month two.
 
+Orthogonalized decompositions depend on the Cholesky ordering, so that figure
+was re-run under six defensible orderings, including one that puts the curve
+last and is maximally unfavorable to it. **At twelve months it ranges 27.4% to
+29.4%** — a spread of two points. The claim does not rest on the ordering.
+
 ### It survives everything I threw at it
 
 - **Conditioning.** Six-variable and eight-variable systems; adding the term
@@ -62,6 +67,26 @@ in month two.
 - **A Taylor rule.** In an error-correction model that gives the Taylor terms
   their best shot, the curve still adds R² +0.170 (p = 5.5e-09) while the
   error-correction term itself is insignificant.
+
+### It is the whole shape, not just the slope
+
+Every test above enters the curve as one number, the 2-year gap. Replacing it
+with the level, slope and curvature factors from a PCA of all fourteen tenors —
+92.5%, 6.9% and 0.4% of curve variation, 99.89% between them — sharpens the
+result rather than diluting it:
+
+| Factor → policy | chi2 (p=6) | p |
+|---|---|---|
+| **Level** | 83.0 | 8.9e-16 |
+| **Slope** | 62.0 | 1.7e-11 |
+| Curvature | 11.5 | 0.075 |
+| Every macro variable | 4.3 – 11.0 | 0.09 – 0.63 |
+
+So it is not only the slope people talk about: **the level of the curve carries
+more information about the Fed's next move than the slope does**, which makes
+sense once you remember the level already embeds the expected path. Curvature
+adds nothing. And the macro variables explain nothing even when the curve is
+split into three factors instead of compressed into one.
 
 ### Why the economic data loses
 
@@ -192,7 +217,23 @@ Recorded because the process is part of the evidence.
 
 ---
 
-## 7. Limits
+## 7. A caveat that no correction fixes
+
+The specifications here were chosen **adaptively, while looking at results**.
+Lag orders came from residual diagnostics, samples were cut at the zero bound,
+systems were made parsimonious when they overfit. Each of those choices is
+defensible on its own and each was made after seeing an earlier answer.
+
+Benjamini-Hochberg corrects for the number of tests reported. It does not
+correct for a search over specifications, and nothing computed after the fact
+can. The honest protections are that the main result survives every
+specification tried rather than one, that it agrees with a large existing
+literature, and that the out-of-sample test — the one check specification
+search cannot flatter — came back **positive but not significant**. Read that
+marginal out-of-sample result as the price of the search, and treat it as the
+more informative number of the two.
+
+## 8. Limits
 
 - **Granger causality is predictive precedence, not causation.** Both the curve
   and the Fed respond to incoming information. Neither causes the other in any
@@ -206,10 +247,8 @@ Recorded because the process is part of the evidence.
 - **Linear, monthly, single-frequency.** No regime-switching, no threshold
   effects, no daily or intra-meeting identification. An FOMC-date event study
   would identify this far more cleanly.
-- **The curve enters as one number.** PCA of the 14 tenors gives the classic
-  decomposition — level 92.5%, slope 6.9%, curvature 0.4%, 99.89% in three
-  factors — but the tests use the 2-year gap alone rather than the factor
-  scores.
+- **Linearity.** Every relationship here is modeled linearly. Threshold or
+  regime-switching behavior would not be detected.
 - **Not investment advice.** Nothing here is a trading rule, and section 5 is
   the reason why.
 
@@ -217,9 +256,26 @@ Recorded because the process is part of the evidence.
 
 ## Reproducing it
 
-The analysis lives outside the site pipeline and is not required to build the
-chart. Everything needed is in the published data files under `docs/data/` plus
-`UNRATE` and `PAYEMS` from FRED. The estimators are small enough to re-derive:
-OLS by Gauss-Jordan, the F and chi-square tails by continued-fraction
+**The code is in [`analysis/`](../analysis/).** Standard library only — no
+numpy, scipy or statsmodels — so every estimator can be read rather than
+trusted: OLS by Gauss-Jordan, the F and chi-square tails by continued-fraction
 incomplete beta and gamma, ADF against MacKinnon critical values, Newey-West
-HAC with a Bartlett kernel, and PCA by power iteration with deflation.
+HAC with a Bartlett kernel, Cholesky for the decompositions, and PCA by power
+iteration with deflation. `econlib.py` reproduces textbook values on the
+distributions it implements.
+
+Run any of them from the repository root, e.g. `python3 analysis/system.py`.
+The analysis is not part of the site build and the chart does not depend on it.
+
+### Still undone
+
+- **A bootstrap** for the HAC Wald tests, which would settle the long-lag
+  results that were discarded as over-rejection rather than reported.
+- **Real-time vintages.** Every macro series here is the current one. ALFRED
+  has vintages; assembling 36 years of them across several series is a project
+  rather than a check, and until it is done any forecasting claim is softer
+  than it looks.
+- **Other countries.** Everything is the United States after 1990: one central
+  bank, one regime family. Whether this is a fact about yield curves or a fact
+  about the Fed is not answerable from this dataset. Japan, with decades at the
+  zero bound, is the obvious test.
