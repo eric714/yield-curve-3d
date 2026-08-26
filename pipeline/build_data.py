@@ -98,6 +98,7 @@ FRED_SERIES = {
     "CPIAUCSL":    "Inflation, CPI year over year",
     "M2SL":        "Money supply growth, M2 year over year",
     "T10YIE":      "10-year breakeven inflation rate",
+    "UNRATE":      "Unemployment rate",
 }
 
 # S&P 500 index values are the property of S&P Dow Jones Indices, and the daily
@@ -621,7 +622,7 @@ def build_context(days):
                             ("NASDAQCOM", "daily"), ("VIXCLS", "daily"),
                             ("THREEFYTP10", "daily"),
                             ("CPIAUCSL", "step"), ("M2SL", "step"),
-                            ("T10YIE", "daily")]:
+                            ("T10YIE", "daily"), ("UNRATE", "step")]:
         if series_id == "SP500":
             raw = sp500
         elif series_id in ("CPIAUCSL", "M2SL"):
@@ -858,6 +859,41 @@ PRESETS = [
 ]
 
 
+def sahm_triggers(days):
+    """Months the Sahm rule crossed its half-point threshold.
+
+    Claudia Sahm's indicator: the three-month average unemployment rate, less
+    its own lowest three-month average of the previous year. At 0.50 the
+    economy has historically already been in recession, which is the point of
+    it -- it was built to start automatic stimulus, not to forecast. It is
+    marked here because it failed in 2024 in the same cycle the yield curve
+    did, and two famous indicators missing together is worth seeing.
+
+    Computed from the current vintage of the unemployment rate. That series is
+    revised, so these dates are not necessarily the ones that would have been
+    published at the time.
+    """
+    raw = read_fred("UNRATE")
+    if not raw:
+        return []
+    keys = sorted(raw)
+    avg = {keys[i]: sum(raw[keys[i - j]] for j in range(3)) / 3
+           for i in range(2, len(keys))}
+    marks, armed = [], True
+    ordered = sorted(avg)
+    for i in range(12, len(ordered)):
+        day = ordered[i]
+        floor = min(avg[ordered[i - j]] for j in range(1, 13))
+        gap = avg[day] - floor
+        if gap >= 0.50 and armed:
+            marks.append((day, round(gap, 2)))
+            armed = False
+        elif gap < 0.50:
+            armed = True
+    return [(d.isoformat() if hasattr(d, "isoformat") else str(d), g)
+            for d, g in marks if days[0] <= d <= days[-1]]
+
+
 def build_meta(days):
     first, last = days[0].isoformat(), days[-1].isoformat()
 
@@ -870,6 +906,16 @@ def build_meta(days):
         {"date": d, "title": t, "note": n}
         for d, t, n in EVENTS if first <= d <= last
     ]
+    for day, gap in sahm_triggers(days):
+        events.append({
+            "date": day,
+            "title": "Sahm rule triggers",
+            "note": f"Unemployment is {gap:.2f} points above its low of the "
+                    "past year, the level that has accompanied every recession "
+                    "since 1960. It is a coincident measure, not a forecast: "
+                    "when it has been right, the recession had already begun.",
+        })
+    events.sort(key=lambda e: e["date"])
     regimes = [
         {"name": n, "start": s, "end": e, "kind": k, "note": note}
         for n, s, e, k, note in REGIMES

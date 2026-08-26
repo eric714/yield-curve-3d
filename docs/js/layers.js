@@ -47,6 +47,9 @@ const SERIES_STYLE = {
   CPIAUCSL:    { color: 0xe86f4f, unit: "%",   scale: 1,    decimals: 1, log: false, rate: true },
   M2SL:        { color: 0x6fc4d8, unit: "%",   scale: 1,    decimals: 1, log: false, rate: true },
   T10YIE:      { color: 0xd4a05e, unit: "%",   scale: 1,    decimals: 2, log: false, rate: true },
+  // The other half of the Fed's mandate. Inflation can be the sea level and
+  // this the back wall at the same time, which is the pair worth seeing.
+  UNRATE:      { color: 0x8fc04e, unit: "%",   scale: 1,    decimals: 1, log: false, rate: true },
 };
 
 /** Every tenor, as index positions. */

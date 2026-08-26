@@ -699,7 +699,7 @@ function shortSeriesName() {
     WALCL: "Fed balance sheet", SP500: "S&P 500", NASDAQCOM: "NASDAQ Composite",
     VIXCLS: "VIX", THREEFYTP10: "Term premium",
     CPIAUCSL: "Inflation (CPI)", T10YIE: "Expected inflation (breakeven)",
-    M2SL: "Money supply growth",
+    M2SL: "Money supply growth", UNRATE: "Unemployment rate",
   }[state.contextSeries] || "";
 }
 

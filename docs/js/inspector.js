@@ -133,6 +133,7 @@ function shortName(id) {
     CPIAUCSL: "Inflation (CPI)",
     T10YIE: "Expected inflation",
     M2SL: "Money supply growth",
+    UNRATE: "Unemployment",
   }[id] || id;
 }
 
