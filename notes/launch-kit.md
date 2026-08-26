@@ -25,7 +25,7 @@ field stays **empty** — put your explanation in the first comment instead.
 I built this after seeing the NYT's 3D yield curve piece from 2015 and
 wanting to explore the data myself rather than watch a fixed animation.
 
-It's every daily Treasury par yield curve since 1990 — 9,167 trading days,
+It's every daily Treasury par yield curve since 1990 — 9,168 trading days,
 14 maturities from one month to thirty years — as a surface you can turn and
 scrub through. The Fed funds target runs along the front edge, since it's
 effectively the zero-maturity point of the curve.
@@ -42,16 +42,21 @@ rate, which turns an extrapolation off the end of the curve into an
 interpolation between two real numbers.
 
 Height doesn't have to mean the yield. Switch it to "yield minus Fed funds"
-and QE becomes visible — on a plain yield surface 2009-2014 looks flat and
-dead, because everything is near zero. Measured against the policy rate the
-front edge pins at zero and you can watch the long end being dragged toward
-it.
+and the flat plane becomes the Fed itself, so you're looking at how far the
+market had moved from where policy actually was. Through 2007 about 95% of the
+published curve sat below the policy rate; on 10 Sep 2007 the 2-year was 1.38
+points under it and the Fed cut eight days later. It's useless from 2009 to
+2014, though — the policy rate was a constant 0.125% and subtracting a
+constant tells you nothing. There's also an inflation sheet you can float
+through the surface at the CPI rate: for 501 straight trading days, from Mar
+2021 to Feb 2023, every maturity out to thirty years paid less than
+inflation.
 
 Technically it's deliberately boring: no build step, no framework, no npm.
-Three.js is vendored, everything else is about 3,900 lines of plain
-JavaScript and standard-library Python. The data pipeline caches raw
+Three.js is vendored, everything else is about 3,300 lines of plain
+JavaScript and 1,400 of standard-library Python. The data pipeline caches raw
 downloads so finished years are fetched once and never again, and it's
-byte-for-byte deterministic so the nightly GitHub Action only commits when
+byte-for-byte deterministic so the weekday GitHub Action only commits when
 data actually changed. The social preview image is rendered from the data by
 a PNG writer built on zlib and struct, because I didn't want a dependency for
 one image.
@@ -67,11 +72,21 @@ Happy to answer questions about the interpolation or the data plumbing.
 **"1.3MB is a lot."** True. 432KB is three.js, 889KB is 36 years of data,
 about 38KB is my code, all gzipped. It's cached after the first visit and
 there is no server round-trip after load. If someone suggests trimming, agree
-— the manifest carries 9,167 date strings that could be packed.
+— the manifest carries 9,168 date strings that could be packed.
 
-**"Another yield curve chart."** Point at the height modes. Nobody else lets
-you re-base the surface against the policy rate, and that is the thing that
-makes QE visible.
+**"Another yield curve chart."** Point at the re-basing. You can measure the
+whole surface against the policy rate or against the 3-month bill, and float
+an inflation sheet through it, so "what did the market think of the Fed" and
+"what did lending actually earn in real terms" become shapes rather than
+arithmetic.
+
+**"Is this AI-generated?"** Answer it straight away and don't be cute: yes,
+built with heavy AI assistance, and the commit history says so on every
+commit. Then move to what you can vouch for — every published value in the
+binary is checked against Treasury's own CSVs, the reconstructed stretches are
+shaded and documented, and several claims got cut because they did not survive
+being checked, including one about QE that the data flatly contradicts. That
+answer is stronger than the question.
 
 **"Where's the S&P data from?"** Answer straight: a Yahoo Finance download for
 the deep history, spliced to FRED. FRED only carries ten years because S&P Dow
@@ -85,7 +100,7 @@ day. Say so plainly.
 ### Rules that will get you buried
 
 Never ask anyone to upvote, anywhere, including privately. It is the fastest
-way to get a post killed and an account penalised. Submit it and leave it
+way to get a post killed and an account penalized. Submit it and leave it
 alone. Stay in the thread for three or four hours and answer everything,
 including the criticism, without arguing.
 
@@ -100,9 +115,12 @@ comment.
 ### What to post
 
 A short screen recording beats a still. Fifteen to twenty seconds, no audio:
-start on the full 36 years, rotate slowly, then switch the height to "yield
-minus Fed funds" over the QE1 range and let the surface transform. That last
-move is the whole pitch and it needs no narration.
+start on the full 36 years, rotate slowly, then jump to 2021-2023 and switch
+on the inflation sheet: the surface sinks under it through 2022 and climbs
+back out in 2023. That last move is the whole pitch and it needs no narration.
+Do not use the Fed-funds height mode for this — through the QE years the
+policy rate was a constant 0.125%, so switching modes shifts the surface
+uniformly and nothing visibly happens.
 
 If you would rather post a still, use the camera button in the corner on the
 "Everything" preset in light mode. It exports at 2x with the title, date range,
@@ -130,7 +148,7 @@ Both public domain.
 
 Tools: three.js for the rendering, Python standard library for the data
 pipeline. No plotting library — the surface is a mesh built from the
-9,167 daily curves.
+9,168 daily curves.
 
 Interactive version, if you want to scrub through it yourself:
 https://yieldcurve3d.com
