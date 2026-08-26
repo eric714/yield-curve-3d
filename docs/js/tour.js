@@ -69,9 +69,9 @@ const STEPS = [
     body: "The back wall carries a second series for context. Here it is the "
         + "Federal Reserve's balance sheet, climbing as it bought bonds. You "
         + "can swap it for the S&P 500, the NASDAQ, the VIX, the ten-year "
-        + "term premium, expected inflation, or the growth rate of the money "
-        + "supply. It starts empty, so nothing is on the wall until you put "
-        + "it there.",
+        + "term premium, expected inflation, the growth rate of the money "
+        + "supply, or the unemployment rate. It starts empty, so nothing is on "
+        + "the wall until you put it there.",
     apply: { preset: "Everything", view: "default", heightMode: "level",
              contextSeries: "WALCL" },
     spotlight: "#wall-block",
@@ -92,9 +92,11 @@ const STEPS = [
         + "you get it. This sheet floats at the rate consumer prices were "
         + "rising, so anything under it lost money in real terms. In the "
         + "whole of 2022 there was not a single day when any Treasury, out "
-        + "to thirty years, paid more than inflation.",
+        + "to thirty years, paid more than inflation. Put the unemployment "
+        + "rate on the back wall and you have both halves of what the Fed is "
+        + "told to care about, on screen at once.",
     apply: { preset: "Inflation shock", view: "default", heightMode: "level",
-             contextSeries: "none",
+             contextSeries: "UNRATE",
              show: { showInflation: true, showRegimes: false,
                      showRecessions: false, showEvents: false } },
     spotlight: "#show-block",

@@ -498,6 +498,9 @@ inflation.
   been negative on **1,557 of 9,168 days — 17 per cent of the record.** It is
   not rare. It was just never this deep for this long.
 - Close: **"Everyone watches the rate. The rate is only half the number."**
+- *If you want a coda:* put the unemployment rate on the back wall while the
+  sheet is still up. That is both halves of the Fed's mandate at once —
+  inflation cutting through the surface, employment behind it.
 
 ## 18. Does printing money cause inflation? — 7 min ⭐
 **One idea:** test Friedman's claim against the data and report what it says,
@@ -529,6 +532,35 @@ including where it does not hold.
   enough that ignoring money is foolish, weak enough that "the only thing that
   causes inflation" is too strong. **"The chart cannot settle this. It can show
   you the two experiments and let you argue better."**
+
+## 19. Two warnings that never arrived — 6 min ⭐
+**One idea:** the two most famous recession indicators both fired in this
+cycle, and neither was followed by a recession.
+`#from=2018-01-02&to=2026-08-26&m=level&w=UNRATE&v=default&t=dark&s=infl,ev,rec`
+
+- **"There are two famous recession alarms. Both went off. Nothing happened.
+  That is the most interesting thing in this data right now."**
+- Alarm one, the curve. *Switch to Mode 3 briefly.* Inverted from July 2022 to
+  September 2024 — **543 trading days, the longest run in the record.**
+- Alarm two, the Sahm rule. *Point at the event marker in July 2024.* Explain
+  it in one sentence: when the three-month average unemployment rate rises half
+  a point above its low of the past year, the economy has historically already
+  been in recession.
+- **MONEY SHOT: the unemployment rate on the back wall.** Scrub 2023 into 2025.
+  The wall lifts just enough to trip the rule, then settles back. It reads
+  **0.00 today.**
+- **The honest scorecard, and put it on screen:**
+  the Sahm rule has fired eleven times since 1960 and nine landed inside a
+  recession — but it is *coincident*, firing one to seven months *after* the
+  recession began. It has never once led. The curve leads by thirteen to
+  twenty-three months but cries wolf constantly: **568 of the 1,052 inverted
+  days in this record had no recession within two years.**
+- So they are complements, not rivals: one warns early and is often wrong, the
+  other confirms late and is rarely wrong.
+- **The close, and do not soften it:** in 2024 the early-and-noisy one and the
+  late-and-reliable one agreed, and both were wrong. **"Two indicators built
+  from different data, and the same cycle broke them both. That is worth more
+  than another chart telling you what you already believe."**
 
 ---
 

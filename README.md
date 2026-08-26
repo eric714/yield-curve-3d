@@ -22,10 +22,13 @@ nothing.
   readout gives you every tenor Treasury published that day, the policy rate,
   2s10s and 10y-3m, CPI inflation and the 10-year yield after it, whatever is
   on the back wall, and whether the day sits inside a recession or a Fed
-  program. Click to pin it. Escape clears it.
+  program. Event markers include the days the Sahm rule crossed its
+  threshold. Click to pin it. Escape clears it.
 - **Put something behind the surface**: the Fed balance sheet, the S&P 500 back
   to 1990, the NASDAQ, the VIX, the 10-year term premium, expected inflation
-  from the 10-year breakeven, or M2 growth. It starts empty.
+  from the 10-year breakeven, M2 growth, or the unemployment rate. It starts
+  empty. Inflation as the sea level and unemployment on the wall puts both
+  halves of the Fed's mandate on screen together.
 - **Share the exact view.** Every control writes to the URL, so a link restores
   the dates, the height mode, the back wall, the camera and the theme.
 - **Choose the maturities.** Switch any of the fourteen tenors off and the
@@ -220,9 +223,17 @@ year is re-fetched.
 **Everything else** comes from FRED, the St. Louis Fed's data service: the Fed
 funds target (`DFEDTAR`, `DFEDTARU`, `DFEDTARL`), the effective rate (`EFFR`),
 the balance sheet (`WALCL`), the NBER recession indicator (`USRECD`), the
-10-year term premium (`THREEFYTP10`), and the market series. These are only
-re-downloaded when the local copy is more than a few days stale. No API key is
-needed.
+10-year term premium (`THREEFYTP10`), the unemployment rate (`UNRATE`), and
+the market series. These are only re-downloaded when the local copy is more
+than a few days stale. No API key is needed.
+
+**The Sahm rule** is computed rather than downloaded: the three-month average
+unemployment rate less its own lowest three-month average of the previous
+twelve months, marked wherever that gap crosses 0.50. Because it is derived
+from the current vintage of `UNRATE`, and that series is revised, these dates
+are not necessarily the ones that would have been published at the time. It is
+a coincident indicator rather than a leading one: on the occasions it has been
+right, the recession had already started.
 
 **The S&P 500** is in two halves. FRED only carries the last ten years, so the
 deep history comes from the spreadsheet in `data/raw/sp500-1982-2021.xlsx`
@@ -530,6 +541,20 @@ Note that GitHub's own **Insights → Traffic** page counts visits to the
 
 Nothing. GitHub Pages is free for public repositories, and Actions minutes are
 free too. A domain name is optional.
+
+## Does any of it predict anything?
+
+Separately from the chart, [`notes/methods.md`](notes/methods.md) tests whether
+the curve forecasts anything. The short answer: it predicts Fed policy and not
+the stock market. The slope accounts for about 29% of the forecast error
+variance of the policy rate at a one-year horizon, against about 5% for every
+economic indicator combined, and it survives conditioning, HAC-robust errors,
+the zero lower bound and all four Fed chairs.
+
+The note is as careful about where the evidence stops. Out of sample the
+improvement is real but not statistically significant, 12 of 24 tests survive
+multiple-testing correction, and the corrections made while running it are
+recorded alongside the results.
 
 ## Disclaimer
 
