@@ -94,8 +94,16 @@ Not because it doesn't matter. In a levels regression the unemployment rate is
 a significant driver of the policy rate (coefficient −0.502, HAC t = −3.37,
 p = 8.3e-04), exactly as a Taylor rule says it should be.
 
-It loses because **the 2-year yield is the market's forecast of the Fed's
-reaction to that data.** It is a sufficient statistic: it already contains the
+That regression explains only 25.7% of the policy rate, though, and
+Engle-Granger finds no cointegration (ADF on the residuals −2.98 against a
+−3.74 critical value), so the level relationship is weaker than a canonical
+Taylor rule — unsurprising given this uses CPI rather than core PCE, no output
+gap and no time-varying neutral rate. In an error-correction model built on it,
+the error-correction term is insignificant (t = −1.09) while the curve still
+adds R² +0.170 (p = 5.5e-09).
+
+The curve loses nothing to the economics. It loses because **the 2-year yield
+is the market's forecast of the Fed's reaction to that data.** It is a sufficient statistic: it already contains the
 macro inputs, plus the market's forecast of them, plus everything else priced
 in. That is what an efficient market should produce, and it is a better finding
 than "the economy doesn't matter."
