@@ -5,9 +5,11 @@ covers a separate question that kept coming up: **does the curve actually
 predict anything?**
 
 Short version: it predicts Fed policy, robustly. It does not predict the stock
-market at all. Money growth leads inflation at roughly a one-year horizon. And
-the honest limit is that a statistically certain relationship still has only
-marginal out-of-sample forecasting value.
+market at all. Money growth leads inflation at roughly a one-year horizon. The
+relationship survives out of sample under the appropriate nested-model test.
+
+The honest limit is not statistical: it is that the main result is close to an
+accounting identity. Read section 0 first.
 
 Computed 26 August 2026 against the shipped data (9,169 trading days,
 1990-01-02 to 2026-08-26). All tests are pure Python; there is no numpy or
@@ -73,8 +75,10 @@ The signal is the 2-year yield minus the policy rate. The test asks whether
 its lags improve a forecast of the change in the policy rate beyond what
 policy's own momentum already tells you.
 
-Conditional Granger test, monthly, HAC-robust, controlling for equity returns,
-VIX, CPI, M2, the unemployment rate and payroll growth:
+Conditional Granger test, monthly, HAC-robust, **lag order 9** (chosen by the
+residual diagnostic, not BIC — see section 7), controlling for equity returns,
+VIX, CPI, M2, the unemployment rate and payroll growth. Note this differs from
+the lag order used for the decomposition below, which is 6:
 
 | Predictor → policy | chi2 | p |
 |---|---|---|
@@ -85,7 +89,9 @@ VIX, CPI, M2, the unemployment rate and payroll growth:
 | Unemployment | 11.7 | 0.23 |
 | VIX | 9.2 | 0.42 |
 
-Forecast error variance decomposition of the policy rate:
+Forecast error variance decomposition of **the monthly change in the policy
+rate** (`dPolicy`, the differenced series the VAR is estimated on — not the
+level), VAR lag order **6**:
 
 | Horizon | Policy's own momentum | **Curve** | All macro | Equities + VIX |
 |---|---|---|---|---|
@@ -94,9 +100,10 @@ Forecast error variance decomposition of the policy rate:
 | 12 months | 60.8% | **29.3%** | 5.3% | 4.5% |
 | 24 months | 59.6% | **29.4%** | 6.1% | 4.8% |
 
-**The curve accounts for about 29% of where policy goes. Every economic
-indicator combined accounts for about 5%.** (Read with section 0: this is not
-a fair contest, because the curve already contains the macro information.) A one-standard-deviation shock to
+**The curve accounts for about 29% of the forecast error in month-to-month
+policy changes at a one-year horizon. Every economic indicator combined
+accounts for about 5%.** (Read with section 0: this is not a fair contest,
+because the curve already contains the macro information.) A one-standard-deviation shock to
 the gap moves the policy rate 0.42pp cumulatively over eighteen months, peaking
 in month two.
 
@@ -132,10 +139,14 @@ result rather than diluting it:
 | Curvature | 11.5 | 0.075 |
 | Every macro variable | 4.3 – 11.0 | 0.09 – 0.63 |
 
-So it is not only the slope people talk about: **the level of the curve carries
-more information about the Fed's next move than the slope does**, which makes
-sense once you remember the level already embeds the expected path. Curvature
-adds nothing. And the macro variables explain nothing even when the curve is
+So it is not only the slope people talk about: **both the level and the slope
+carry information about the Fed's next move**, and curvature adds nothing.
+
+I previously wrote that the level carries *more* information than the slope, on
+the strength of chi2 83.0 against 62.0. That does not follow — a larger Wald
+statistic is stronger evidence against a null, not a measure of relative
+economic importance, and the two factors are on different scales. Corrected
+after review. And the macro variables explain nothing even when the curve is
 split into three factors instead of compressed into one.
 
 ### Why the economic data loses
@@ -236,7 +247,7 @@ misused as one.
 
 ---
 
-## 5. Where it stops working
+## 5. Out of sample, and the limits of the statistics
 
 This is the part that matters most.
 
@@ -281,8 +292,11 @@ both ways. There is no meaningful cut-versus-hike asymmetry: that gap is 4
 misses against 1 on n ≈ 50.
 
 **Multiple testing.** Benjamini-Hochberg at q = 0.05 across the 24 headline
-tests: **12 survive.** Every curve → policy test survives. Both Diebold-Mariano
-tests do not. That is the boundary of the whole exercise.
+tests: **12 survive.** Every curve → policy test survives. The two
+Diebold-Mariano tests do not — but those were the wrong test for nested models
+and have been superseded by Clark-West, which clears at p < 0.004. The
+boundary of the exercise is therefore not statistical significance; it is the
+identity problem in section 0.
 
 ---
 
@@ -301,12 +315,39 @@ Two reviewers read this cold. Their criticisms, and what happened to each:
 | The Taylor rule is too crude to support "curve beats macro" | **Correct**, and already conceded |
 | Zero bound handled inconsistently | **Correct.** Now listed |
 
-The reviewers disagreed on severity. One put ~85% confidence on the curve
-carrying policy information beyond conventional macro variables; the other
-ranked that claim last, as unsurprising rather than wrong. Both agreed the
-in-sample statistics carried more weight than the identification permitted,
-and on the same decisive next test: split the 2-year into expected path and
-term premium, and ask whether the premium predicts policy.
+A second round, once the code was public rather than only the write-up, found
+three more:
+
+| Criticism | Verdict |
+|---|---|
+| The FEVD is computed on the *change* in the policy rate, not the level, and was described as the level | **Correct.** Relabeled |
+| Lag orders are inconsistent — the Granger tests use 9, the decomposition uses 6, and the note did not say so | **Correct.** Both now stated |
+| Obsolete "not significant" language about the out-of-sample result survived the Clark-West correction in three places | **Correct.** Removed |
+| "The level matters more than the slope" does not follow from a larger Wald statistic | **Correct.** Withdrawn |
+| The claim that revised data biases *against* the conclusion is not signable | **Correct.** Now stated as unknown |
+
+Both agreed the in-sample statistics carried more weight than the
+identification permitted, and both named the same decisive next test: split the
+2-year yield into expected policy path and term premium, and ask whether the
+*premium* predicts policy. That test is not run here.
+
+The sharpest formulation came out of the second round, and it is worth stating
+as the summary of this whole document. The evidence supports:
+
+> The 2-year Treasury market is a very good aggregator of expectations about
+> subsequent Federal Reserve policy, and that forecasting relationship survives
+> out of sample.
+
+It does not support:
+
+> The yield curve contains information that predicts Fed behavior beyond the
+> market's own embedded expectations of future Fed policy.
+
+Reviewer confidence on the individual claims, after reading the code, ran from
+~95% (the 2-year anticipates policy) and ~85% (it survives out of sample) down
+to ~35–45% (the curve carries information independent of expected policy) and
+~20% ("the curve beats macro data"). The ordering of those numbers is the
+finding.
 
 ## 7. Corrections made along the way
 
@@ -345,9 +386,11 @@ correct for a search over specifications, and nothing computed after the fact
 can. The honest protections are that the main result survives every
 specification tried rather than one, that it agrees with a large existing
 literature, and that the out-of-sample test — the one check specification
-search cannot flatter — came back **positive but not significant**. Read that
-marginal out-of-sample result as the price of the search, and treat it as the
-more informative number of the two.
+search cannot flatter — is **positive and significant** under the correct
+nested-model test (Clark-West, p < 0.004), having looked marginal only while
+the wrong test was applied. So specification search does not appear to explain
+the result away. What limits the finding is not fragility but interpretation:
+see section 0.
 
 ## 9. Limits
 
@@ -362,12 +405,17 @@ more informative number of the two.
   cointegrates. Both reviewers raised this independently; it is not done here.
 - **The zero bound is handled inconsistently.** Zero-bound months are kept in
   the in-sample tests and excluded only from the out-of-sample exercise.
-- **Revised data, not real-time vintages.** Every macro series here is the
-  current vintage. Yields are prices and are never revised; unemployment,
-  payrolls and CPI are. So the macro variables were given information no
-  forecaster actually had, and still lost. This biases *against* the
-  conclusion, which makes it safer, but it should be said. The same caveat
-  applies to the Sahm trigger dates the site displays.
+- **Revised data, not real-time vintages, and the direction of that bias is
+  unknown.** Every macro series here is the current vintage; yields are prices
+  and are never revised. I previously claimed this biased *against* the
+  conclusion, on the grounds that the macro variables were handed information
+  no forecaster had and still lost. A reviewer pointed out that is only half
+  the story. Revisions also strip out the noise the Fed was actually reacting
+  to at the time, so revised data can be a *worse* proxy for what policymakers
+  saw, handicapping the macro variables unfairly. The two effects run in
+  opposite directions and I cannot sign the net. Real-time vintages are the
+  only way to settle it. The same caveat applies to the Sahm trigger dates the
+  site displays.
 - **Linear, monthly, single-frequency.** No regime-switching, no threshold
   effects, no daily or intra-meeting identification. An FOMC-date event study
   would identify this far more cleanly.

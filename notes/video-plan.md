@@ -598,10 +598,10 @@ people there in the description.
   slope and forward returns: **r = −0.097**, which is **under 1%** of the
   variation. **"It is not a weak signal. It is not a signal."**
 - **The thing that does work.** Same test, different target: the Fed.
-- **The thing that looked spectacular.** Of the forecast error in where the
-  policy rate goes a year out, the shape of the curve accounts for about
-  **29 per cent** — against about **five** for unemployment, payrolls and
-  inflation combined. It survives conditioning, robust errors, dropping the
+- **The thing that looked spectacular.** Of the forecast error in how much the
+  Fed changes rates month to month, a year out, the shape of the curve accounts
+  for about **29 per cent** — against about **five** for unemployment, payrolls
+  and inflation combined. It survives conditioning, robust errors, dropping the
   zero-rate years, and all four Fed chairs separately.
 - **MONEY SHOT TWO — the turn. Do not skip this and do not soften it.**
   **"I had that reviewed by two people who had not seen it, and they both said
