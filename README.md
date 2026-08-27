@@ -322,23 +322,27 @@ the theme you picked and whether you have seen the walkthrough.
 
 ## Does any of it predict anything?
 
-Separately from the chart, [`notes/methods.md`](notes/methods.md) tests whether
-the curve forecasts anything. It predicts Fed policy; it does not give a usable
-signal about the stock market.
+People ask this immediately, so [`notes/methods.md`](notes/methods.md) answers
+it properly. The headline:
 
-The more useful part is what happened when two people reviewed it. Both made
-the same criticism and both were right: a two-year yield is roughly the average
-policy rate the market expects over two years, so the headline result is close
-to an accounting identity. Tested directly, the relationship is
-indistinguishable from one-for-one (slope 1.106, cannot reject 1, p = 0.65).
-The honest description is that the bond market anticipates the Fed and is well
-calibrated — not that the curve beats the economic data, which was never a fair
-contest because the curve already contains them.
+- **It tells you what the bond market expects the Fed to do**, and the market
+  is well calibrated at that — its implied forecast has tracked the Fed's
+  actual moves close to one-for-one over 36 years. That is the one real
+  forecast in the chart, and it is readable straight off the surface.
+- **It tells you nothing usable about the stock market.** The slope explains
+  under 1% of the S&P's next twelve months, and buying after an inversion did
+  slightly *worse* than buying at random.
+- **Money supply growth leads inflation** by about a year, and that survives
+  dropping the 2020s entirely.
+- **Both famous recession alarms failed in this cycle** — the curve, which
+  warns early and often wrongly, and the Sahm rule, which has never once warned
+  in advance.
 
-Review also caught a test I had wrong in the other direction: Diebold-Mariano
-does not apply to nested models, and the correct Clark-West statistic moves the
-out-of-sample result from p = 0.08 to p = 0.0008. The note records both, along
-with everything still undone.
+The note is equally clear that the Fed result is close to circular — a 2-year
+yield largely *is* the market's forecast of Fed policy — and that none of this
+is new. It replicates established work, with the arithmetic shown in
+[`analysis/`](analysis/) rather than taken on trust. It was reviewed twice by
+people who had not seen it, and their corrections are in the history.
 
 ## Disclaimer
 
