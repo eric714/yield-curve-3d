@@ -60,6 +60,10 @@ let data, stage, layers, inspector, summary;
 let dirty = true;
 let extraLabels = [];
 let cursorDay = null;
+// A day named in the URL, applied once the scene exists. Lets a link open with
+// a specific date already read out, which is how you point someone at a day
+// rather than at a chart and a date to go find.
+let pendingPin = null;
 let toastTimer = null;
 
 init().catch(showError);
@@ -128,6 +132,7 @@ async function init() {
     $("#legend-bar").style.background = cssGradient();
     stage.goTo(state.view, true);
     dirty = true;
+    applyPendingPin();
   });
 
   // Reveal and size the canvas before framing the camera, otherwise the
@@ -136,6 +141,8 @@ async function init() {
   stage.resize();
   stage.goTo(state.view, true);
   $("#loading").classList.add("done");
+
+  applyPendingPin();
 
   // Draw one frame straight away rather than waiting for the animation loop.
   // Browsers do not schedule animation frames for an iframe that is scrolled
@@ -244,6 +251,7 @@ function readUrl() {
       if (picked.length >= 2) state.tenors = picked;
     }
   }
+  pendingPin = params.get("d") || null;
   if (params.get("lg") === "0") state.legendOpen = false;
   if (params.get("lg") === "1") state.legendOpen = true;
   if (params.has("s")) {
@@ -277,6 +285,10 @@ function currentUrl() {
     params.set("tn", String(state.tenors.reduce((m, i) => m | (1 << i), 0)));
   }
   if (!state.legendOpen) params.set("lg", "0");
+  // Only a deliberately pinned day travels in the link; a hover does not.
+  if (inspector && inspector.pinned != null) {
+    params.set("d", data.dates[inspector.pinned]);
+  }
   return `${location.origin}${location.pathname}#${params}`;
 }
 
@@ -701,6 +713,23 @@ function shortSeriesName() {
     CPIAUCSL: "Inflation (CPI)", T10YIE: "Expected inflation (breakeven)",
     M2SL: "Money supply growth", UNRATE: "Unemployment rate",
   }[state.contextSeries] || "";
+}
+
+/**
+ * Pin the day named by ?d= in the URL, if it is inside the current range.
+ * Runs after the scene is built, because pinning draws the crosshair and the
+ * readout panel, neither of which exists while the URL is first parsed.
+ */
+function applyPendingPin() {
+  if (!pendingPin) return;
+  const iso = pendingPin;
+  pendingPin = null;
+  const day = data.indexOf(iso);
+  if (day == null || day < state.from || day > state.to) return;
+  cursorDay = day;
+  inspector.pinned = day;
+  layers.setCursor(day);
+  inspector.show(day, state, summary);
 }
 
 function contextCaption(wall) {
