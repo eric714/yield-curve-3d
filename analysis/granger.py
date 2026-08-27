@@ -1,3 +1,13 @@
+"""SUPERSEDED -- kept only to show the mistake.
+
+This script uses a plain F test on VAR residuals. Section 7 of notes/methods.md
+explains why that is invalid here: Ljung-Box rejects white-noise residuals at
+short lag orders, so the F statistic is badly oversized. It overstated
+significance by roughly nine orders of magnitude.
+
+Use analysis/headline.py, which does the same tests with Newey-West errors.
+Nothing in the methods note is sourced from this file.
+"""
 """Bivariate Granger causality, pure Python: OLS by Gauss-Jordan, F-test, incomplete-beta p."""
 import json,struct,math
 

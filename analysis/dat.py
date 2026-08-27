@@ -1,5 +1,10 @@
+import os
 import json,struct,math
-def load(root="/Users/erichale/yield-curve-3d"):
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def load(root=None):
+    root = root or ROOT
     man=json.load(open(root+"/docs/data/manifest.json"))
     LAB=man["tenorLabels"];N=len(LAB);SC=man["scale"];OF=man["offset"];D=man["dates"];n=man["dayCount"]
     arr=struct.unpack_from("<%dH"%(n*(N+1)),open(root+"/docs/data/tenors.bin","rb").read())

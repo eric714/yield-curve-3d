@@ -1,3 +1,4 @@
+import os
 import sys,os,csv,math
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 from econlib import *; from dat import *
@@ -10,7 +11,7 @@ def fred_monthly(sid):
     return out
 UN,PA=fred_monthly("UNRATE"),fred_monthly("PAYEMS")
 
-def build_macro(root="/Users/erichale/yield-curve-3d"):
+def build_macro(root=None):
     man,LAB,rows=load(root)
     r=[x for x in rows if all(x[k] is not None for k in ("sp","vix","cpi","m2"))
        and x["month"] in UN and x["month"] in PA]

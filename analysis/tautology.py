@@ -61,3 +61,30 @@ print()
 print("  For scale: how much of the gap's variation is realized?")
 print(f"    gap standard deviation                     {statdev(gap):.2f} pp")
 print(f"    realized average policy change std dev     {statdev(Y):.2f} pp")
+
+
+# ---------------------------------------------------------------------------
+# A reviewer objected, correctly, that the regression above uses OVERLAPPING
+# 24-month averages: consecutive observations share 23 of 24 months, so the
+# HAC(24) p-value is not to be read as precise. Repeat on non-overlapping
+# blocks, where each observation is independent by construction.
+print()
+print("=" * 74)
+print("SAME TEST ON NON-OVERLAPPING 24-MONTH BLOCKS")
+Xn, Yn, tags = [], [], []
+t = 0
+while t + H < len(months):
+    avg = sum(pol[t+j]-pol[t] for j in range(1, H+1))/H
+    Xn.append([1.0, gap[t]]); Yn.append(avg); tags.append(months[t])
+    t += H
+mn = ols(Xn, Yn)
+bn, sen = mn["beta"][1], mn["se"][1]
+t1n = (bn-1.0)/sen
+p1n = betai((mn["n"]-2)/2, 0.5, (mn["n"]-2)/((mn["n"]-2)+t1n*t1n))
+print(f"  n = {mn['n']} independent blocks, {tags[0]} to {tags[-1]}")
+print(f"  slope = {bn:+.3f}  (se {sen:.3f})   R2 = {mn['r2']:.3f}")
+print(f"  H0: slope = 1   t = {t1n:+.2f}   p = {p1n:.4f}"
+      f"   -> {'cannot reject the identity' if p1n > 0.05 else 'REJECTED'}")
+print(f"  H0: slope = 0   t = {bn/sen:+.2f}")
+print(f"\n  With only {mn['n']} blocks this has little power; it is a check that the")
+print("  overlapping result is not an artifact of the overlap, not a sharper test.")
