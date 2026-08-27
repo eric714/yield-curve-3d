@@ -545,16 +545,22 @@ free too. A domain name is optional.
 ## Does any of it predict anything?
 
 Separately from the chart, [`notes/methods.md`](notes/methods.md) tests whether
-the curve forecasts anything. The short answer: it predicts Fed policy and not
-the stock market. The slope accounts for about 29% of the forecast error
-variance of the policy rate at a one-year horizon, against about 5% for every
-economic indicator combined, and it survives conditioning, HAC-robust errors,
-the zero lower bound and all four Fed chairs.
+the curve forecasts anything. It predicts Fed policy; it does not give a usable
+signal about the stock market.
 
-The note is as careful about where the evidence stops. Out of sample the
-improvement is real but not statistically significant, 12 of 24 tests survive
-multiple-testing correction, and the corrections made while running it are
-recorded alongside the results.
+The more useful part is what happened when two people reviewed it. Both made
+the same criticism and both were right: a two-year yield is roughly the average
+policy rate the market expects over two years, so the headline result is close
+to an accounting identity. Tested directly, the relationship is
+indistinguishable from one-for-one (slope 1.106, cannot reject 1, p = 0.65).
+The honest description is that the bond market anticipates the Fed and is well
+calibrated — not that the curve beats the economic data, which was never a fair
+contest because the curve already contains them.
+
+Review also caught a test I had wrong in the other direction: Diebold-Mariano
+does not apply to nested models, and the correct Clark-West statistic moves the
+out-of-sample result from p = 0.08 to p = 0.0008. The note records both, along
+with everything still undone.
 
 ## Disclaimer
 

@@ -289,10 +289,12 @@ different rate for each; that set of rates on one day is the curve.
 **One idea:** the market prices cuts months before the Fed makes them, and you
 can see it as a shape.
 
-**Title note:** it used to be called "forecasts the Fed" and that word does not
-survive the evidence. The relationship is overwhelming looking backwards and
-only marginal as a forecast. "Moves before" is what the data supports. See
-video 19.
+**Title note:** it used to be called "forecasts the Fed". Two things killed
+that word. The out-of-sample evidence was weaker than the in-sample evidence,
+and more fundamentally the two-year yield largely *is* the market's forecast of
+Fed policy, so "the curve forecasts the Fed" is close to circular. "Moves
+before" is what survives. Do not oversell this one; video 19 is where the
+limitation gets its own screen time.
 `#from=2007-06-01&to=2009-12-31&m=vsFunds&w=none&v=default&t=dark&s=ff`
 
 - **"In September 2007 the bond market knew the Fed was about to cut. The Fed
@@ -596,25 +598,34 @@ people there in the description.
   slope and forward returns: **r = −0.097**, which is **under 1%** of the
   variation. **"It is not a weak signal. It is not a signal."**
 - **The thing that does work.** Same test, different target: the Fed.
-- **MONEY SHOT TWO.** Of the forecast error in where the policy rate goes a
-  year out, the shape of the curve accounts for about **29 per cent.** Every
-  economic indicator combined — unemployment, payrolls, inflation — accounts
-  for about **five.**
-- Why that is not as strange as it sounds: the two-year yield *is* the market's
-  forecast of the Fed's reaction to that data. It already contains the
-  economics. *Put unemployment on the wall and the sea level up while you say
-  this — both halves of the mandate, already priced into the surface.*
-- It survives everything: conditioning on seven variables, robust standard
-  errors, dropping the zero-rate years, and all four Fed chairs separately.
-- **Then take it back down, on camera.** Out of sample, forecasting one month
-  ahead, the improvement is real — R² from 0.20 to 0.34 — but **not
-  statistically significant** (p ≈ 0.06). Twelve of twenty-four tests survive
-  multiple-testing correction. Both out-of-sample tests are among the twelve
-  that do not.
+- **The thing that looked spectacular.** Of the forecast error in where the
+  policy rate goes a year out, the shape of the curve accounts for about
+  **29 per cent** — against about **five** for unemployment, payrolls and
+  inflation combined. It survives conditioning, robust errors, dropping the
+  zero-rate years, and all four Fed chairs separately.
+- **MONEY SHOT TWO — the turn. Do not skip this and do not soften it.**
+  **"I had that reviewed by two people who had not seen it, and they both said
+  the same thing, and they were right."**
+- Explain the objection in one breath, because it is simple once said: a
+  two-year Treasury yield *is* roughly the average interest rate the market
+  expects the Fed to set over the next two years. Subtract today's rate and you
+  have the market's forecast of how much the Fed will move. **"So I had
+  discovered that the market's forecast of the Fed predicts the Fed. That is
+  not a finding about yield curves. That is what a yield curve is."**
+- *Put the test on screen.* If it were purely that identity, the relationship
+  should be one-for-one. Measured slope: **1.106.** Cannot reject 1
+  (**p = 0.65**).
+- So the honest version is smaller and truer: **the bond market anticipates the
+  Fed, and it is well calibrated.** The economic indicators do not lose a
+  contest — *there was no contest*, because the curve already contains them.
+- One correction that went the *other* way: the out-of-sample test. I used the
+  wrong statistic — Diebold-Mariano assumes the models are not nested, and
+  mine were. The right test, Clark-West, gives **p = 0.0008** where I had
+  reported 0.08. **"I was wrong in both directions on the same page."**
 - **The close, and this is the whole channel's credibility in one line:**
-  **"There is a difference between a relationship that is certainly there and
-  one you can act on. This is the first kind. Anyone who tells you the second
-  kind is easy is selling you something."**
+  **"The interesting number here was not the twenty-nine per cent. It was
+  finding out what it actually meant — and I only found that out because I
+  asked people who had no reason to be kind about it."**
 
 ## 20. The recession alarm that is never early — 6 min ⭐
 **One idea:** the Sahm rule, what it actually measures, and why 2024 broke it

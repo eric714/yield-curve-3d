@@ -132,3 +132,9 @@ def pca(cols,ncomp=3):
         comps.append({"loadings":v,"eigenvalue":lam,"scores":scores,"share":lam/k})
         C=[[C[a][b]-lam*v[a]*v[b] for b in range(k)] for a in range(k)]
     return comps
+
+
+def statdev(xs):
+    xs=[x for x in xs if x is not None]
+    m=sum(xs)/len(xs)
+    return math.sqrt(sum((x-m)**2 for x in xs)/len(xs))

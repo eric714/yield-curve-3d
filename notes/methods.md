@@ -16,7 +16,56 @@ Ljung-Box, Newey-West and PCA are implemented directly.
 
 ---
 
-## 1. The headline result
+## 0. Read this before section 1
+
+Sections 1 to 3 were written before this work was reviewed by two people who
+had not seen it. Their central criticism was the same, and it was correct, so
+it goes at the top rather than in a footnote.
+
+**The main result is very close to an accounting identity.** A 2-year Treasury
+yield is approximately the average policy rate the market expects over the next
+24 months, plus a term premium. Subtracting today's policy rate leaves
+approximately *the market's forecast of how much policy will change*. Finding
+that this predicts how much policy then changes is not a discovery about yield
+curves. It is a restatement of what a 2-year yield is.
+
+That is testable, and it fails the way the critics predicted. Regressing the
+realized average policy change over the following 24 months on the gap:
+
+| | |
+|---|---|
+| slope | **+1.106** (HAC se 0.237) |
+| H0: slope = 1, the pure identity | t = +0.45, **p = 0.65 — cannot reject** |
+| H0: slope = 0, no relationship | t = +4.67 |
+| R² | 0.276 |
+
+The relationship is real, and it is statistically indistinguishable from
+one-for-one. The honest description of section 1 is therefore **"the bond
+market anticipates the Fed, and the bond market is well calibrated"** — not
+"the curve leads the Fed," and certainly not "the curve beats the economic
+data."
+
+Two consequences follow, and they run through everything below:
+
+- **The horse race in section 1 is not identified.** Macro variables look
+  useless next to the curve because the curve already prices them. That is not
+  evidence the economy does not matter; it is evidence the bond market is
+  paying attention. Reporting "29% versus 5%" as a contest was a mistake.
+- **The variance decomposition inherits the problem.** The gap contains the
+  policy rate, so its innovation is not a clean structural shock and the FEVD
+  is not a statement about the curve *driving* policy.
+
+What would make this interesting is a test I could not run here: split the
+2-year yield into expected policy path and term premium, and ask whether the
+*premium* predicts policy after controlling for the path. FRED carries the ACM
+term premium only at ten years, and that one **does not** predict policy
+(p = 0.12) — which points the same way the critics do. The proper test needs
+2-year decomposition data from the New York Fed and real-time macro vintages.
+
+Section 5 changed too: I used the wrong significance test there, and correcting
+it moved the result **against** my own caution. Details in that section.
+
+## 1. The in-sample relationship
 
 **The slope of the curve Granger-causes Fed policy, and nothing else does.**
 
@@ -46,7 +95,8 @@ Forecast error variance decomposition of the policy rate:
 | 24 months | 59.6% | **29.4%** | 6.1% | 4.8% |
 
 **The curve accounts for about 29% of where policy goes. Every economic
-indicator combined accounts for about 5%.** A one-standard-deviation shock to
+indicator combined accounts for about 5%.** (Read with section 0: this is not
+a fair contest, because the curve already contains the macro information.) A one-standard-deviation shock to
 the gap moves the policy rate 0.42pp cumulatively over eighteen months, peaking
 in month two.
 
@@ -110,7 +160,7 @@ than "the economy doesn't matter."
 
 ---
 
-## 2. Equities: nothing
+## 2. Equities: no usable signal
 
 | | |
 |---|---|
@@ -125,6 +175,13 @@ nothing — every cell in that row and column sits above p = 0.06.
 
 The un-inversion looks sharper (2 of 3 preceded severe declines) but n = 3, and
 the third went the other way hard. Not a finding.
+
+**Wording, corrected after review.** "The curve has no relationship with
+equities" is broader than this evidence supports. What is supported is narrower
+and still useful: *the slope is not a usable 12-month equity timing signal, and
+inversion in particular is not one.* A correlation of −0.097 over one sample
+and six inversion episodes cannot establish the absence of any relationship at
+any horizon.
 
 ---
 
@@ -142,9 +199,18 @@ magnitude more strongly than the reverse. At a one-month horizon it shows
 nothing at all — the first test I ran was simply at the wrong horizon, which
 is the single easiest way to get this question wrong.
 
-Results at 18 and 24 lags are discarded: chi2 climbing 20 → 47 → 179 → 263 as
-restrictions multiply is the Kiefer-Vogelsang over-rejection signature of HAC
-Wald tests, not a strengthening signal.
+At 18 and 24 lags both directions produced very large statistics (chi2 179 and
+263). I originally discarded these as Kiefer-Vogelsang over-rejection, which
+both reviewers correctly called an after-the-fact rule: deciding which results
+to drop **after seeing them** is the same specification-search pathology
+section 7 is about. They are therefore reported here rather than dropped, with
+the caveat that HAC Wald inference is known to over-reject as the number of
+restrictions grows, and that a bootstrap — still not run — is what would settle
+it. Treat the 12-lag result as the reportable one and the long-lag results as
+uninterpreted.
+
+A second qualification: at 12 lags the reverse direction is also significant
+(p = 0.036), so the evidence is bidirectional rather than one-way.
 
 ---
 
@@ -184,10 +250,30 @@ significant.** Expanding-window, one-step-ahead, zero-bound months excluded:
 | AR + macro | 0.1950 | 0.205 |
 | AR + macro + curve | 0.1747 | 0.362 |
 
-A 73% improvement in R². But Diebold-Mariano gives **p = 0.080** against the AR
-benchmark and **p = 0.057** against AR+macro. Across five specifications the
-DM p-value ranged 0.057 to 0.14 and never crossed 0.05. With 111 forecasts of
-a lumpy, discretized target, the test cannot certify it.
+A 73% improvement in R². I originally tested it with Diebold-Mariano, which
+gave p = 0.080 and 0.057, and concluded the gain was not significant.
+
+**That was the wrong test.** Diebold-Mariano assumes non-nested models. AR
+versus AR+curve is nested: under the null the extra coefficients are zero, the
+larger model still pays an estimation-noise penalty, and DM is undersized as a
+result. Clark-West corrects for exactly that penalty. Both reviewers caught
+this; neither of us should have needed to.
+
+| Comparison | Clark-West | (DM, inappropriate) |
+|---|---|---|
+| AR vs AR+curve, p=6 | **p = 0.0008** | 0.080 |
+| AR+macro vs +curve, p=6 | **p = 0.0006** | 0.057 |
+| AR vs AR+curve, p=3 | **p = 0.0007** | 0.139 |
+| Full window, AR vs AR+curve | **p = 0.0035** | 0.131 |
+
+So the out-of-sample improvement **is** significant under the appropriate
+test, and my published caveat was too pessimistic. One qualification: over the
+full window including the zero-bound years, AR+macro versus +curve does not
+clear (p = 0.11).
+
+This does not rescue the interpretation. A well-calibrated forecast of policy
+forecasting policy out of sample is still the identity from section 0, now
+confirmed on data the model had not seen.
 
 **Direction yes, magnitude no.** The model gets the sign of a policy move right
 92% of the time on cuts and 98% on hikes, but within-episode R² is negative
@@ -200,7 +286,29 @@ tests do not. That is the boundary of the whole exercise.
 
 ---
 
-## 6. Corrections made along the way
+## 6. What outside review changed
+
+Two reviewers read this cold. Their criticisms, and what happened to each:
+
+| Criticism | Verdict |
+|---|---|
+| The result is close to the expectations-hypothesis identity | **Correct.** Tested directly; slope 1.106, cannot reject 1. Now section 0 |
+| Diebold-Mariano is wrong for nested models | **Correct.** Clark-West moves p from 0.08 to 0.0008 — against my own caution |
+| "No relationship with equities" is too broad | **Correct.** Narrowed in section 2 |
+| Discarding the 18/24-lag results after seeing them | **Correct.** Now reported |
+| Levels gap among differenced variables is an untested VECM | **Correct.** Listed as undone |
+| The macro horse race is not identified | **Correct.** Now stated in section 0 |
+| The Taylor rule is too crude to support "curve beats macro" | **Correct**, and already conceded |
+| Zero bound handled inconsistently | **Correct.** Now listed |
+
+The reviewers disagreed on severity. One put ~85% confidence on the curve
+carrying policy information beyond conventional macro variables; the other
+ranked that claim last, as unsurprising rather than wrong. Both agreed the
+in-sample statistics carried more weight than the identification permitted,
+and on the same decisive next test: split the 2-year into expected path and
+term premium, and ask whether the premium predicts policy.
+
+## 7. Corrections made along the way
 
 Recorded because the process is part of the evidence.
 
@@ -225,7 +333,7 @@ Recorded because the process is part of the evidence.
 
 ---
 
-## 7. A caveat that no correction fixes
+## 8. A caveat that no correction fixes
 
 The specifications here were chosen **adaptively, while looking at results**.
 Lag orders came from residual diagnostics, samples were cut at the zero bound,
@@ -241,11 +349,19 @@ search cannot flatter — came back **positive but not significant**. Read that
 marginal out-of-sample result as the price of the search, and treat it as the
 more informative number of the two.
 
-## 8. Limits
+## 9. Limits
 
 - **Granger causality is predictive precedence, not causation.** Both the curve
   and the Fed respond to incoming information. Neither causes the other in any
   structural sense.
+- **Mixed integration, handled by assumption rather than by test.** The gap
+  enters in levels alongside differenced variables. A spread between two rates
+  is a candidate cointegrating vector, so this effectively imposes a
+  cointegrating relationship instead of testing for one. The right
+  specification is a Johansen test on the rates system and a VECM if it
+  cointegrates. Both reviewers raised this independently; it is not done here.
+- **The zero bound is handled inconsistently.** Zero-bound months are kept in
+  the in-sample tests and excluded only from the out-of-sample exercise.
 - **Revised data, not real-time vintages.** Every macro series here is the
   current vintage. Yields are prices and are never revised; unemployment,
   payrolls and CPI are. So the macro variables were given information no
