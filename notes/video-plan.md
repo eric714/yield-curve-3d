@@ -40,7 +40,10 @@ Every other rate on the chart is set by the market. This mode isolates the gap
 between the two.
 
 **The signal: a surface below zero means the market is betting on cuts.** And
-it has been right.
+it has been right — not roughly, but almost exactly. Over 36 years the size of
+that gap has predicted the average size of the Fed's next two years of moves
+**one-for-one**. That is the strongest single sentence available about this
+chart, and video 19 is where it gets examined rather than just asserted.
 
 | Before | 2-year below the policy rate | Worst |
 |---|---|---|
@@ -581,8 +584,13 @@ useful one.
 `#from=1990-01-02&to=2026-08-26&m=level&w=UNRATE&v=default&t=dark&s=infl`
 
 This is the most defensible thing on the site and the answer to the question
-every viewer is actually asking. Full workings in `notes/methods.md`; point
-people there in the description.
+every viewer is actually asking.
+
+`notes/methods.md` is now written to be read by the same audience that watches
+this channel, so it works as the companion piece rather than as a footnote:
+link it in the description, and its opening four bullets are a decent pinned
+comment on their own. Its structure is close to this script's — what the thing
+is good for first, then what it cannot do.
 
 - **"Every chart like this eventually gets the same question: can I make money
   with it? I tested that properly, and the answer is no — but something more
@@ -602,7 +610,9 @@ people there in the description.
   Fed changes rates month to month, a year out, the shape of the curve accounts
   for about **29 per cent** — against about **five** for unemployment, payrolls
   and inflation combined. It survives conditioning, robust errors, dropping the
-  zero-rate years, and all four Fed chairs separately.
+  zero-rate years, and Greenspan, Bernanke and Powell tested separately. (Not
+  Yellen — four years is too short a stretch to test on, and saying so is part
+  of the job.)
 - **MONEY SHOT TWO — the turn. Do not skip this and do not soften it.**
   **"I had that reviewed by two people who had not seen it, and they both said
   the same thing, and they were right."**
