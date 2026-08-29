@@ -1022,6 +1022,15 @@ def main():
     except Exception as exc:                       # a card is not worth failing over
         print(f"  ! preview card not rendered: {exc}")
 
+    # Keep the code stamp current too, so a browser cannot hold a stale module
+    # against a fresh page. Cheap, and it means the weekday run repairs a stamp
+    # that a code push forgot.
+    try:
+        import stamp
+        stamp.main()
+    except Exception as exc:                       # a stamp is not worth failing over
+        print(f"  ! code version not stamped: {exc}")
+
     if not refreshed:
         behind = (today - days[-1]).days
         print(f"\n  ! Could not reach Treasury. Newest data is {days[-1]} "

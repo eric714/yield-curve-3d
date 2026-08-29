@@ -178,7 +178,9 @@ def main():
         "This copy is a single file with nothing outside it. It sets no cookies, "
         "counts nothing, and sends nothing anywhere.",
         html, flags=re.S)
-    html = html.replace('<script type="module" src="js/app.js"></script>', loader)
+    # The src carries a ?v= stamp in the served page, so match it loosely.
+    html = re.sub(r'<script type="module" src="js/app\.js(?:\?v=[0-9a-f]+)?"></script>',
+                  lambda _: loader, html, count=1)
     # The license files are not bundled, so drop the links but keep the credit.
     html = html.replace('<a href="vendor/THREE-LICENSE.txt">three.js</a>', "three.js")
     html = re.sub(r'<a href="vendor/LUCIDE-LICENSE\.txt">([^<]*)</a>', r"\1", html)

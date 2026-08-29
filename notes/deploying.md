@@ -231,3 +231,34 @@ offline and should not report back when someone passes it around.
 
 Note that GitHub's own **Insights → Traffic** page counts visits to the
 *repository*, not to the website. GitHub Pages provides no server logs.
+
+
+## Code versions
+
+`docs/data/` has always been cache-proof: the pipeline writes a hash into
+`manifest.json` and every other data file is fetched with `?v=` behind it. The
+code files had nothing, and GitHub Pages serves them with `max-age=600`. So for
+ten minutes after a push, a browser could hold an old `app.js` against a new
+`index.html`. That does not look broken. It behaves like the version before the
+change, which is worse.
+
+`pipeline/stamp.py` fixes it. It hashes `docs/js/*.js` and `docs/style.css`,
+then writes that hash into `index.html` in three places: the stylesheet link,
+the `app.js` script tag, and an import map entry for every module.
+
+The import map is the part that matters. Versioning `app.js` alone would leave
+the modules it imports stale, which is worse than versioning nothing. A browser
+resolves `./layers.js` and then consults the map, so one entry per module
+versions the whole graph.
+
+You should not have to remember to run it. It runs automatically from
+`pipeline/serve.py` on startup and from `pipeline/build_data.py` after a build,
+which between them cover working on the code locally and the weekday data run.
+To do it by hand:
+
+```bash
+python3 pipeline/stamp.py
+```
+
+It is idempotent and only rewrites `index.html` when the hash actually changed,
+so running it twice is free and it will not produce noise in `git status`.

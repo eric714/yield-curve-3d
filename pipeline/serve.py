@@ -34,6 +34,12 @@ class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def main():
+    # Stamp before serving: this is the thing you run while changing code, so
+    # it is the moment the stamp is most likely to be out of date.
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import stamp
+    stamp.main()
+
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     handler = functools.partial(NoCacheHandler, directory=ROOT)
     with http.server.ThreadingHTTPServer(("", port), handler) as httpd:
