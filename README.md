@@ -31,7 +31,15 @@ nothing.
   2s10s and 10y-3m, CPI inflation and the 10-year yield after it, whatever is
   on the back wall, and whether the day sits inside a recession or a Fed
   program. Event markers include the days the Sahm rule crossed its
-  threshold. Click to pin it. Escape clears it.
+  threshold. The same curve is drawn beside the numbers, so the figures have a
+  shape. Click to pin it. Escape clears it.
+- **Play the window.** Press Play and a cursor walks the trading days in the
+  current range, redrawing the readout as it goes. The range itself does not
+  move. Dragging the slider, picking a preset, rotating the scene or pressing
+  Escape all stop it.
+- **Jump to a date.** Type one and it snaps to the nearest trading day. If the
+  day sits outside the current window, the window slides to contain it and
+  keeps its span rather than expanding to all of history.
 - **Put something behind the surface**: the Fed balance sheet, the S&P 500 back
   to 1990, the NASDAQ, the VIX, the 10-year term premium, expected inflation
   from the 10-year breakeven, M2 growth, or the unemployment rate. It starts

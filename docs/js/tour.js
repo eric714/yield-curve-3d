@@ -48,8 +48,9 @@ const STEPS = [
   {
     title: "Read any day you like",
     body: "Move the pointer across the surface, or tap it on a phone, and the "
-        + "panel gives you every rate the Treasury published that day. Click "
-        + "to pin it there.",
+        + "panel gives you every rate the Treasury published that day, drawn "
+        + "as that day's curve. Click to pin it there, or type a date into "
+        + "Jump to.",
     apply: { preset: "Past five years", view: "default" },
   },
   {
@@ -112,7 +113,8 @@ const STEPS = [
     title: "Now go and look",
     body: "These buttons jump to the famous episodes: try the global financial "
         + "crisis. Drag either end of the date slider to change the range, or "
-        + "the bar between them to move the whole window through history.",
+        + "the bar between them to move the whole window through history. Then "
+        + "press Play and watch the curve move.",
     apply: { preset: "Past five years", view: "default", heightMode: "level",
              contextSeries: "none",
              show: { showRegimes: false, showRecessions: false,

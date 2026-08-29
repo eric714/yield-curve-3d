@@ -162,6 +162,9 @@ Every link loads the exact view. Paste it, hit record.
 ## 1. What a yield curve actually is — 6 min
 **One idea:** the government borrows for different lengths of time and pays a
 different rate for each; that set of rates on one day is the curve.
+
+*The readout draws this day's curve beside the numbers, so you have the shape
+on screen even before the end-on move below.*
 `#from=2021-08-25&to=2026-08-25&m=level&w=none&v=front&t=dark&s=`
 
 - Open cold on the surface. **"This is what it has cost the United States
@@ -701,8 +704,28 @@ in the same cycle the yield curve broke.
   video discusses. Resist the urge to turn everything on before you record.
 - **Double-click empty chart space** to hide the side panel for full-bleed
   sections, and click the ☰ button top right to bring it back.
+- **Where a beat says "scrub", press Play.** This is the biggest change to how
+  these get recorded. Fourteen beats below tell you to drag the slider through
+  a period while narrating, which means talking and dragging with the same
+  hand and getting the pace wrong. Play walks the trading days on its own at a
+  fixed rate, so you can put your hands down and just talk. Slow is about four
+  days a second, Normal twelve, Fast forty. Pick the speed so the move you are
+  describing takes about as long as the sentence describing it.
+- **Where a beat says "scrub to" a specific date, type it into Jump to.**
+  Four beats below do that. Hunting for one day by dragging is the worst way
+  to hit it, and on camera it looks like fumbling. Type the date, it snaps to
+  the nearest trading day and pins it. If the day is outside the range, the
+  window slides to hold it and keeps its span.
+- **Play stops the moment you touch anything.** Dragging the slider, picking a
+  preset, rotating the chart or pressing Escape all stop it, and it leaves the
+  last day pinned. So you can let it run, interrupt it to make a point, and
+  carry on talking without the chart moving under you.
 - **Pin days by clicking** so the readout stays put while you talk. Escape
   clears it.
+- **The readout now draws the day as a curve** above the numbers. Useful in
+  the videos that are about the shape of one day rather than the shape of
+  history: it is on screen the whole time without switching to the end-on
+  view.
 - **The readout always shows CPI and the real ten-year yield**, whatever else
   is selected. You can read the inflation-adjusted number aloud on any day in
   any video without changing a setting.
