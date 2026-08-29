@@ -89,6 +89,7 @@ export class Inspector {
         <span class="ins-date">${longDate(iso)}</span>
         ${this.pinned != null ? '<span class="ins-pin">pinned</span>' : ""}
       </div>
+      ${sliceSvg(curve, state, data, day)}
       <div class="ins-grid">${rows}</div>
       ${anyFilled ? '<p class="ins-note">Paler figures were reconstructed, not published.</p>' : ""}
       <dl class="ins-extra">
@@ -101,6 +102,66 @@ export class Inspector {
         ? "Click the surface to unpin" : "Click to pin this date"}</p>`;
     this.el.hidden = false;
   }
+}
+
+/**
+ * The same curve the grid above lists, drawn as a line so the numbers have a
+ * shape. Deliberately small: this is a sparkline with axes, not a second chart.
+ *
+ * It reads tenorCurve, not the resampled 48-point grid, so every point on the
+ * line is a figure the reader can find in the grid underneath it. Maturity is
+ * warped the same way the 3D surface warps it, so the two agree.
+ */
+function sliceSvg(curve, state, data, day) {
+  const W = 236, H = 76, PL = 4, PR = 4, PT = 8, PB = 12;
+  const mode = state.heightMode || "level";
+
+  // Match layers.offsetFor without importing it: the zero plane is the Fed's
+  // own rate in vsFunds, and that day's 3-month bill in vs3m.
+  let shift = 0;
+  if (mode === "vsFunds") {
+    const hi = data.context.fedFundsUpper[day], lo = data.context.fedFundsLower[day];
+    if (hi == null) return "";
+    shift = (hi + (lo == null ? hi : lo)) / 2;
+  } else if (mode === "vs3m") {
+    const three = curve.find((c) => c.years === 0.25);
+    if (!three || three.value == null) return "";
+    shift = three.value;
+  }
+
+  // Honour the maturity mask, so the slice shows what the surface shows.
+  const keep = state.tenors
+    ? curve.filter((c, i) => state.tenors.includes(i))
+    : curve.slice();
+  const pts = keep.filter((c) => c.value != null);
+  if (pts.length < 2) return "";
+
+  const warp = data.manifest.warp || 0.32;
+  const xs = pts.map((c) => Math.pow(c.years, warp));
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const vals = pts.map((c) => c.value - shift);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (mode !== "level") { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  else { lo = Math.min(lo, 0); }
+  if (hi - lo < 0.25) { hi += 0.125; lo -= 0.125; }
+
+  const X = (i) => PL + ((xs[i] - x0) / (x1 - x0 || 1)) * (W - PL - PR);
+  const Y = (v) => PT + (1 - (v - lo) / (hi - lo || 1)) * (H - PT - PB);
+
+  const line = pts.map((c, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(vals[i]).toFixed(1)}`).join("");
+  const dots = pts.map((c, i) =>
+    `<circle cx="${X(i).toFixed(1)}" cy="${Y(vals[i]).toFixed(1)}" r="1.7"` +
+    `${c.real ? "" : ' class="filled"'}/>`).join("");
+  const zero = mode === "level" ? "" :
+    `<line class="zero" x1="${PL}" y1="${Y(0).toFixed(1)}" x2="${W - PR}" y2="${Y(0).toFixed(1)}"/>`;
+
+  const first = keep[0], last = keep[keep.length - 1];
+  return `<svg class="ins-slice" viewBox="0 0 ${W} ${H}" role="img"
+      aria-label="The curve on this day, ${maturityLabel(first.years)} to ${maturityLabel(last.years)}">
+      ${zero}<path class="curve" d="${line}"/>${dots}
+      <text class="tick" x="${PL}" y="${H - 2}">${maturityLabel(first.years)}</text>
+      <text class="tick" x="${W - PR}" y="${H - 2}" text-anchor="end">${maturityLabel(last.years)}</text>
+    </svg>`;
 }
 
 const pct = (v) => `${v.toFixed(2)}%`;

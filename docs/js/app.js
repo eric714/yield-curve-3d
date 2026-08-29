@@ -60,6 +60,10 @@ let data, stage, layers, inspector, summary;
 let dirty = true;
 let extraLabels = [];
 let cursorDay = null;
+// Playing walks a cursor through the window. from/to never move, because
+// changing them rebuilds the mesh and a rebuild per frame stutters.
+const play = { on: false, perSecond: 12, carry: 0, last: 0 };
+let syncPlay = () => {};
 // A day named in the URL, applied once the scene exists. Lets a link open with
 // a specific date already read out, which is how you point someone at a day
 // rather than at a chart and a date to go find.
@@ -109,6 +113,8 @@ async function init() {
   buildViews();
   buildSnapshotMenu();
   buildTour();
+  buildPlay();
+  buildJump();
   buildTenorPicker();
   buildLegend();
   buildKeys();
@@ -159,6 +165,7 @@ async function init() {
     // Synchronous, so it still works from the console when the tab is in the
     // background and animation frames have stopped being scheduled.
     redraw: () => { rebuild(); dirty = false; stage.render(extraLabels); },
+    play, startPlay, stopPlay, seekTo, advancePlayhead,
     snapshotImage, runSnapshot,
   };
 
@@ -167,6 +174,7 @@ async function init() {
 
 /* --------------------------------------------------------------- render */
 function frame() {
+  if (play.on) advancePlayhead();
   if (dirty) {
     rebuild();
     dirty = false;
@@ -174,6 +182,77 @@ function frame() {
   stage.lastExtraLabels = extraLabels;
   stage.render(extraLabels);
   requestAnimationFrame(frame);
+}
+
+/**
+ * Step the playhead by wall-clock time rather than by frame, so the speed is
+ * the same on a 60Hz laptop and a 120Hz phone. Only the cursor moves: no
+ * rebuild, no mesh work.
+ */
+function advancePlayhead() {
+  const now = performance.now();
+  const dt = Math.min(250, now - play.last);     // a backgrounded tab should
+  play.last = now;                                // not sprint on return
+  play.carry += (dt / 1000) * play.perSecond;
+  const steps = Math.floor(play.carry);
+  if (steps < 1) return;
+  play.carry -= steps;
+
+  const next = Math.min(state.to, (cursorDay == null ? state.from : cursorDay) + steps);
+  cursorDay = next;
+  inspector.pinned = next;                        // so the panel does not blink
+  layers.setCursor(next);
+  inspector.show(next, state, summary);
+  if (next >= state.to) stopPlay();
+}
+
+function startPlay() {
+  if (state.to - state.from < 1) return;
+  const at = inspector.pinned;
+  cursorDay = at != null && at >= state.from && at < state.to ? at : state.from;
+  play.on = true;
+  play.carry = 0;
+  play.last = performance.now();
+  inspector.pinned = cursorDay;
+  layers.setCursor(cursorDay);
+  inspector.show(cursorDay, state, summary);
+  syncPlay();
+}
+
+/** Leaves the last day pinned, which is what you want at the end of a run. */
+function stopPlay() {
+  if (!play.on) return;
+  play.on = false;
+  syncPlay();
+  writeUrl();
+}
+
+/**
+ * Put a day under the cursor and pin it, sliding the window if the day sits
+ * outside it. The span is preserved: jumping somewhere should not silently
+ * widen the range to all of history.
+ */
+function seekTo(day, { slide = true } = {}) {
+  if (day == null) return false;
+  stopPlay();
+  if (day < state.from || day > state.to) {
+    if (!slide) return false;
+    const span = state.to - state.from;
+    // Two thirds along, so there is history behind the day and a little ahead.
+    let from = Math.round(day - span * 0.66);
+    from = Math.max(0, Math.min(from, data.rows - 1 - span));
+    state.from = from;
+    state.to = from + span;
+    clearPreset();
+    syncSlider();
+    dirty = true;
+  }
+  cursorDay = day;
+  inspector.pinned = day;
+  layers.setCursor(day);
+  inspector.show(day, state, summary);
+  writeUrl();
+  return true;
 }
 
 function rebuild() {
@@ -313,6 +392,7 @@ function buildPresets() {
 }
 
 function applyPreset(index, redraw = true) {
+  stopPlay();
   if (index < 0) index = 0;
   const preset = data.manifest.presets[index];
   state.from = data.indexOf(preset.start);
@@ -363,6 +443,7 @@ function buildSlider() {
   };
 
   const setHandle = (which, index) => {
+    stopPlay();
     if (which === "lo") {
       state.from = Math.max(0, Math.min(index, state.to - MIN_SPAN));
     } else {
@@ -613,6 +694,52 @@ function buildTour() {
   if (!EMBEDDED && Tour.unseen()) setTimeout(() => tour.start(), 700);
 }
 
+function buildPlay() {
+  const btn = $("#play-toggle");
+  const speed = $("#play-speed");
+
+  syncPlay = () => {
+    btn.textContent = play.on ? "Pause" : "Play";
+    btn.setAttribute("aria-pressed", String(play.on));
+  };
+
+  btn.addEventListener("click", () => (play.on ? stopPlay() : startPlay()));
+  speed.addEventListener("change", () => {
+    play.perSecond = Number(speed.value) || 12;
+    play.carry = 0;
+  });
+  syncPlay();
+}
+
+/**
+ * The slider is the wrong tool for "show me 18 March 2009". Snap whatever the
+ * picker gives us to the nearest trading day, then hand it to seekTo.
+ */
+function buildJump() {
+  const input = $("#jump-date");
+  input.min = data.dates[0];
+  input.max = data.dates[data.rows - 1];
+
+  const go = () => {
+    const iso = input.value;
+    if (!iso) return;
+    if (iso < data.dates[0] || iso > data.dates[data.rows - 1]) {
+      toast(`The record runs ${longDate(data.dates[0])} to ` +
+            `${longDate(data.dates[data.rows - 1])}.`);
+      return;
+    }
+    const day = data.indexOf(iso);            // nearest trading day at or after
+    if (day == null) { toast("No trading day near that date."); return; }
+    seekTo(day);
+    if (data.dates[day] !== iso) toast(`Nearest trading day: ${longDate(data.dates[day])}.`);
+  };
+
+  input.addEventListener("change", go);
+  input.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") { ev.preventDefault(); go(); }
+  });
+}
+
 function buildViews() {
   $(".views").addEventListener("click", (ev) => {
     const name = ev.target.dataset?.view;
@@ -751,12 +878,9 @@ function updateEventList(events) {
   for (const ev of events) {
     const btn = document.createElement("button");
     btn.innerHTML = `<b>${escapeHtml(ev.title)}</b><time>${longDate(ev.date)}</time>`;
-    btn.addEventListener("click", () => {
-      cursorDay = data.indexOf(ev.date);
-      inspector.pinned = cursorDay;
-      layers.setCursor(cursorDay);
-      inspector.show(cursorDay, state, summary);
-    });
+    // Already a <button>, so Enter and Space work without extra handling.
+    // seekTo adds the window slide for a day outside the current range.
+    btn.addEventListener("click", () => seekTo(data.indexOf(ev.date)));
     host.appendChild(btn);
   }
 }
@@ -796,6 +920,13 @@ function buildCursor() {
   canvas.addEventListener("pointerdown", (ev) => {
     dragging = true;
     downAt = { x: ev.clientX, y: ev.clientY };
+  });
+
+  // A rotation stops playback. A tap does not, so tapping to pin mid-run still
+  // behaves like pinning rather than like an accidental stop.
+  canvas.addEventListener("pointermove", (ev) => {
+    if (!dragging || !play.on || !downAt) return;
+    if (Math.hypot(ev.clientX - downAt.x, ev.clientY - downAt.y) > 4) stopPlay();
   });
 
   window.addEventListener("pointerup", () => { dragging = false; });
@@ -895,11 +1026,20 @@ function buildKeys() {
   window.addEventListener("keydown", (ev) => {
     const meta = ev.metaKey || ev.ctrlKey;
     const key = ev.key.toLowerCase();
+    const el = document.activeElement;
+    const typing = el && (el.tagName === "INPUT" || el.tagName === "SELECT"
+                          || el.tagName === "TEXTAREA" || el.isContentEditable);
+    if (ev.key === " " && !typing && !meta) {
+      ev.preventDefault();
+      play.on ? stopPlay() : startPlay();
+      return;
+    }
     if (key === "s" && meta && ev.altKey) { ev.preventDefault(); runSnapshot("download"); }
     else if (key === "s" && meta && ev.shiftKey) { ev.preventDefault(); runSnapshot("copy"); }
     else if (key === "s" && ev.altKey && !meta) { ev.preventDefault(); runSnapshot("link"); }
     else if (key === "p" && meta) { ev.preventDefault(); runSnapshot("print"); }
     else if (key === "escape") {
+      stopPlay();
       inspector.pinned = null;
       cursorDay = null;
       layers.setCursor(null);

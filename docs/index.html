@@ -122,6 +122,24 @@
         <span id="range-span"></span>
         <span id="range-hi"></span>
       </div>
+
+      <div id="play-row">
+        <button id="play-toggle" aria-pressed="false">Play</button>
+        <label class="play-speed">
+          <span class="sr-only">Speed</span>
+          <select id="play-speed">
+            <option value="4">Slow</option>
+            <option value="12" selected>Normal</option>
+            <option value="40">Fast</option>
+          </select>
+        </label>
+      </div>
+      <p class="note">Play days in this range.</p>
+
+      <div id="jump-row">
+        <label for="jump-date">Jump to</label>
+        <input type="date" id="jump-date">
+      </div>
     </section>
 
     <section class="block" id="height-block">
