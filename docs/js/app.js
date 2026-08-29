@@ -720,9 +720,15 @@ function buildJump() {
   input.min = data.dates[0];
   input.max = data.dates[data.rows - 1];
 
-  const go = () => {
+  // One jump per value per visit to the field. Refocusing clears it, so
+  // returning to the same date after moving the window still works.
+  let applied = "";
+
+  // force skips the repeat guard: Enter is someone asking for it explicitly,
+  // where change and blur are just the field settling.
+  const go = (force = false) => {
     const iso = input.value;
-    if (!iso) return;
+    if (!iso || (iso === applied && !force)) return;
     if (iso < data.dates[0] || iso > data.dates[data.rows - 1]) {
       toast(`The record runs ${longDate(data.dates[0])} to ` +
             `${longDate(data.dates[data.rows - 1])}.`);
@@ -730,13 +736,25 @@ function buildJump() {
     }
     const day = data.indexOf(iso);            // nearest trading day at or after
     if (day == null) { toast("No trading day near that date."); return; }
+    applied = iso;
     seekTo(day);
     if (data.dates[day] !== iso) toast(`Nearest trading day: ${longDate(data.dates[day])}.`);
   };
 
-  input.addEventListener("change", go);
+  input.addEventListener("focus", () => { applied = ""; });
+
+  // Three ways in, because the native date picker is a browser widget rather
+  // than part of the page. While its calendar is open it takes the keys, so a
+  // keydown listener here never sees Enter and the browser moves focus on
+  // instead. Whatever happens, focus eventually leaves the field, so blur is
+  // the one signal that always arrives.
+  input.addEventListener("change", () => go());   // calendar committed a date
+  input.addEventListener("blur", () => go());     // clicked away, or focus moved
   input.addEventListener("keydown", (ev) => {
-    if (ev.key === "Enter") { ev.preventDefault(); go(); }
+    if (ev.key !== "Enter") return;
+    ev.preventDefault();                     // do not hand Enter to the page
+    go(true);
+    input.blur();                            // closes the picker, marks it taken
   });
 }
 
