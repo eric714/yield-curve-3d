@@ -419,31 +419,43 @@ select{
 
 
 /* ------------------------------------------------------- play and jump */
-#play-row{display:flex;gap:6px;align-items:center;margin:.55rem 0 .2rem}
+#play-row{display:flex;gap:8px;align-items:center;margin:.55rem 0 .2rem}
+
+/* Icon only, and square, so it reads as a transport control rather than as a
+   fourth word in the row. */
 #play-toggle{
-  flex:0 0 auto;min-width:64px;padding:.35rem .7rem;font-size:12px;
+  flex:0 0 auto;width:30px;height:30px;padding:0;
+  display:flex;align-items:center;justify-content:center;
   background:transparent;border:1px solid var(--line);border-radius:5px;
   color:var(--ink-dim);cursor:pointer;
 }
 #play-toggle:hover{border-color:var(--ink-faint);color:var(--ink)}
 #play-toggle[aria-pressed=true]{
-  background:var(--accent);border-color:var(--accent);color:var(--bg-panel);font-weight:600;
+  background:var(--accent);border-color:var(--accent);color:var(--bg-panel);
 }
-/* Same shape as the view and preset buttons, so the panel keeps one language. */
-.speeds{flex:1 1 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+#play-toggle svg{display:block}
+
+/* One control with hairline dividers rather than three pills with gaps: the
+   three speeds are a single choice, and spacing them apart said otherwise. */
+.speeds{
+  flex:1 1 auto;display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--line);border-radius:5px;overflow:hidden;
+}
 .speeds button{
-  padding:.35rem .2rem;font-size:12px;background:transparent;
-  border:1px solid var(--line);border-radius:5px;color:var(--ink-dim);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;min-height:30px;
+  padding:0;min-height:30px;font-size:12px;font-variant-numeric:tabular-nums;
+  background:transparent;border:0;border-left:1px solid var(--line);
+  color:var(--ink-dim);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
 }
-/* fill, not stroke, and currentColor so the pressed state tints them the same
-   way it tints the word between them. Colour emoji cannot do this. */
-.speeds svg{width:21px;height:21px;display:block;
+.speeds button:first-child{border-left:0}
+/* Sized down from 21px to sit on the same optical line as the 12px numeral
+   beside them. Stroke, not fill, so currentColor still does the tinting. */
+.speeds svg{width:17px;height:17px;display:block;
   fill:none;stroke:currentColor;stroke-width:2.1;
   stroke-linecap:round;stroke-linejoin:round}
-.speeds button:hover{border-color:var(--ink-faint);color:var(--ink)}
+.speeds button:hover{color:var(--ink)}
 .speeds button[aria-pressed=true]{
-  background:var(--accent);border-color:var(--accent);color:var(--bg-panel);font-weight:600;
+  background:var(--accent);color:var(--bg-panel);font-weight:600;
 }
 #jump-row{display:flex;gap:8px;align-items:center;margin:.5rem 0 .1rem}
 #jump-row label{font-size:12px;color:var(--ink-dim);white-space:nowrap}

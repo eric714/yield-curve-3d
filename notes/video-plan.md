@@ -708,9 +708,10 @@ in the same cycle the yield curve broke.
   these get recorded. Fourteen beats below tell you to drag the slider through
   a period while narrating, which means talking and dragging with the same
   hand and getting the pace wrong. Play walks the trading days on its own at a
-  fixed rate, so you can put your hands down and just talk. Slow is about four
-  days a second, Normal twelve, Fast forty. Pick the speed so the move you are
-  describing takes about as long as the sentence describing it.
+  fixed rate, so you can put your hands down and just talk. The three speeds
+  are a turtle at about four trading days a second, 1x at twelve, and a rabbit
+  at forty. Pick the one that makes the move take about as long as the sentence
+  describing it.
 - **Where a beat says "scrub to" a specific date, type it into Jump to.**
   Four beats below do that. Hunting for one day by dragging is the worst way
   to hit it, and on camera it looks like fumbling. Type the date, it snaps to

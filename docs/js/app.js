@@ -698,9 +698,19 @@ function buildPlay() {
   const btn = $("#play-toggle");
   const speed = $("#play-speed");
 
+  // Filled geometry rather than stroked, so both stay crisp at 15px.
+  const PLAY = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" '
+    + 'aria-hidden="true"><polygon points="6 4 20 12 6 20"/></svg>';
+  const PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" '
+    + 'aria-hidden="true"><rect x="6" y="4" width="4" height="16"/>'
+    + '<rect x="14" y="4" width="4" height="16"/></svg>';
+
   syncPlay = () => {
-    btn.textContent = play.on ? "Pause" : "Play";
+    btn.innerHTML = play.on ? PAUSE : PLAY;
     btn.setAttribute("aria-pressed", String(play.on));
+    // The button is icon only, so the accessible name has to carry the verb.
+    btn.setAttribute("aria-label", play.on ? "Pause" : "Play");
+    btn.setAttribute("title", play.on ? "Pause" : "Play");
   };
 
   btn.addEventListener("click", () => (play.on ? stopPlay() : startPlay()));
