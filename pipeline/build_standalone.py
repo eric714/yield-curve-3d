@@ -171,6 +171,13 @@ def main():
     # Strip the traffic counter: a self-contained copy is meant to work
     # offline, and a file passed around by hand should not report back.
     html = re.sub(r"<!-- Traffic counting\..*?</script>\n\n", "", html, flags=re.S)
+    # The counter is stripped above, so the page must stop saying it counts.
+    html = re.sub(
+        r"This site sets no cookies\. It counts page views with\s+"
+        r"GoatCounter, which stores no personal data and cannot identify you\.",
+        "This copy is a single file with nothing outside it. It sets no cookies, "
+        "counts nothing, and sends nothing anywhere.",
+        html, flags=re.S)
     html = html.replace('<script type="module" src="js/app.js"></script>', loader)
     # The license file is not bundled, so drop the link but keep the credit.
     html = html.replace('<a href="vendor/THREE-LICENSE.txt">three.js</a>', "three.js")

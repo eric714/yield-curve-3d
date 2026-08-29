@@ -7,6 +7,14 @@ programs marked on the floor.
 
 Live at **[yieldcurve3d.com](https://yieldcurve3d.com)**.
 
+![Thirty-six years of US Treasury yields drawn as a single 3D surface. Time runs
+left to right from 1990 to 2026, maturity recedes from one month at the front
+edge to thirty years at the back, and height is the yield. The surface is
+colored from deep blue at zero per cent through green and yellow to red above
+eight, so the high-rate 1990s stand out warm on the left and the zero-rate years
+after 2009 sink into a blue
+trough.](docs/preview.png)
+
 It runs entirely in the browser. Visitors need nothing installed. Hosting costs
 nothing.
 
@@ -69,6 +77,33 @@ you walk a fixed span forward through history.
 | `.github/workflows/` | The robot that keeps the data current. |
 
 ---
+
+## Run it locally
+
+Python 3 and a browser. Nothing to install, no pip, no npm. Built and run on
+3.14, and stdlib-only so anything reasonably current will do.
+
+```bash
+git clone https://github.com/eric714/yield-curve-3d
+cd yield-curve-3d
+python3 pipeline/serve.py
+```
+
+Then open <http://localhost:8000>. That server is Python's own with caching
+turned off, because the browser will otherwise hold on to an edited module and
+you end up drawing conclusions from code that is no longer running. Pass a port
+if 8000 is taken: `python3 pipeline/serve.py 8080`.
+
+The repository ships with the data already built, so the site works straight
+after cloning. To pull anything new that Treasury and FRED have published since:
+
+```bash
+python3 pipeline/build_data.py
+```
+
+Finished years are cached under `data/raw/` and never re-fetched, so this is
+mostly a no-op that checks the current year. It rewrites `docs/data/` and only
+produces a diff when the numbers actually changed.
 
 ## How the data is put together
 
@@ -315,10 +350,13 @@ loader clears the cache and retries once instead of dying.
 
 ## Traffic
 
-The site ships with no analytics switched on. There are no cookies, no
-third-party scripts, and the only outside address in the code is twitter.com,
-reached only when someone clicks Share on X. Local storage holds two things:
-the theme you picked and whether you have seen the walkthrough.
+The live site counts page views with GoatCounter, because I want to know
+whether anyone uses it. It sets no cookies and stores nothing in the visitor's
+browser, records no personal identifiers, and is switched off inside embeds and
+on localhost. The dashboard is private. The script is pinned to a versioned URL
+with an integrity hash. The only other outbound host is twitter.com, and only if
+someone clicks Share on X. Local storage holds two things, both the visitor's
+own: the theme they picked and whether they have seen the walkthrough.
 
 ## Does any of it predict anything?
 

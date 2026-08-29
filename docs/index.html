@@ -226,9 +226,14 @@
 <div id="print-host" aria-hidden="true"></div>
 <noscript><p style="padding:2rem">This visualization needs JavaScript.</p></noscript>
 <!-- Traffic counting.
-     Off until a code is filled in below: with it empty, no script is fetched
-     and nothing whatsoever is sent. GoatCounter sets no cookies and stores no
-     personal data, so there is nothing here to consent to.
+     On, with the code below. GoatCounter sets no cookies and stores nothing in
+     the visitor's browser, so there is nothing here to consent to. Empty the
+     code to switch it off: no script is fetched and nothing is sent.
+     Pinned to the versioned script with an integrity hash, so a compromised
+     CDN cannot substitute different code. If GoatCounter ever rebuilds v5 the
+     hash stops matching, the browser refuses the script, and counting silently
+     stops. Recompute it with:
+       curl -s https://gc.zgo.at/count.v5.js | openssl dgst -sha384 -binary | openssl base64 -A
      Deliberately skipped inside embeds: if a publisher puts the chart on a
      busy page, their readers did not choose to be counted, and the numbers
      would stop meaning "people who visited the site". -->
@@ -240,7 +245,9 @@
   if (location.hostname === "localhost" || location.hostname === "127.0.0.1") return;
   var s = document.createElement("script");
   s.async = true;
-  s.src = "https://gc.zgo.at/count.js";
+  s.src = "https://gc.zgo.at/count.v5.js";
+  s.integrity = "sha384-atnOLvQb9t+jTSipvd75X2yginT4PjVbqDdlJAmxMm+wYElFmeR6EmLP5bYeoRVQ";
+  s.crossOrigin = "anonymous";
   s.setAttribute("data-goatcounter", "https://" + CODE + ".goatcounter.com/count");
   document.head.appendChild(s);
 })();
