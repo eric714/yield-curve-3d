@@ -46,7 +46,10 @@ nothing.
   empty. Inflation as the sea level and unemployment on the wall puts both
   halves of the Fed's mandate on screen together.
 - **Share the exact view.** Every control writes to the URL, so a link restores
-  the dates, the height mode, the back wall, the camera and the theme.
+  the dates, the height mode, the back wall, the camera, the theme, the chosen
+  maturities and the pinned day. A link can therefore open on a particular
+  date with its figures already on screen. Playing is deliberately not in the
+  URL: it is something you do, not a view.
 - **Choose the maturities.** Switch any of the fourteen tenors off and the
   curve is re-interpolated through the ones that are left, so the surface stays
   continuous rather than developing holes, and the maturity axis re-lays itself

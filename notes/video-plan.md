@@ -700,6 +700,12 @@ in the same cycle the yield curve broke.
   did not. Fixed. You can now run a whole recording session in one tab.
 - **A link without a maturity list means all fourteen.** Also new: video 12
   and 13 trim the axis, and the next link used to inherit the trim.
+- **A link can open on a pinned day.** Add `&d=YYYY-MM-DD` and the readout is
+  already showing that date when the page loads, with the crosshair on it.
+  Seventeen beats below say "pin 10 September 2007" or similar; for the first
+  one in a video, put it in the link instead and the shot is set up before you
+  start talking. Use the Jump to field for the later ones. If the date is
+  outside the range in the same link it is ignored, so keep them consistent.
 - **The links start clean on purpose.** Each one switches on only what that
   video discusses. Resist the urge to turn everything on before you record.
 - **Double-click empty chart space** to hide the side panel for full-bleed
