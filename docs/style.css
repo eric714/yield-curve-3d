@@ -429,8 +429,16 @@ select{
 #play-toggle[aria-pressed=true]{
   background:var(--accent);border-color:var(--accent);color:var(--bg-panel);font-weight:600;
 }
-.play-speed{flex:1 1 auto}
-#play-speed{width:100%}
+/* Same shape as the view and preset buttons, so the panel keeps one language. */
+.speeds{flex:1 1 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.speeds button{
+  padding:.35rem .2rem;font-size:12px;background:transparent;
+  border:1px solid var(--line);border-radius:5px;color:var(--ink-dim);cursor:pointer;
+}
+.speeds button:hover{border-color:var(--ink-faint);color:var(--ink)}
+.speeds button[aria-pressed=true]{
+  background:var(--accent);border-color:var(--accent);color:var(--bg-panel);font-weight:600;
+}
 #jump-row{display:flex;gap:8px;align-items:center;margin:.5rem 0 .1rem}
 #jump-row label{font-size:12px;color:var(--ink-dim);white-space:nowrap}
 #jump-date{flex:1 1 auto;min-width:0}

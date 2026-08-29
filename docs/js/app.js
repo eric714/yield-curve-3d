@@ -704,9 +704,17 @@ function buildPlay() {
   };
 
   btn.addEventListener("click", () => (play.on ? stopPlay() : startPlay()));
-  speed.addEventListener("change", () => {
-    play.perSecond = Number(speed.value) || 12;
+
+  // Changing speed mid-run should not jump the playhead, so only the rate
+  // changes and the part-step in hand is dropped.
+  speed.addEventListener("click", (ev) => {
+    const pick = ev.target.closest("button[data-speed]");
+    if (!pick) return;
+    play.perSecond = Number(pick.dataset.speed) || 12;
     play.carry = 0;
+    for (const b of speed.querySelectorAll("button")) {
+      b.setAttribute("aria-pressed", String(b === pick));
+    }
   });
   syncPlay();
 }

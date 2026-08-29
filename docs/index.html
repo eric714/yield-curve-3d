@@ -125,14 +125,11 @@
 
       <div id="play-row">
         <button id="play-toggle" aria-pressed="false">Play</button>
-        <label class="play-speed">
-          <span class="sr-only">Speed</span>
-          <select id="play-speed">
-            <option value="4">Slow</option>
-            <option value="12" selected>Normal</option>
-            <option value="40">Fast</option>
-          </select>
-        </label>
+        <div class="speeds" id="play-speed" role="group" aria-label="Playback speed">
+          <button data-speed="4">Slow</button>
+          <button data-speed="12" aria-pressed="true">Normal</button>
+          <button data-speed="40">Fast</button>
+        </div>
       </div>
       <p class="note">Play days in this range.</p>
 
