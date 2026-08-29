@@ -413,7 +413,13 @@ MIT license.
 
 ## License
 
-The code here is MIT licensed — see `LICENSE`. It is original work; it is not
-derived from any other visualization. three.js is bundled under its own MIT
-license (`docs/vendor/THREE-LICENSE.txt`), which requires that the license file
-stays with it.
+The code here is MIT licensed, see `LICENSE`. It is original work; it is not
+derived from any other visualization.
+
+Two things are borrowed and both keep their own notice. three.js is bundled
+under its MIT license (`docs/vendor/THREE-LICENSE.txt`). The turtle and rabbit
+on the playback speed buttons are from [Lucide](https://lucide.dev) under the
+ISC license (`docs/vendor/LUCIDE-LICENSE.txt`), inlined as SVG rather than
+pulled from a CDN so the page still has no outside dependencies. Both licenses
+require only that the notice travels with the code, which is why the files are
+in the repository and linked from the About panel on the site.

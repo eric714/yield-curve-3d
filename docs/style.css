@@ -434,11 +434,13 @@ select{
 .speeds button{
   padding:.35rem .2rem;font-size:12px;background:transparent;
   border:1px solid var(--line);border-radius:5px;color:var(--ink-dim);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;min-height:28px;
+  display:flex;align-items:center;justify-content:center;min-height:30px;
 }
 /* fill, not stroke, and currentColor so the pressed state tints them the same
    way it tints the word between them. Colour emoji cannot do this. */
-.speeds svg{width:19px;height:19px;fill:currentColor;display:block}
+.speeds svg{width:21px;height:21px;display:block;
+  fill:none;stroke:currentColor;stroke-width:2.1;
+  stroke-linecap:round;stroke-linejoin:round}
 .speeds button:hover{border-color:var(--ink-faint);color:var(--ink)}
 .speeds button[aria-pressed=true]{
   background:var(--accent);border-color:var(--accent);color:var(--bg-panel);font-weight:600;

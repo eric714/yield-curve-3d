@@ -179,8 +179,25 @@ def main():
         "counts nothing, and sends nothing anywhere.",
         html, flags=re.S)
     html = html.replace('<script type="module" src="js/app.js"></script>', loader)
-    # The license file is not bundled, so drop the link but keep the credit.
+    # The license files are not bundled, so drop the links but keep the credit.
     html = html.replace('<a href="vendor/THREE-LICENSE.txt">three.js</a>', "three.js")
+    html = re.sub(r'<a href="vendor/LUCIDE-LICENSE\.txt">([^<]*)</a>', r"\1", html)
+
+    # Both licenses ask that the notice appear in copies, and this file is
+    # meant to be passed around by hand. A link to a file that is not here
+    # satisfies nobody, so the notices themselves ride along in a comment.
+    notices = []
+    for name, rel in (("three.js", "docs/vendor/THREE-LICENSE.txt"),
+                      ("Lucide icons", "docs/vendor/LUCIDE-LICENSE.txt")):
+        path = os.path.join(ROOT, rel)
+        if os.path.exists(path):
+            raw = open(path, encoding="utf-8").read().strip()
+            body = re.sub(r"-{2,}", lambda m: " ".join(m.group(0)), raw)
+            notices.append(f"{name}\n{'=' * len(name)}\n{body}")
+    if notices:
+        block = "\n\n".join(notices)
+        html = html.replace("<head>", "<head>\n<!--\nBundled third-party licenses.\n\n"
+                            + block + "\n-->", 1)
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as fh:
