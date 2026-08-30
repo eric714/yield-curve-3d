@@ -11,8 +11,8 @@ The short version:
 
 - **It tells you what the bond market expects the Fed to do next, and the
   market is good at that.** This is the one genuine forecast in the chart.
-- **It tells you nothing useful about the stock market.** Not a weak signal —
-  no signal.
+- **It tells you nothing useful about the stock market.** Not a weak signal.
+  No signal at all.
 - **It shows you what lending actually earned after inflation**, which is a
   number most people never see and which changes how the last five years look.
 - **It is a poor recession alarm**, and so is the other famous one.
@@ -30,7 +30,7 @@ run.
 
 This is the most useful thing on the chart and it takes ten seconds.
 
-Turn on **Fed funds target** and compare it to the front of the curve — or
+Turn on **Fed funds target** and compare it to the front of the curve, or
 switch **Height of the surface** to *Yield minus Fed funds*, which puts the
 Fed's own rate at zero.
 
@@ -39,7 +39,7 @@ Fed's own rate at zero.
 
 The market is not merely directionally right. Over 36 years, the gap between
 the 2-year yield and the Fed's rate has predicted the average size of the Fed's
-next two years of moves **almost exactly one-for-one**. Not approximately —
+next two years of moves **almost exactly one-for-one**. Not approximately:
 statistically indistinguishable from one-for-one.
 
 Example on the chart: **10 September 2007**, the 2-year sat 1.38 points below
@@ -52,8 +52,8 @@ cut arrived.
 Turn on **Inflation (CPI) as sea level**. Anything under the sheet lost money
 in real terms.
 
-This reframes the recent past. For **501 straight trading days — 1 March 2021
-to 28 February 2023 — every single Treasury, out to thirty years, paid less
+This reframes the recent past. For **501 straight trading days, 1 March 2021
+to 28 February 2023, every single Treasury, out to thirty years, paid less
 than inflation.** In all of 2022, on 249 trading days out of 249, there was not
 one maturity that beat it. The worst day was 1 March 2022: the ten-year paid
 1.83% against inflation of 8.6%, a real loss of **6.85% a year**, in the asset
@@ -107,7 +107,7 @@ predicts the Fed. That is not a discovery about yield curves. It is what a
 yield curve is.
 
 I tested exactly that. If it were purely the definition, the relationship
-should be one-for-one — and it is. The measured slope is **1.106**, and the
+should be one-for-one, and it is. The measured slope is **1.106**, and the
 hypothesis that it equals exactly 1 cannot be rejected (p = 0.65). On
 non-overlapping periods it is **0.984** (p = 0.968).
 
@@ -138,7 +138,7 @@ Milton Friedman said inflation is always a monetary phenomenon. Testable.
 
 Money supply growth does lead inflation, at about a **twelve-month** lag
 (p = 0.000004). At a one-month lag it shows nothing, which is why people who
-test it carelessly get the wrong answer — the effect is slow.
+test it carelessly get the wrong answer, the effect is slow.
 
 It is not just the 2021–22 episode. Excluding everything from 2020 onward the
 result is unchanged. What *does* disappear is the reverse direction: inflation
@@ -150,12 +150,12 @@ The site marks both. They fail in opposite ways.
 
 | | Curve inversion | Sahm rule |
 |---|---|---|
-| Timing | **Early** — 13 to 23 months ahead | **Late** — fires 1 to 7 months *into* the recession |
+| Timing | **Early.** 13 to 23 months ahead | **Late.** fires 1 to 7 months *into* the recession |
 | Reliability | Poor: **568 of 1,052 inverted days** had no recession within two years | Good: 9 of 11 triggers landed in a recession |
 | Ever warned in advance? | Yes | **Never once** |
 | This cycle | Longest inversion ever, no recession | Triggered July 2024, no recession |
 
-The Sahm rule was built as a *detector*, not a forecast — designed to start
+The Sahm rule was built as a *detector*, not a forecast, designed to start
 relief spending the moment a downturn was visible. People misuse it as a
 prediction constantly.
 
@@ -168,7 +168,7 @@ sense: 16 days before 1990, 3 days before 2020.
 ## What it cannot do
 
 - **It will not help you trade.** The one forecast it contains is about Fed
-  policy, and that forecast is the market's own — already in the price of
+  policy, and that forecast is the market's own, already in the price of
   everything before you see it.
 - **It does not establish cause.** These tests show what comes *before* what.
   The curve and the Fed both react to the same incoming news.
@@ -179,7 +179,7 @@ sense: 16 days before 1990, 3 days before 2020.
 - **The open question.** Is there anything in the curve *beyond* the market's
   embedded expectations that predicts the Fed? Splitting the yield into
   "expected path" and "everything else" is the test, and it is not done here.
-  The one related figure available — the ten-year term premium — does **not**
+  The one related figure available (the ten-year term premium) does **not**
   predict policy (p = 0.12), which points toward "no."
 
 ---
@@ -198,7 +198,7 @@ accident. Correcting for that (Benjamini-Hochberg, q = 0.05), **14 of 26 tests
 survive.** Every curve-to-policy test survives. So does the money-to-inflation
 result and both out-of-sample tests.
 
-**Specifications were chosen while looking at results** — lag lengths, sample
+**Specifications were chosen while looking at results.** lag lengths, sample
 cuts, model size. That is a real risk no correction fixes. The protection is
 that the main result survives every version tried, agrees with a large existing
 literature, and holds out of sample, which is the one check that kind of
@@ -208,16 +208,16 @@ searching cannot flatter.
 policy is established macro-finance, closest to work by Piazzesi and by
 Gürkaynak, Sack and Swanson. The slow money-to-inflation lag is Friedman's.
 That the slope forecasts recessions rather than stocks is Estrella and Mishkin.
-This is a replication on public data with the workings shown, not a discovery —
-and the fact that it lands where the literature already is, is the strongest
+This is a replication on public data with the workings shown, not a discovery.
+The fact that it lands where the literature already is is the strongest
 reason to believe the arithmetic is right.
 
 ---
 
 ## The code
 
-Everything is in [`analysis/`](../analysis/), standard library only — no
-statistics packages — so the arithmetic can be read rather than trusted. Run
+Everything is in [`analysis/`](../analysis/), standard library only, no
+statistics packages, so the arithmetic can be read rather than trusted. Run
 any of it from the repository root:
 
 | Script | What it produces |

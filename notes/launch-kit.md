@@ -1,4 +1,4 @@
-# Launch kit — Hacker News and r/dataisbeautiful
+# Launch kit: Hacker News and r/dataisbeautiful
 
 Post to Hacker News first, on a Tuesday, Wednesday or Thursday, around
 **8–10am US Eastern**. Then r/dataisbeautiful two or three days later. Never
@@ -17,7 +17,7 @@ Show HN: The US Treasury yield curve in 3D, every trading day since 1990
 
 Plain and factual. HN punishes adjectives. No "beautiful", no "stunning", no
 exclamation marks. The URL field gets `https://yieldcurve3d.com` and the text
-field stays **empty** — put your explanation in the first comment instead.
+field stays **empty.** put your explanation in the first comment instead.
 
 ### First comment (post immediately after submitting)
 
@@ -25,8 +25,8 @@ field stays **empty** — put your explanation in the first comment instead.
 I built this after seeing the NYT's 3D yield curve piece from 2015 and
 wanting to explore the data myself rather than watch a fixed animation.
 
-It's every daily Treasury par yield curve since 1990 — 9,168 trading days,
-14 maturities from one month to thirty years — as a surface you can turn and
+It's every daily Treasury par yield curve since 1990, 9,168 trading days,
+14 maturities from one month to thirty years, as a surface you can turn and
 scrub through. The Fed funds target runs along the front edge, since it's
 effectively the zero-maturity point of the curve.
 
@@ -46,7 +46,7 @@ and the flat plane becomes the Fed itself, so you're looking at how far the
 market had moved from where policy actually was. Through 2007 about 95% of the
 published curve sat below the policy rate; on 10 Sep 2007 the 2-year was 1.38
 points under it and the Fed cut eight days later. It's useless from 2009 to
-2014, though — the policy rate was a constant 0.125% and subtracting a
+2014, though, the policy rate was a constant 0.125% and subtracting a
 constant tells you nothing. There's also an inflation sheet you can float
 through the surface at the CPI rate: for 501 straight trading days, from Mar
 2021 to Feb 2023, every maturity out to thirty years paid less than
@@ -72,7 +72,7 @@ Happy to answer questions about the interpolation or the data plumbing.
 **"1.3MB is a lot."** True. 432KB is three.js, 889KB is 36 years of data,
 about 38KB is my code, all gzipped. It's cached after the first visit and
 there is no server round-trip after load. If someone suggests trimming, agree
-— the manifest carries 9,168 date strings that could be packed.
+,  the manifest carries 9,168 date strings that could be packed.
 
 **"Another yield curve chart."** Point at the re-basing. You can measure the
 whole surface against the policy rate or against the 3-month bill, and float
@@ -82,7 +82,7 @@ arithmetic.
 
 **"Is this AI-generated?"** Answer it straight away and don't be cute: yes,
 built with heavy AI assistance, and the commit history says so on every
-commit. Then move to what you can vouch for — every published value in the
+commit. Then move to what you can vouch for, every published value in the
 binary is checked against Treasury's own CSVs, the reconstructed stretches are
 shaded and documented, and several claims got cut because they did not survive
 being checked, including one about QE that the data flatly contradicts. That
@@ -94,7 +94,7 @@ Jones licenses index values. Say it's fine for a non-commercial site and that
 NASDAQ and VIX cover the full range if it ever isn't. Don't be defensive; it
 is a fair question and the honest answer is a good one.
 
-**"Does it work on mobile?"** Yes — one finger rotates, two pinch, tap reads a
+**"Does it work on mobile?"** Yes, one finger rotates, two pinch, tap reads a
 day. Say so plainly.
 
 ### Rules that will get you buried
@@ -118,7 +118,7 @@ A short screen recording beats a still. Fifteen to twenty seconds, no audio:
 start on the full 36 years, rotate slowly, then jump to 2021-2023 and switch
 on the inflation sheet: the surface sinks under it through 2022 and climbs
 back out in 2023. That last move is the whole pitch and it needs no narration.
-Do not use the Fed-funds height mode for this — through the QE years the
+Do not use the Fed-funds height mode for this, through the QE years the
 policy rate was a constant 0.125%, so switching modes shifts the surface
 uniformly and nothing visibly happens.
 
@@ -147,7 +147,7 @@ FRED (St. Louis Fed) for the Fed funds target and the balance sheet.
 Both public domain.
 
 Tools: three.js for the rendering, Python standard library for the data
-pipeline. No plotting library — the surface is a mesh built from the
+pipeline. No plotting library, the surface is a mesh built from the
 9,168 daily curves.
 
 Interactive version, if you want to scrub through it yourself:
@@ -157,11 +157,11 @@ https://yieldcurve3d.com
 ### Timing and expectations
 
 Post between **9am and noon US Eastern**, weekdays. That subreddit is much
-larger than Hacker News but the traffic is shallower — people upvote the
+larger than Hacker News but the traffic is shallower, people upvote the
 picture and scroll on. Expect a big impression count and a much smaller
 click-through than HN.
 
 Do not cross-post the same image to r/economics or r/investing on the same
 day. Both dislike anything that looks like a campaign. Leave it a week, and
-lead with a specific finding rather than the tool — the May 2023 debt ceiling
+lead with a specific finding rather than the tool, the May 2023 debt ceiling
 episode is the strongest candidate.

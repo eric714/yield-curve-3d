@@ -105,7 +105,7 @@ Then in the repository, **Settings** → **Pages** → **Custom domain**, type
 for you, which adds a commit you will want to pull down in GitHub Desktop
 before making further changes.
 
-Once the DNS has propagated — usually minutes, occasionally a day — tick
+Once the DNS has propagated (usually minutes, occasionally a day) tick
 **Enforce HTTPS**. GitHub issues the certificate free.
 
 ---

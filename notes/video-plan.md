@@ -1,4 +1,4 @@
-# Video plan — yieldcurve3d.com
+# Video plan: yieldcurve3d.com
 
 Rewritten after the redesign. The site now opens bare, inflation is a layer
 rather than a wall series, and several claims in the old plan did not survive
@@ -18,19 +18,19 @@ do* in italics.
 
 ---
 
-# Part 1 — The height of the surface
+# Part 1: The height of the surface
 
 The chart draws a surface. The **height** of that surface is a number you
 choose, and the three choices answer three different questions. This is the
 most unusual thing the site does and the thing most worth explaining well.
 
-### Mode 1 — Yield
+### Mode 1: Yield
 
 The rate itself. What the government paid to borrow, that day, for that length
 of time. The view the whole thing was built for, and where you should spend
 most of your time.
 
-### Mode 2 — Yield minus Fed funds
+### Mode 2: Yield minus Fed funds
 
 Every point measured against **the rate the Fed was charging that same day**.
 The flat zero plane *is* the Fed, and the surface floats above or below it.
@@ -40,7 +40,7 @@ Every other rate on the chart is set by the market. This mode isolates the gap
 between the two.
 
 **The signal: a surface below zero means the market is betting on cuts.** And
-it has been right — not roughly, but almost exactly. Over 36 years the size of
+it has been right, not roughly, but almost exactly. Over 36 years the size of
 that gap has predicted the average size of the Fed's next two years of moves
 **one-for-one**. That is the strongest single sentence available about this
 chart, and video 19 is where it gets examined rather than just asserted.
@@ -57,11 +57,11 @@ points *below* what the Fed was charging. Eight days later the Fed cut. Across
 rate.**
 
 **When it is useless:** when the Fed is parked. Through 2009–2014 the policy
-rate was a constant 0.125 per cent, so subtracting it changes nothing — that
+rate was a constant 0.125 per cent, so subtracting it changes nothing. That
 stretch spans 4.85 points in both modes, the same number to two decimals.
 **Do not use this mode to talk about QE. It genuinely does not show it.**
 
-### Mode 3 — Yield minus 3-month
+### Mode 3: Yield minus 3-month
 
 Every point measured against **that same day's 3-month bill**. This is the
 slope of the curve, and anything below the zero plane is an inversion.
@@ -77,7 +77,7 @@ switch modes.
 
 ---
 
-# Part 2 — Inflation as a sea level
+# Part 2: Inflation as a sea level
 
 New since the last plan, and it changes how several videos should be built.
 
@@ -101,9 +101,9 @@ The numbers that make this worth a video of its own:
 - The worst single day was **1 March 2022**: the ten-year paid 1.83 per cent
   against CPI at 8.6, a **real yield of −6.85 per cent.**
 - Across the whole record, the real ten-year yield was negative on **1,557 of
-  9,168 days — 17 per cent of the time.**
+  9,168 days, 17 per cent of the time.**
 
-Always name the measure. There are several inflation numbers — CPI, PCE, PPI —
+Always name the measure. There are several inflation numbers (CPI, PCE, PPI),
 and the site uses **CPI, year over year**. Say "CPI" out loud, every time.
 
 ## Why the layers start switched off
@@ -116,17 +116,37 @@ layer after that is a question they chose to ask.
 every link, which is exactly the busy chart the redesign was meant to avoid.
 Each link below now switches on only what that video actually discusses, and
 you turn things on *on camera* as you reach them. That is a better video
-anyway — the toggle is a beat.
+anyway, the toggle is a beat.
 
 ---
 
-# Part 3 — The videos
+# Part 3: The videos
 
 Twenty of them, about two hours of finished footage. **That is a back catalog,
 not a to-do list**, and treating it as a to-do list is the most likely way this
 never gets made. Work in tiers.
 
-### Tier 1 — the launch set. Make these five, in this order, before anything else.
+### How the scripts are written
+
+Video 1 is written out the way all of Tier 1 should be by the time you shoot
+it: a timing spine, the lines you actually say in bold quotes, and the stage
+directions in italics. Everything in quotes is meant to be said close to
+verbatim. Everything in italics is something you do with the mouse.
+
+Two rules that came out of writing it:
+
+**Check what the link opens as before you write the first beat.** Video 1 used
+to open end-on and then treat the end-on view as a reveal a minute later, which
+gave the whole thing away in the first second. Load the link, look at the
+screen, then write.
+
+**Put the day in the link and read the real numbers.** `&d=YYYY-MM-DD` opens
+with the readout up, so you are not hunting for a date on camera and the
+figures are on screen before you say them. Every number quoted in a script
+below was read out of the shipped data, so if one does not match what you see,
+tell me rather than reading what is on screen: it means something moved.
+
+### Tier 1: the launch set. Make these five, in this order, before anything else.
 
 | # | Video | Why it goes here |
 |---|---|---|
@@ -141,17 +161,17 @@ They introduce the chart, deliver its best picture, make its strongest claim,
 and then audit that claim honestly. That last one is what separates this from
 every other explainer, so do not leave it for later.
 
-### Tier 2 — the ones with a story nobody else is telling.
+### Tier 2: the ones with a story nobody else is telling.
 
 **20** (the Sahm rule), **12** (the debt-ceiling week), **18** (Friedman and the
 money supply), **8** (QE told honestly). Distinctive, quotable, and each rests
 on a number that took real work to verify.
 
-### Tier 3 — the historical episodes.
+### Tier 3: the historical episodes.
 
 **3, 4, 5, 6, 9, 10, 11, 13, 14, 15, 16.** These share one format: pick an
 episode, scrub through it, pin two days. That is a fine format and a bad
-sequence — seven of them in a row is a channel about the 1990s, not about the
+sequence, seven of them in a row is a channel about the 1990s, not about the
 chart. Space them between Tier 1 and 2 releases, and drop any that does not
 have a number you would put on screen.
 
@@ -159,36 +179,62 @@ Every link loads the exact view. Paste it, hit record.
 
 ---
 
-## 1. What a yield curve actually is — 6 min
+## 1. What a yield curve actually is, 6 min
 **One idea:** the government borrows for different lengths of time and pays a
 different rate for each; that set of rates on one day is the curve.
 
-*The readout draws this day's curve beside the numbers, so you have the shape
-on screen even before the end-on move below.*
-`#from=2021-08-25&to=2026-08-25&m=level&w=none&v=front&t=dark&s=`
+`#from=2021-08-25&to=2026-08-25&m=level&w=none&v=default&t=dark&s=&d=2026-08-03`
 
-- Open cold on the surface. **"This is what it has cost the United States
-  government to borrow money, every trading day for the last five years."**
-  *No intro card, no greeting.*
-- The government borrows by selling bonds. Someone lends it money; it pays
-  interest and returns the principal later. *Double-click to hide the panel.*
-- It borrows for many lengths at once — one month, two years, thirty years.
-  Each length has its own rate. *Point along the near edge.*
-- **MONEY SHOT (aim for 0:60–0:90).** *You are already end-on.* **"Seen this
-  way it is one line. That line is a yield curve — every rate the government
-  paid, on one single day."**
-- Left edge one month, right edge thirty years, height is the rate. *Trace it.*
-- Why it usually rises to the right: lending for longer is riskier, so lenders
-  want more. *Hover a day; read the readout aloud.*
-- *Pin a day.* Read four numbers — 3-month, 2-year, 10-year, 30-year. Real
-  published data, not a model.
-- *Rotate to the default view.* **"Time runs left to right, and the maturities
-  run away from you to the right."** Every ridge is another day. Thirty-six
-  years of them.
-- Close: **"The shape of that line changes, and the changes tell you things.
-  That is what the rest of these videos are about."**
+The link opens in the angled view with 3 August 2026 pinned, so the readout is
+already up and the end-on move below is still a reveal. An earlier draft opened
+end-on, which gave the whole thing away in the first second.
 
-## 2. Steep, flat, inverted — and why anyone cares — 6 min
+**0:00 to 0:20. Open cold.**
+- Say, over the surface turning: **"This is what it has cost the United States
+  government to borrow money. Every trading day, for the last five years."**
+- No intro card, no greeting, no name. The first thing on screen is the thing.
+
+**0:20 to 0:55. What a bond is, in two sentences.**
+- **"When the government needs money, it sells you a bond. You hand over
+  cash, it pays you interest, and years later it gives your money back."**
+- **"It does that for a lot of different lengths at the same time. One month.
+  Two years. Thirty years. Each one has its own interest rate."**
+- *Point along the near edge as you name the lengths.*
+
+**0:55 to 1:30. MONEY SHOT: the rotation.**
+- *Click "Curve on" in the View block. Let it turn. Say nothing for two
+  seconds.*
+- **"Seen end-on, all of that is one line. That line is a yield curve. Every
+  rate the government paid, on one single day."**
+- **"Left edge is one month. Right edge is thirty years. Height is the rate."**
+  *Trace it left to right with the cursor.*
+
+**1:30 to 2:30. Read a real day.**
+- The panel is already open on 3 August 2026. Read four numbers aloud, slowly:
+  **"Three months, 3.91 per cent. Two years, 4.25. Ten years, 4.70. Thirty
+  years, 5.23."**
+- **"That is not a model. That is what the Treasury published that afternoon."**
+- **"And notice it climbs. Lending your money for thirty years pays more than
+  lending it for three months. That is normal, and it is worth understanding
+  why: the longer you are locked in, the more can go wrong, so you want paying
+  for it."**
+
+**2:30 to 4:30. Back to three dimensions.**
+- *Click "Default" to rotate back.* **"Time runs left to right. The maturities
+  run away from you to the right. And every ridge is one more day."**
+- *Drag the slider left end all the way back.* **"Thirty-six years of them.
+  Every trading day since 1990."**
+- Let it sit. Rotate slowly. This is the shot people remember.
+
+**4:30 to 6:00. Close on the question.**
+- **"The shape of that line changes. Sometimes slowly, sometimes in a week.
+  And the changes tell you things, about what the Fed is about to do, about
+  what people think inflation will be, about whether lending money is worth
+  it at all."**
+- **"That is what the rest of these videos are about."**
+- End on the surface, not on your face.
+
+## 2. Steep, flat, inverted: and why anyone cares, 6 min
 **One idea:** the shape carries information the level does not.
 `#from=2021-09-01&to=2023-12-29&m=level&w=none&v=front&t=dark&s=`
 
@@ -207,17 +253,17 @@ on screen even before the end-on move below.*
 - **The honest bit, and say it exactly this way.** The folklore is that an
   inversion predicts a recession. This record supports that twice, clearly:
   **227 inverted days before the 2001 recession, 238 before 2008.** It does
-  not really support it the other two times — **16 days before 1990** (the
+  not really support it the other two times, **16 days before 1990** (the
   record starts in January 1990 and misses most of the 1989 inversion) and
   **3 days before 2020.** And then **2022**: the longest inversion here, more
   than two years, followed by no recession at all. **568 of the 1,052 inverted
   days in this record had no recession within two years.**
-- **"It is a warning light, not a prophecy — and it is a warning light with a
+- **"It is a warning light, not a prophecy, and it is a warning light with a
   false alarm still fresh in the memory."**
 - *Switch to Mode 3 on camera.* Everything below the plane is inverted.
   **"You can see how much of those two years was."**
 
-## 3. 1994: the year the bond market broke — 5 min
+## 3. 1994: the year the bond market broke, 5 min
 **One idea:** six surprise hikes lifted the entire surface at once.
 `#from=1993-10-01&to=1995-06-30&m=level&w=none&v=default&t=dark&s=ff`
 
@@ -235,7 +281,7 @@ on screen even before the end-on move below.*
 - What changed afterwards: this is a large part of why the Fed now telegraphs
   everything.
 
-## 4. The dot-com bust — 6 min
+## 4. The dot-com bust, 6 min
 **One idea:** the front end fell off a cliff while the long end barely moved.
 `#from=2000-01-03&to=2004-06-30&m=level&w=none&v=default&t=dark&s=ff,rec`
 
@@ -247,11 +293,11 @@ on screen even before the end-on move below.*
 - Eleven cuts in one year. By December 2001 the 3-month was 1.74 and the
   30-year still 5.48.
 - *The recession band is already on.* It arrives March 2001, after the
-  inversion — which began February 2000, thirteen months ahead.
+  inversion, which began February 2000, thirteen months ahead.
 - Long rates stayed high because long rates are about the next decade, not the
   next meeting. **That is the lesson of this one.**
 
-## 5. Greenspan's conundrum — 6 min
+## 5. Greenspan's conundrum, 6 min
 **One idea:** the Fed hiked seventeen times and the long end refused to follow.
 `#from=2004-06-01&to=2006-08-31&m=level&w=none&v=side&t=dark&s=ff`
 
@@ -263,13 +309,13 @@ on screen even before the end-on move below.*
   **MONEY SHOT: the near edge climbing while the far edge stays flat.**
 - *Pin 30 June 2004, then 29 June 2006.* 3-month **1.33 → 5.01**. Ten-year
   **4.62 → 5.22**.
-- The result is a flat curve — the surface almost level from front to back.
+- The result is a flat curve, the surface almost level from front to back.
 - Why it mattered: cheap long-term money kept the housing market going while
   the Fed was trying to cool it.
 - Close on the sequel: this flatness tipped into inversion in 2006, and you
   know what happened next. *Sets up video 6.*
 
-## 6. 2008: a crisis in three dimensions — 7 min
+## 6. 2008: a crisis in three dimensions, 7 min
 **One idea:** inversion, then collapse to zero, as one continuous shape.
 `#from=2007-06-01&to=2009-12-31&m=level&w=none&v=default&t=dark&s=ff,rec,ev`
 
@@ -287,11 +333,11 @@ on screen even before the end-on move below.*
   first time in its history. *Front-edge ribbon flattens onto the floor.*
 - *Recession shading is on.* December 2007 to June 2009.
 - Close on where it leaves the curve: front pinned at zero, long end still up.
-  **The steepest the curve ever got came a year later — 30-year minus 3-month
+  **The steepest the curve ever got came a year later, 30-year minus 3-month
   reached +4.70 points on 11 January 2010, the widest in the record.**
   *Sets up video 8.*
 
-## 7. The bond market moves before the Fed does — 7 min ⭐
+## 7. The bond market moves before the Fed does, 7 min ⭐
 **One idea:** the market prices cuts months before the Fed makes them, and you
 can see it as a shape.
 
@@ -305,7 +351,7 @@ limitation gets its own screen time.
 
 - **"In September 2007 the bond market knew the Fed was about to cut. The Fed
   had not said so. Here is what that looks like."**
-- Explain the mode carefully — this is the video that teaches it. The Fed sets
+- Explain the mode carefully. This is the video that teaches it. The Fed sets
   one rate, overnight. Everything else on the chart is set by the market.
 - *Switch the height dropdown on camera.* **MONEY SHOT.** The flat plane is now
   the Fed itself. The surface floats above or below it.
@@ -321,13 +367,13 @@ limitation gets its own screen time.
   before the 2024 cuts.
 - **Say the limitation out loud, twice.** First: this mode tells you almost
   nothing when the Fed is parked at zero, because subtracting a constant
-  changes nothing. It is a tool for periods when policy is moving — which is
+  changes nothing. It is a tool for periods when policy is moving, which is
   exactly why the next video does not use it.
 - Second, and do not skip it: **"Everything I have just shown you is looking
   backwards. Whether you could have used it in advance is a different question,
   and a harder one. That is video 19."** *Point forward to it.*
 
-## 8. QE, told honestly — 7 min ⭐
+## 8. QE, told honestly, 7 min ⭐
 **One idea:** what the Fed actually did, and what the curve did alongside it,
 without claiming the chart proves one caused the other.
 `#from=2008-09-01&to=2015-12-31&m=level&w=WALCL&v=default&t=dark&s=qe`
@@ -344,20 +390,20 @@ without claiming the chart proves one caused the other.
 - *Floor bands are on.* QE1, QE2, Operation Twist, QE3, and the taper.
 - **The honest part, and do not skip it:** the curve did not simply fall
   through this. The ten-year was 2.37 per cent in December 2008 and 3.84 by
-  the end of QE1 — it went *up*. Those years were also a recovery.
+  the end of QE1. It went *up*. Those years were also a recovery.
 - **"You cannot read causation off this chart, and anyone who tells you
   otherwise is selling something. What you can see is scale, timing, and that
   the long end stayed remarkably low for remarkably long."**
 - **Head off the obvious question on camera:** *switch to Mode 2 and back.*
   **"You might think measuring against the Fed would show QE better. It does
-  not — the Fed was parked at an eighth of a per cent for six years, so
+  not, the Fed was parked at an eighth of a per cent for six years, so
   subtracting it changes nothing at all."** This is the single most common
   wrong instinct about the chart. Kill it here.
 - Operation Twist as the interesting case: the balance sheet stays flat while
   the long end still falls. *Wall visibly level, surface still moving.*
 - Close: the Fed has run this in reverse, twice. *Sets up video 15.*
 
-## 9. The taper tantrum — 5 min
+## 9. The taper tantrum, 5 min
 **One idea:** the long end jumped on no policy change at all.
 `#from=2012-06-01&to=2015-01-31&m=level&w=WALCL&v=side&t=dark&s=qe,ev`
 
@@ -370,7 +416,7 @@ without claiming the chart proves one caused the other.
 - The ten-year went from 1.99 to 2.64 in five weeks.
 - The lesson: expectations move markets, not just actions.
 
-## 10. COVID: zero in three weeks — 5 min
+## 10. COVID: zero in three weeks, 5 min
 **One idea:** the fastest move in the record, and the only day in 36 years
 when the entire curve was under one per cent.
 `#from=2020-01-02&to=2021-12-31&m=level&w=none&v=default&t=dark&s=ff,rec,ev`
@@ -380,13 +426,13 @@ when the entire curve was under one per cent.
 - *Pin 19 February.* Normal. 3-month 1.58, 30-year 2.01.
 - *Scrub three weeks.* **MONEY SHOT: the surface flattening onto the floor.**
 - *Pin 9 March.* Every maturity under 1 per cent. **The only day in the whole
-  record — I checked all 9,168 of them.**
+  record, I checked all 9,168 of them.**
 - 15 March: emergency cut to zero, plus $700bn of purchases. *Event marker.*
-- *Recession band.* February to April 2020 — the shortest on record.
+- *Recession band.* February to April 2020, the shortest on record.
 - Close by pointing at what comes next: **"Hold that picture. Two videos from
   now, this is where the inflation story starts."**
 
-## 11. The deepest inversion since Volcker — 6 min
+## 11. The deepest inversion since Volcker, 6 min
 **One idea:** measured against the 3-month, the inversion becomes a shape.
 `#from=2021-09-01&to=2023-12-29&m=vs3m&w=none&v=default&t=dark&s=`
 
@@ -407,14 +453,14 @@ when the entire curve was under one per cent.
   what that does and does not mean, and resist the temptation to explain it
   away.
 
-## 12. The week one-month bills paid more than two-month — 6 min ⭐
+## 12. The week one-month bills paid more than two-month, 6 min ⭐
 **One idea:** in May 2023 the front of the curve turned inside out, because
 bills maturing near the debt-ceiling deadline became radioactive.
 `#from=2023-04-03&to=2023-07-14&m=level&w=none&v=default&t=dark&s=ev&tn=127`
 
 - **"For a few weeks in 2023, lending to the US government for one month paid
   more than lending for three. That is not supposed to happen."**
-- Note the maturities are trimmed to a year — say so, and show the checkboxes.
+- Note the maturities are trimmed to a year, say so, and show the checkboxes.
 - April: the *opposite* problem. One-month bills yielded 1.74 points **less**
   than three-month, because paper maturing before the deadline was precious.
 - **MONEY SHOT: scrub into May.** The front edge spikes as the one-month window
@@ -429,7 +475,7 @@ bills maturing near the debt-ceiling deadline became radioactive.
 - 26 May: 6.02 per cent, the highest one-month yield ever published.
 - Deal announced that weekend. *Scrub to 30 May.* Gone in three sessions.
 
-## 13. SVB and the biggest one-day drop in the record — 5 min
+## 13. SVB and the biggest one-day drop in the record, 5 min
 **One idea:** 13 March 2023, the two-year fell 0.57 points in a session.
 `#from=2023-02-01&to=2023-05-31&m=level&w=VIXCLS&v=default&t=dark&s=ev&tn=4032`
 
@@ -439,11 +485,11 @@ bills maturing near the debt-ceiling deadline became radioactive.
 - Friday 10 March: SVB fails.
 - **MONEY SHOT: scrub across the weekend.** *VIX on the back wall spiking.*
 - Monday 13 March: two-year at 4.03. **Down 1.02 points in three sessions, and
-  0.57 of it in the single Monday session — the largest one-day fall here.**
+  0.57 of it in the single Monday session, the largest one-day fall here.**
 - What it means: the market repriced the entire path of Fed policy in a
   weekend.
 
-## 14. Where these numbers come from — 7 min
+## 14. Where these numbers come from, 7 min
 **One idea:** the credibility video. Public data, and here is exactly how the
 holes were filled.
 `#from=2000-01-03&to=2004-06-30&m=level&w=none&v=top&t=dark&s=`
@@ -458,7 +504,7 @@ holes were filled.
   paler.* 994 days of it.
 - How it was filled: interpolate the 30-year-minus-20-year gap through time and
   add it back to the published 20-year. Say why you cannot just interpolate
-  across — there is nothing beyond the 30-year to interpolate to.
+  across. There is nothing beyond the 30-year to interpolate to.
 - The short end before July 2001: anchored with the Fed funds rate, which turns
   an extrapolation into an interpolation between two real numbers.
 - Everything reconstructed is shaded, and the readout says so on every day.
@@ -468,14 +514,14 @@ holes were filled.
   a year there are more days than can be drawn. **"If a chart will not tell you
   where it guessed, do not trust the parts where it did."**
 
-## 15. QT: running the tape backwards — 6 min
+## 15. QT: running the tape backwards, 6 min
 **One idea:** the Fed has also *sold*, twice, and the second time was three
 times the size of the first.
 `#from=2016-01-04&to=2026-08-25&m=level&w=WALCL&v=default&t=dark&s=qe`
 
 - **"Everyone knows the Fed printed money. Far fewer people know it has spent
   the last four years destroying it."**
-- Recap QE in fifteen seconds — assume this is someone's first video.
+- Recap QE in fifteen seconds, assume this is someone's first video.
 - What QT is: the Fed stops replacing bonds as they mature, so the balance
   sheet shrinks without anyone selling anything.
 - **MONEY SHOT: scrub forward with the balance sheet on the wall.** It climbs,
@@ -490,7 +536,7 @@ times the size of the first.
 - Close on the honest uncertainty: nobody agrees how much of the 2022–24 curve
   shape was QT and how much was the hiking cycle. *Toggle the bands off and on.*
 
-## 16. Why rates were 8% in 1990 — 6 min
+## 16. Why rates were 8% in 1990, 6 min
 **One idea:** the height of the whole surface is mostly a story about
 inflation.
 `#from=1990-01-02&to=2026-08-25&m=level&w=none&v=default&t=dark&s=infl`
@@ -503,7 +549,7 @@ inflation.
   The sheet and the surface fall together. **"That sheet is CPI inflation, and
   it is drawn on the same axis as the surface, so the gap between them is a
   distance you can see rather than a subtraction you have to do."**
-- **Name the measure.** There are several inflation numbers — CPI, PCE, PPI.
+- **Name the measure.** There are several inflation numbers, CPI, PCE, PPI.
   This is CPI, year over year. Say it.
 - *Pin 2 January 1990.* CPI 5.2 per cent, the 30-year at 8.00.
 - *Pin 1 February 2021.* CPI 1.7, the 30-year at 1.84.
@@ -516,7 +562,7 @@ inflation.
 - Close: the level is inflation, the shape is expectation. Two different
   stories on one chart.
 
-## 17. The two years when lending lost money — 6 min ⭐
+## 17. The two years when lending lost money, 6 min ⭐
 **One idea:** for 501 straight trading days, every Treasury paid less than
 inflation.
 `#from=2020-01-02&to=2023-12-29&m=level&w=none&v=default&t=dark&s=infl`
@@ -531,7 +577,7 @@ inflation.
   watch the surface sink under it.**
 - **1 March 2021 to 28 February 2023: 501 trading days with the entire curve
   below CPI.** The longest such run in the record.
-- **In the whole of 2022 — 249 trading days out of 249 — not one day when any
+- **In the whole of 2022 (249 trading days out of 249) not one day when any
   maturity beat inflation.**
 - The worst of it: *pin 1 March 2022.* The ten-year paid 1.83 per cent with
   CPI at 8.6. **A real yield of −6.85 per cent, the worst in the record.**
@@ -542,14 +588,14 @@ inflation.
   sheet as the Fed hikes and inflation falls. *Pin a day in late 2023 and read
   "10yr after inflation" straight off the readout.*
 - The context, so nobody thinks this was unique: the real ten-year yield has
-  been negative on **1,557 of 9,168 days — 17 per cent of the record.** It is
+  been negative on **1,557 of 9,168 days, 17 per cent of the record.** It is
   not rare. It was just never this deep for this long.
 - Close: **"Everyone watches the rate. The rate is only half the number."**
 - *If you want a coda:* put the unemployment rate on the back wall while the
-  sheet is still up. That is both halves of the Fed's mandate at once —
+  sheet is still up. That is both halves of the Fed's mandate at once:
   inflation cutting through the surface, employment behind it.
 
-## 18. Does printing money cause inflation? — 7 min ⭐
+## 18. Does printing money cause inflation?, 7 min ⭐
 **One idea:** test Friedman's claim against the data and report what it says,
 including where it does not hold.
 `#from=1990-01-02&to=2026-08-25&m=level&w=M2SL&v=default&t=dark&s=infl`
@@ -558,7 +604,7 @@ including where it does not hold.
   phenomenon. That is testable, so let us test it."**
 - State the claim fairly: more money chasing the same goods means higher
   prices.
-- **The case against, first — this ordering matters for credibility.** *Switch
+- **The case against, first. This ordering matters for credibility.** *Switch
   the wall to the balance sheet, 2008 to 2015.* The Fed roughly doubled it and
   inflation averaged 1.6 per cent. **"By the strong version of the claim this
   should have been catastrophic. It was not."** *The sea level sits there,
@@ -566,7 +612,7 @@ including where it does not hold.
 - **MONEY SHOT: switch the wall to money supply growth.** *Scrub to 2021.* M2
   grew **26.8 per cent in a single year**, which had never happened before.
 - Sixteen months later, inflation peaked at **9.0 per cent.** *The sheet rises
-  through the surface — and that is video 17's story arriving from the other
+  through the surface, and that is video 17's story arriving from the other
   direction.*
 - The reconciliation, and this is the actual insight: **QE created bank
   reserves. The 2020 stimulus created deposits.** Reserves sit inside the
@@ -580,7 +626,7 @@ including where it does not hold.
   causes inflation" is too strong. **"The chart cannot settle this. It can show
   you the two experiments and let you argue better."**
 
-## 19. Does any of this actually predict anything? — 8 min ⭐⭐
+## 19. Does any of this actually predict anything?, 8 min ⭐⭐
 **One idea:** the honest audit. The curve predicts the Fed and does not predict
 the stock market, and here is the difference between a real relationship and a
 useful one.
@@ -592,18 +638,18 @@ every viewer is actually asking.
 `notes/methods.md` is now written to be read by the same audience that watches
 this channel, so it works as the companion piece rather than as a footnote:
 link it in the description, and its opening four bullets are a decent pinned
-comment on their own. Its structure is close to this script's — what the thing
+comment on their own. Its structure is close to this script's, what the thing
 is good for first, then what it cannot do.
 
 - **"Every chart like this eventually gets the same question: can I make money
-  with it? I tested that properly, and the answer is no — but something more
+  with it? I tested that properly, and the answer is no, but something more
   interesting is true."**
 - Set the standard first: **"I am going to show you the test that failed
   before the one that worked, because that is the only way you should trust
   either."**
 - **The failure.** Does the curve predict stocks? *Show the inversion preset.*
   The folklore says an inversion means sell.
-- **MONEY SHOT ONE — put the numbers on screen and leave them up.**
+- **MONEY SHOT ONE, put the numbers on screen and leave them up.**
   S&P return in the twelve months after an inversion: **+9.3% on average.**
   Unconditional twelve-month baseline: **+10.3%.** Correlation between the
   slope and forward returns: **r = −0.097**, which is **under 1%** of the
@@ -611,12 +657,12 @@ is good for first, then what it cannot do.
 - **The thing that does work.** Same test, different target: the Fed.
 - **The thing that looked spectacular.** Of the forecast error in how much the
   Fed changes rates month to month, a year out, the shape of the curve accounts
-  for about **29 per cent** — against about **five** for unemployment, payrolls
+  for about **29 per cent.** against about **five** for unemployment, payrolls
   and inflation combined. It survives conditioning, robust errors, dropping the
   zero-rate years, and Greenspan, Bernanke and Powell tested separately. (Not
-  Yellen — four years is too short a stretch to test on, and saying so is part
+  Yellen, four years is too short a stretch to test on, and saying so is part
   of the job.)
-- **MONEY SHOT TWO — the turn. Do not skip this and do not soften it.**
+- **MONEY SHOT TWO, the turn. Do not skip this and do not soften it.**
   **"I had that reviewed by two people who had not seen it, and they both said
   the same thing, and they were right."**
 - Explain the objection in one breath, because it is simple once said: a
@@ -630,17 +676,17 @@ is good for first, then what it cannot do.
   (**p = 0.65**).
 - So the honest version is smaller and truer: **the bond market anticipates the
   Fed, and it is well calibrated.** The economic indicators do not lose a
-  contest — *there was no contest*, because the curve already contains them.
+  contest, *there was no contest*, because the curve already contains them.
 - One correction that went the *other* way: the out-of-sample test. I used the
-  wrong statistic — Diebold-Mariano assumes the models are not nested, and
+  wrong statistic, Diebold-Mariano assumes the models are not nested, and
   mine were. The right test, Clark-West, gives **p = 0.0008** where I had
   reported 0.08. **"I was wrong in both directions on the same page."**
 - **The close, and this is the whole channel's credibility in one line:**
   **"The interesting number here was not the twenty-nine per cent. It was
-  finding out what it actually meant — and I only found that out because I
+  finding out what it actually meant, and I only found that out because I
   asked people who had no reason to be kind about it."**
 
-## 20. The recession alarm that is never early — 6 min ⭐
+## 20. The recession alarm that is never early, 6 min ⭐
 **One idea:** the Sahm rule, what it actually measures, and why 2024 broke it
 in the same cycle the yield curve broke.
 `#from=2006-01-03&to=2026-08-26&m=level&w=UNRATE&v=default&t=dark&s=ev,rec`
@@ -651,7 +697,7 @@ in the same cycle the yield curve broke.
 - What it is, slowly, because most people have not met it: take the
   unemployment rate, average it over three months, and compare that to the
   lowest three-month average of the previous year. **When the gap reaches half
-  a percentage point, the rule triggers.** *Unemployment is on the back wall —
+  a percentage point, the rule triggers.** *Unemployment is on the back wall;
   trace the shape you are describing.*
 - Why Claudia Sahm built it: not to forecast, but to **start stimulus
   automatically** the moment a downturn was detectable, without waiting for
@@ -659,17 +705,17 @@ in the same cycle the yield curve broke.
 - *Turn on event markers.* Six triggers inside this record. *Click through
   them: 1990, 2001, 2003, 2008, 2020, 2024.*
 - **MONEY SHOT: the scorecard on screen.** Nine of eleven triggers landed
-  inside a recession — but every single one fired **one to seven months after
+  inside a recession, but every single one fired **one to seven months after
   it had already begun.** **"It has never been early. Not once. It is a smoke
   detector, not a weather forecast."**
 - Now the comparison, and this is why it belongs on this site. *Scrub back to
   each trigger with the surface up.* The curve had inverted **thirteen to
-  twenty-three months earlier** — but it cries wolf: **568 of the 1,052
+  twenty-three months earlier**, but it cries wolf: **568 of the 1,052
   inverted days in this record had no recession within two years.**
 - So: one alarm is early and noisy, the other is late and reliable. Neither is
   a forecast on its own.
 - **2024, and let it land.** *Pin July 2024.* The Sahm rule triggers. The curve
-  had been inverted since 2022 — **543 trading days, the longest run ever
+  had been inverted since 2022, **543 trading days, the longest run ever
   recorded.** Both alarms, agreeing, for the first time in years.
 - **No recession followed.** *Scrub forward.* Unemployment settles back; the
   reading is **0.00 today**; the curve un-inverts in September 2024.
@@ -680,7 +726,7 @@ in the same cycle the yield curve broke.
 
 ---
 
-# Part 4 — Production
+# Part 4: Production
 
 ### Staying inside 5–7 minutes
 1. **Write the one idea as a single sentence first.** If it needs an "and", it
@@ -692,7 +738,7 @@ in the same cycle the yield curve broke.
 5. **Hard stop at seven.** Leftovers are the next video, and you need topics.
 
 ### Mechanics
-- **Paste the link, then record.** Never set up controls on camera — except
+- **Paste the link, then record.** Never set up controls on camera, except
   the one toggle the video is about, which *should* be on camera.
 - **Pasting into a tab that already has the site open works.** It did not
   until this draft: two of these links differ only after the "#", and the
@@ -736,7 +782,7 @@ in the same cycle the yield curve broke.
 - **The readout always shows CPI and the real ten-year yield**, whatever else
   is selected. You can read the inflation-adjusted number aloud on any day in
   any video without changing a setting.
-- **The `?` button replays the walkthrough** — eleven steps, and a decent
+- **The `?` button replays the walkthrough.** eleven steps, and a decent
   free section if you need one.
 - Record in **dark mode**; export **light mode** stills for thumbnails, because
   they stand out in a feed of dark finance charts.
@@ -748,7 +794,7 @@ credited even when someone only sees the preview.
 
 ### A note on numbers
 Every figure in these scripts was recomputed against the shipped data on 25
-August 2026. Several from the previous draft did not survive that check — the
+August 2026. Several from the previous draft did not survive that check, the
 1994 spread, the conundrum's ten-year move, "the steepest shape in the record"
 at the end of 2008, the depth of the 2023 inversion, and the claim that an
 inversion preceded all four recessions. They are corrected above. If you want

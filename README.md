@@ -147,7 +147,7 @@ deep history comes from the spreadsheet in `data/raw/sp500-1982-2021.xlsx`
 (daily closes, 1982 to March 2021) and FRED extends it to the present. The two
 sources overlap by 1,147 trading days and agree to an average of 0.0012 index
 points, so the join is invisible. The pipeline reads the spreadsheet with the
-standard library — an `.xlsx` is a zip of XML — and checks that the column it
+standard library (an `.xlsx` is a zip of XML) and checks that the column it
 reads really is headed "Close" rather than trusting its position.
 
 ### Filling the gaps
@@ -160,7 +160,7 @@ holes in the surface:
 | 1 month | before 31 July 2001 |
 | 1.5 / 2 / 4 month | before 2025 / Oct 2018 / Oct 2022 |
 | 20 year | 1990 to Sept 1993 |
-| **30 year** | **Feb 2002 to Feb 2006** — the bond wasn't issued |
+| **30 year** | **Feb 2002 to Feb 2006.** the bond wasn't issued |
 
 Three different repairs, because the gaps aren't the same kind of problem:
 
@@ -182,7 +182,7 @@ hover readout says so explicitly. You can turn the shading off under **Show**.
 
 The result is checked for artifacts: across roughly 440,000 grid points there
 are 54 single-day spikes and 5 kinks along the maturity axis, and every one of
-them is a real market event — the August 2007 credit freeze, the week Lehman
+them is a real market event, the August 2007 credit freeze, the week Lehman
 failed, and the April 2023 debt-ceiling scare, when one-month bills briefly
 yielded almost two points less than three-month bills.
 
@@ -358,7 +358,7 @@ failing with a stack trace.
 
 GitHub Pages tells browsers to hold every file for ten minutes, and each file's
 ten minutes starts when that file was served. The four data files are fetched
-separately, so their windows drift apart — enough that a returning visitor
+separately, so their windows drift apart, enough that a returning visitor
 could get a fresh `manifest.json` describing a stale `surface.bin`. That
 mismatch used to be fatal: the loader checks that the row counts agree and
 threw if they did not.
@@ -387,7 +387,7 @@ People ask this immediately, so [`notes/methods.md`](notes/methods.md) answers
 it properly. The headline:
 
 - **It tells you what the bond market expects the Fed to do**, and the market
-  is well calibrated at that — its implied forecast has tracked the Fed's
+  is well calibrated at that, its implied forecast has tracked the Fed's
   actual moves close to one-for-one over 36 years. That is the one real
   forecast in the chart, and it is readable straight off the surface.
 - **It tells you nothing usable about the stock market.** The slope explains
@@ -395,12 +395,12 @@ it properly. The headline:
   slightly *worse* than buying at random.
 - **Money supply growth leads inflation** by about a year, and that survives
   dropping the 2020s entirely.
-- **Both famous recession alarms failed in this cycle** — the curve, which
+- **Both famous recession alarms failed in this cycle.** the curve, which
   warns early and often wrongly, and the Sahm rule, which has never once warned
   in advance.
 
-The note is equally clear that the Fed result is close to circular — a 2-year
-yield largely *is* the market's forecast of Fed policy — and that none of this
+The note is equally clear that the Fed result is close to circular, a 2-year
+yield largely *is* the market's forecast of Fed policy, and that none of this
 is new. It replicates established work, with the arithmetic shown in
 [`analysis/`](analysis/) rather than taken on trust. It was reviewed twice by
 people who had not seen it, and their corrections are in the history.
