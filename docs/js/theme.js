@@ -6,13 +6,19 @@
  * definition, two consumers.
  */
 
+// Both palettes were softened off their extremes after a reader said light was
+// too light and dark too dark. They were: the dark ground sat at a luminance of
+// 11 out of 255 and the light panel was pure white. Now 26 and 248. Everything
+// else moved with them so the separation between ground, frame and panel stayed
+// the same, and the faint text in the light theme was darkened to hold a 3:1
+// contrast ratio against a panel that is no longer white.
 export const THEMES = {
   dark: {
     name: "dark",
-    background: 0x080b14,
+    background: 0x131a2b,
     fog: [340, 880],
-    frame: 0x263149,
-    frameEdge: 0x38465f,
+    frame: 0x2e3a54,
+    frameEdge: 0x42506b,
     zeroPlane: 0x5c6f92,
     // three.js divides diffuse by pi, so the intensities have to sum to about
     // pi for the surface to render at the color the ramp actually specifies.
@@ -22,7 +28,7 @@ export const THEMES = {
     // Recession shading: how far toward the tint, and what tint.
     shadow: { amount: 0.52, tint: [0.09, 0.11, 0.17] },
     surfaceLift: 0,
-    recessionRail: 0x2a3247,
+    recessionRail: 0x333c53,
     inflationSheet: 0x4bd0e0,
     fedFunds: 0xf2a03c,
     fedFundsEdge: 0xffc472,
@@ -30,13 +36,14 @@ export const THEMES = {
     cursor: 0xffffff,
     eventMark: 0xffd479,
     css: {
-      "--bg": "#080b14",
-      "--bg-panel": "#0e1322",
-      "--bg-float": "rgba(10,14,24,.93)",
-      "--line": "#1e2739",
-      "--ink": "#e8ecf5",
+      "--bg": "#131a2b",
+      "--bg-panel": "#1a2134",
+      "--bg-float": "rgba(22,29,46,.93)",
+      "--line": "#2a3448",
+      "--ink": "#e2e8f3",
       "--ink-dim": "#8b98b4",
-      "--ink-faint": "#5a6782",
+      // Lifted with the panel, to hold a 3:1 ratio against a lighter ground.
+      "--ink-faint": "#657493",
       "--accent": "#f2a03c",
       "--accent-2": "#4fb8e8",
       "--shadow": "0 8px 28px rgba(0,0,0,.55)",
@@ -45,9 +52,9 @@ export const THEMES = {
 
   light: {
     name: "light",
-    background: 0xf4f6fa,
+    background: 0xe9ecf2,
     fog: [420, 1050],
-    frame: 0xc3cbd9,
+    frame: 0xbcc4d3,
     frameEdge: 0x9aa5b8,
     zeroPlane: 0x8792a6,
     // Flatter, brighter lighting: strong directional shading reads as dirt on
@@ -70,13 +77,15 @@ export const THEMES = {
     cursor: 0x1a2233,
     eventMark: 0x9a6a10,
     css: {
-      "--bg": "#f4f6fa",
-      "--bg-panel": "#ffffff",
-      "--bg-float": "rgba(255,255,255,.95)",
-      "--line": "#dfe4ec",
-      "--ink": "#141a26",
-      "--ink-dim": "#55617a",
-      "--ink-faint": "#8a94a8",
+      "--bg": "#e9ecf2",
+      "--bg-panel": "#f7f8fb",
+      "--bg-float": "rgba(250,251,253,.95)",
+      "--line": "#d6dce6",
+      "--ink": "#1b2331",
+      "--ink-dim": "#5b6780",
+      // Darkened to keep the faint text above a 3:1 ratio now that the panel
+      // is no longer pure white.
+      "--ink-faint": "#828b9e",
       "--accent": "#c97a12",
       "--accent-2": "#1d7fb8",
       "--shadow": "0 8px 28px rgba(20,30,50,.14)",
