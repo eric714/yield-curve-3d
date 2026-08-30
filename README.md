@@ -25,8 +25,12 @@ nothing.
 ## What you can do with it
 
 - **Change what the height means.** *Yield* is the plain view. *Yield minus Fed
-  funds* is where QE becomes obvious: the front edge pins to zero while
-  everything behind it is dragged down. *Yield minus 3-month* turns the whole
+  funds* measures every point against the rate the Fed was charging that same
+  day, so the flat zero plane is policy itself and a surface below it means the
+  market was betting on cuts. It is least useful exactly when the Fed is
+  parked: from 2009 to 2014 the target was a constant 0.125%, so subtracting it
+  shifts the surface and changes nothing, and that stretch spans 4.85 points in
+  either mode. It is not the QE view. *Yield minus 3-month* turns the whole
   surface into curve slope, where anything below the zero plane is an
   inversion. The spread views switch to a diverging color scale so the sign
   change is visible.

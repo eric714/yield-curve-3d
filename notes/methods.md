@@ -65,8 +65,9 @@ switched on.
 ### 3. Understand a headline instead of taking it on faith
 
 When someone says the curve inverted, you can see for yourself how deep, how
-long, and what happened afterwards. The 2022–24 inversion ran **543 trading
-days, the longest in the record, and no recession followed.**
+long, and what happened afterwards. The 2022–24 inversion ran **537 trading
+days on the 2-year/10-year measure, the longest in the record, and no recession
+followed.** On the 10-year/3-month measure it ran 534.
 
 ### 4. Stop acting on a signal that does not work
 
