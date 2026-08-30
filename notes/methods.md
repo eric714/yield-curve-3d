@@ -56,7 +56,7 @@ This reframes the recent past. For **501 straight trading days, 1 March 2021
 to 28 February 2023, every single Treasury, out to thirty years, paid less
 than inflation.** In all of 2022, on 249 trading days out of 249, there was not
 one maturity that beat it. The worst day was 1 March 2022: the ten-year paid
-1.83% against inflation of 8.6%, a real loss of **6.85% a year**, in the asset
+1.72% against inflation of 8.6%, a real loss of **6.85% a year**, in the asset
 everyone calls risk-free.
 
 The readout shows *10yr after inflation* on every day, whatever else you have
