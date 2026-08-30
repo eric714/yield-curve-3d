@@ -1016,11 +1016,12 @@ def main():
     with open(os.path.join(OUT, "context.json"), "w", encoding="utf-8") as fh:
         fh.write(context_text)
 
-    try:
-        import build_preview
-        build_preview.main()
-    except Exception as exc:                       # a card is not worth failing over
-        print(f"  ! preview card not rendered: {exc}")
+    # docs/preview.png is a screenshot kept by hand now, not a render. The
+    # generator in build_preview.py still works and is left in the repository,
+    # but it is no longer wired in: it would overwrite the screenshot on every
+    # run. The argument for generating it was that a shared link always showed
+    # current data, and across a 36-year surface a few more months at the right
+    # edge is invisible at card size. A better-looking card wins that trade.
 
     # Keep the code stamp current too, so a browser cannot hold a stale module
     # against a fresh page. Cheap, and it means the weekday run repairs a stamp

@@ -316,10 +316,18 @@ appearing blank until they scroll to it.
 
 ## The social preview
 
-`docs/preview.png` is what X, Slack, iMessage and the rest show when the link is
-shared. It is drawn from the same data the site loads, by
-`pipeline/build_preview.py`, and redrawn on every update, so a shared link
-always shows the current surface rather than a stale screenshot.
+`docs/preview.png` is what X, Slack, iMessage and the rest show when the link
+is shared, and it is also the image at the top of this file. It is a screenshot,
+replaced by hand.
+
+It used to be drawn from the data on every update by `pipeline/build_preview.py`,
+so that a shared link always showed the current surface. That script still works
+and is still here, but it is no longer wired into the pipeline. Across a
+36-year surface, a few more months at the right edge is invisible at card size,
+and a card's job is to make someone click rather than to report a number. A
+screenshot does that better. If you want the generated card back, call
+`build_preview.main()` from `build_data.py` again and add `docs/preview.png`
+back to the `git add` line in the workflow.
 
 That script writes a PNG with nothing but the standard library: a PNG is a few
 chunks around zlib-compressed scanlines, and a shaded surface is a
