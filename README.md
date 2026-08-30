@@ -92,7 +92,7 @@ you walk a fixed span forward through history.
 | `pipeline/build_preview.py` | Draws a social card from the data. Kept, but no longer wired in: `docs/preview.png` is a screenshot now. |
 | `data/raw/` | Cached original downloads. Once a year is saved here it is never fetched again. |
 | `analysis/` | The statistics behind `notes/methods.md`. Standard library only, so the arithmetic can be read rather than trusted. |
-| `notes/` | Working notes: the methods write-up, and my own deployment and video notes. |
+| `notes/` | The methods write-up, and deployment notes. |
 | `.github/workflows/` | The robot that keeps the data current. |
 
 ---

@@ -1,8 +1,9 @@
-"""Regenerates every number in section 1 of notes/methods.md.
+"""Regenerates every number under "The market forecasts the Fed. Very well."
+in notes/methods.md.
 
 Written after a reviewer pointed out, correctly, that the headline Wald
 statistic appeared in the write-up but in no committed script. If a number is
-quoted in section 1 and not printed here, treat that as a bug.
+quoted in that section and not printed here, treat that as a bug.
 
 Newey-West bandwidth is stated on every table rather than left to the reader to
 find in the source: it is lag order + 4 throughout this file.

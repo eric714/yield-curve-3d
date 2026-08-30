@@ -32,7 +32,7 @@ to point them at a different checkout.
 | `econlib.py` | OLS with Newey-West HAC errors, F and chi-square tails via continued-fraction incomplete beta and gamma, ADF, Ljung-Box, Cholesky, PCA by power iteration |
 | `dat.py` | Reads `docs/data/` into monthly observations |
 | `macro.py` | Adds `UNRATE` and `PAYEMS` from `analysis/fred/` |
-| `headline.py` | Regenerates every figure in section 1 of the methods note |
+| `headline.py` | Regenerates every figure under "The market forecasts the Fed" |
 | `tautology.py` | The one-for-one test, overlapping and non-overlapping |
 | `clarkwest.py` | Out-of-sample forecasting, nested-model test |
 | `equities.py` | The stock market tests |
