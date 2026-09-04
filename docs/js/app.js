@@ -26,6 +26,7 @@ const TOGGLES = {
   ff:     { key: "showFedFunds",   el: "#opt-fedfunds" },
   lines:  { key: "showLines",      el: "#opt-lines" },
   infl:   { key: "showInflation",  el: "#opt-inflation" },
+  hist:   { key: "showHistory",    el: "#opt-history" },
 };
 
 /**
@@ -52,6 +53,7 @@ const state = {
   showFedFunds: false,
   showLines: false,
   showInflation: false,     // a second reading of the chart, not the default
+  showHistory: false,       // second crosshair line, along the time axis
   legendOpen: true,
   tenors: null,          // null means every maturity
 };
@@ -60,6 +62,31 @@ let data, stage, layers, inspector, summary;
 let dirty = true;
 let extraLabels = [];
 let cursorDay = null;
+let cursorCol = null;      // maturity column under the pointer, for the crosshair
+
+/**
+ * The maturity the history line follows when nothing has been pointed at yet,
+ * which is what a shared link restores into. The ten-year is the benchmark, so
+ * it is the one worth defaulting to.
+ */
+let histFallback = null;
+function defaultHistCol() {
+  if (histFallback == null) {
+    const m = data.maturities;
+    let best = 0;
+    for (let i = 1; i < m.length; i++) {
+      if (Math.abs(m[i] - 10) < Math.abs(m[best] - 10)) best = i;
+    }
+    histFallback = best;
+  }
+  return histFallback;
+}
+
+/** Move both crosshair lines. The maturity line only draws when asked for. */
+function setCursorAt(day) {
+  const col = cursorCol == null ? defaultHistCol() : cursorCol;
+  layers.setCursor(day, state.showHistory ? col : null);
+}
 // Playing walks a cursor through the window. from/to never move, because
 // changing them rebuilds the mesh and a rebuild per frame stutters.
 const play = { on: false, perSecond: 12, carry: 0, last: 0 };
@@ -201,7 +228,7 @@ function advancePlayhead() {
   const next = Math.min(state.to, (cursorDay == null ? state.from : cursorDay) + steps);
   cursorDay = next;
   inspector.pinned = next;                        // so the panel does not blink
-  layers.setCursor(next);
+  setCursorAt(next);
   inspector.show(next, state, summary);
   if (next >= state.to) stopPlay();
 }
@@ -214,7 +241,7 @@ function startPlay() {
   play.carry = 0;
   play.last = performance.now();
   inspector.pinned = cursorDay;
-  layers.setCursor(cursorDay);
+  setCursorAt(cursorDay);
   inspector.show(cursorDay, state, summary);
   syncPlay();
 }
@@ -249,7 +276,7 @@ function seekTo(day, { slide = true } = {}) {
   }
   cursorDay = day;
   inspector.pinned = day;
-  layers.setCursor(day);
+  setCursorAt(day);
   inspector.show(day, state, summary);
   writeUrl();
   return true;
@@ -295,7 +322,7 @@ function rebuild() {
     });
   }
 
-  layers.setCursor(cursorDay);
+  setCursorAt(cursorDay);
   updateLegend();
   updateRangeReadout();
   updateEventList(summary.events);
@@ -891,7 +918,7 @@ function applyPendingPin() {
   if (day == null || day < state.from || day > state.to) return;
   cursorDay = day;
   inspector.pinned = day;
-  layers.setCursor(day);
+  setCursorAt(day);
   inspector.show(day, state, summary);
 }
 
@@ -944,7 +971,11 @@ function buildCursor() {
     stage.world.worldToLocal(local);
     const rows = layers.rows;
     const slot = clamp(Math.round((local.z / BOX.D) * (rows.length - 1)), 0, rows.length - 1);
-    return rows[slot];
+    // local.x was already computed by the raycast and discarded. It is the
+    // maturity axis, mapped the same linear way stage.x maps it forward.
+    const cols = data.cols;
+    const col = clamp(Math.round((local.x / BOX.W) * (cols - 1)), 0, cols - 1);
+    return { day: rows[slot], col };
   };
 
   // Rotating the scene should not also scrub the date, and letting go after a
@@ -969,17 +1000,24 @@ function buildCursor() {
 
   canvas.addEventListener("pointermove", (ev) => {
     if (dragging || inspector.pinned != null) return;
-    const day = dateAt(ev);
-    if (day === cursorDay) return;
-    cursorDay = day;
-    layers.setCursor(day);
-    if (day == null) inspector.clear(); else inspector.show(day, state, summary);
+    const hit = dateAt(ev);
+    const day = hit && hit.day, col = hit ? hit.col : null;
+    if (day === cursorDay && col === cursorCol) return;
+    const sameDay = day === cursorDay;
+    cursorDay = day == null ? null : day;
+    cursorCol = col;
+    setCursorAt(cursorDay);
+    // Sliding along one row only moves the second line, so leave the readout
+    // alone rather than rebuilding identical markup on every mouse move.
+    if (cursorDay == null) inspector.clear();
+    else if (!sameDay) inspector.show(cursorDay, state, summary);
   });
 
   canvas.addEventListener("pointerleave", () => {
     if (inspector.pinned != null) return;
     cursorDay = null;
-    layers.setCursor(null);
+    cursorCol = null;
+    setCursorAt(null);
     inspector.clear();
   });
 
@@ -992,12 +1030,13 @@ function buildCursor() {
     if (inspector.pinned != null) {
       inspector.pinned = null;
     } else {
-      const day = dateAt(ev);
-      if (day == null) return;
-      inspector.pinned = day;
-      cursorDay = day;
+      const hit = dateAt(ev);
+      if (!hit || hit.day == null) return;
+      inspector.pinned = hit.day;
+      cursorDay = hit.day;
+      cursorCol = hit.col;          // pin the maturity too, so the line stays
     }
-    layers.setCursor(cursorDay);
+    setCursorAt(cursorDay);
     if (cursorDay != null) inspector.show(cursorDay, state, summary);
   });
 }
@@ -1078,7 +1117,8 @@ function buildKeys() {
       stopPlay();
       inspector.pinned = null;
       cursorDay = null;
-      layers.setCursor(null);
+      cursorCol = null;
+      setCursorAt(null);
       inspector.clear();
       $("#snap-menu").hidden = true;
     }

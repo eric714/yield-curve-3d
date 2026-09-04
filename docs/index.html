@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Every US Treasury yield curve since 1990, in three dimensions.">
 <meta name="twitter:image" content="https://yieldcurve3d.com/preview.png">
 
-<link rel="stylesheet" href="style.css?v=e8f74bc524">
+<link rel="stylesheet" href="style.css?v=72f10342e2">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
 { "imports": {
@@ -32,16 +32,16 @@
     "three/webgpu": "./vendor/three.module.js",
     "three/tsl": "./vendor/three.module.js",
     "three/addons/": "./vendor/",
-      "./js/app.js": "./js/app.js?v=e8f74bc524",
-      "./js/colormap.js": "./js/colormap.js?v=e8f74bc524",
-      "./js/data.js": "./js/data.js?v=e8f74bc524",
-      "./js/inspector.js": "./js/inspector.js?v=e8f74bc524",
-      "./js/interpolate.js": "./js/interpolate.js?v=e8f74bc524",
-      "./js/layers.js": "./js/layers.js?v=e8f74bc524",
-      "./js/scene.js": "./js/scene.js?v=e8f74bc524",
-      "./js/snapshot.js": "./js/snapshot.js?v=e8f74bc524",
-      "./js/theme.js": "./js/theme.js?v=e8f74bc524",
-      "./js/tour.js": "./js/tour.js?v=e8f74bc524"
+      "./js/app.js": "./js/app.js?v=72f10342e2",
+      "./js/colormap.js": "./js/colormap.js?v=72f10342e2",
+      "./js/data.js": "./js/data.js?v=72f10342e2",
+      "./js/inspector.js": "./js/inspector.js?v=72f10342e2",
+      "./js/interpolate.js": "./js/interpolate.js?v=72f10342e2",
+      "./js/layers.js": "./js/layers.js?v=72f10342e2",
+      "./js/scene.js": "./js/scene.js?v=72f10342e2",
+      "./js/snapshot.js": "./js/snapshot.js?v=72f10342e2",
+      "./js/theme.js": "./js/theme.js?v=72f10342e2",
+      "./js/tour.js": "./js/tour.js?v=72f10342e2"
   } }
 </script>
 </head>
@@ -191,6 +191,7 @@
       <label class="check"><input type="checkbox" id="opt-inflation"> <span class="sw sw-infl"></span> Inflation (CPI) as sea level</label>
       <label class="check"><input type="checkbox" id="opt-fedfunds"> <span class="sw sw-ff"></span> Fed funds target</label>
       <label class="check" title="Draws the actual daily curves on top of the surface, so you can see the readings the surface is stretched over. Over long ranges these are sampled; the legend says how often."><input type="checkbox" id="opt-lines"> Individual curve lines</label>
+      <label class="check" title="Adds a second crosshair line running the other way, following one maturity through time, so you can see where the point you are reading sits in its own history."><input type="checkbox" id="opt-history"> Maturity history line</label>
     </section>
 
     <section class="block">
@@ -280,6 +281,6 @@
 })();
 </script>
 
-<script type="module" src="js/app.js?v=e8f74bc524"></script>
+<script type="module" src="js/app.js?v=72f10342e2"></script>
 </body>
 </html>

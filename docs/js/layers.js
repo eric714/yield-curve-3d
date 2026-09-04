@@ -178,8 +178,19 @@ export class Layers {
     this.cursorFloor = new THREE.Line(this.cursorFloorGeo, new THREE.LineBasicMaterial({
       transparent: true, opacity: 0.5,
     }));
+    // The other half of the crosshair: one maturity followed through time.
+    // Its vertices are copied straight off the surface, so it sits exactly on
+    // the shape rather than being resampled and drifting from it.
+    this.histGeo = new THREE.BufferGeometry();
+    this.histPos = new Float32Array(MAX_ROWS * 3);
+    this.histGeo.setAttribute("position", new THREE.BufferAttribute(this.histPos, 3));
+    this.cursorHistory = new THREE.Line(this.histGeo, new THREE.LineBasicMaterial({
+      transparent: true, opacity: 0.95, depthTest: false,
+    }));
+    this.cursorHistory.renderOrder = 5;
     this.cursorCurve.visible = this.cursorFloor.visible = false;
-    this.group.add(this.cursorCurve, this.cursorFloor);
+    this.cursorHistory.visible = false;
+    this.group.add(this.cursorCurve, this.cursorFloor, this.cursorHistory);
 
     // The surface is resampled every rebuild, either copied straight from the
     // prebuilt grid or re-interpolated through whichever maturities the reader
@@ -218,6 +229,7 @@ export class Layers {
     this.fedFunds.material.color.setHex(theme.fedFunds);
     this.fedFundsEdge.material.color.setHex(theme.fedFundsEdge);
     this.cursorCurve.material.color.setHex(theme.cursor);
+    this.cursorHistory.material.color.setHex(theme.cursor);
     this.inflation.material.color.setHex(theme.inflationSheet);
     this.inflationEdge.material.color.setHex(theme.inflationSheet);
     this.cursorFloor.material.color.setHex(theme.cursor);
@@ -902,10 +914,11 @@ export class Layers {
 
   /* --------------------------------------------------------- cursor */
   /** Highlight the whole curve for one date, or clear it with null. */
-  setCursor(day) {
+  setCursor(day, col = null) {
     const show = day != null && this.rows.length > 0;
     this.cursorCurve.visible = show;
     this.cursorFloor.visible = show;
+    this.setHistory(show ? col : null);
     if (!show) return;
 
     const { data, stage } = this;
@@ -936,6 +949,31 @@ export class Layers {
     this.cursorFloorPos.set([BOX.FF_X - 7, floor, z, BOX.RAIL_X1 + 1, floor, z]);
     this.cursorFloorGeo.attributes.position.needsUpdate = true;
     this.cursorFloorGeo.computeBoundingSphere();
+  }
+
+  /**
+   * The second crosshair line: one maturity column, walked through every drawn
+   * row. Vertices are lifted straight out of the surface buffer, which is
+   * row-major (r * cols + c), so the line cannot disagree with the shape it is
+   * drawn on. Pass null to hide it.
+   */
+  setHistory(col) {
+    const nRows = this.rows.length;
+    const cols = this.data.cols;
+    const on = col != null && nRows > 1 && col >= 0 && col < cols;
+    this.cursorHistory.visible = on;
+    if (!on) return;
+
+    const src = this.surfacePos, dst = this.histPos;
+    for (let r = 0; r < nRows; r++) {
+      const s = (r * cols + col) * 3;
+      dst[r * 3]     = src[s];
+      dst[r * 3 + 1] = src[s + 1] + 0.5;   // same lift as the day line
+      dst[r * 3 + 2] = src[s + 2];
+    }
+    this.histGeo.setDrawRange(0, nRows);
+    this.histGeo.attributes.position.needsUpdate = true;
+    this.histGeo.computeBoundingSphere();
   }
 
   /**
