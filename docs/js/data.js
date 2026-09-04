@@ -17,7 +17,19 @@ export async function load() {
   // surface, which used to be a fatal mismatch. Tying the three URLs to
   // whatever the manifest says means you always get a consistent set, old or
   // new, and never a mixture of the two.
-  const manifest = await fetch(BASE + "manifest.json")
+  // GitHub Pages serves this with max-age=600, so for ten minutes after the
+  // pipeline commits a plain reload can still hand back the old manifest and,
+  // through it, the old data. checkForNewer sets a one-shot flag when it has
+  // seen something newer, so that reload alone goes past the cache.
+  let bust = "";
+  try {
+    if (sessionStorage.getItem(BUST_KEY)) {
+      sessionStorage.removeItem(BUST_KEY);
+      bust = `?cb=${Date.now()}`;
+    }
+  } catch { /* private mode: fall through to the cached copy */ }
+
+  const manifest = await fetch(BASE + "manifest.json" + bust)
     .then(requireOk).then((r) => r.json());
   const tag = manifest.version ? `?v=${manifest.version}` : "";
 
@@ -131,6 +143,33 @@ export async function load() {
 }
 
 export class StaleDataError extends Error {}
+
+const BUST_KEY = "ycd-bust-manifest";
+
+/**
+ * Ask the server whether a newer build exists, going past the cache.
+ *
+ * This is the only kind of refresh a static site can honestly offer. The page
+ * cannot make the pipeline run, and it cannot read Treasury directly either:
+ * that endpoint sends no access-control-allow-origin, so a browser blocks it.
+ * What it can do is notice that the weekday job has committed since the page
+ * was opened, which is the case that actually catches people out.
+ *
+ * Returns the published manifest's identity; the caller decides what changed.
+ */
+export async function checkForNewer() {
+  const r = await fetch(`${BASE}manifest.json?cb=${Date.now()}`, {
+    cache: "no-store",
+  });
+  requireOk(r);
+  const m = await r.json();
+  return { version: m.version, lastDate: m.lastDate };
+}
+
+/** Tell the next load() to fetch the manifest past the cache. */
+export function bustManifestOnce() {
+  try { sessionStorage.setItem(BUST_KEY, "1"); } catch { /* nothing to do */ }
+}
 
 function requireOk(response) {
   if (!response.ok) {

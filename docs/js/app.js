@@ -3,7 +3,8 @@
  * in step with what is on screen, and runs the render loop.
  */
 import * as THREE from "three";
-import { load, longDate, monthYear, StaleDataError } from "./data.js";
+import { load, longDate, monthYear, checkForNewer, bustManifestOnce,
+         StaleDataError } from "./data.js";
 import { Stage, BOX } from "./scene.js";
 import { Layers, HEIGHT_MODES, defaultTenors } from "./layers.js";
 import { Inspector } from "./inspector.js";
@@ -154,11 +155,12 @@ async function init() {
   buildTour();
   buildPlay();
   buildJump();
+  buildFreshness();
   buildTenorPicker();
   buildLegend();
   buildKeys();
   $("#legend-bar").style.background = cssGradient();
-  $("#stamp").textContent = `Data through ${monthYear(data.manifest.lastDate)}.`;
+  $("#stamp").textContent = `Data through ${longDate(data.manifest.lastDate)}.`;
 
   syncControls();
 
@@ -772,6 +774,70 @@ function buildPlay() {
  * The slider is the wrong tool for "show me 18 March 2009". Snap whatever the
  * picker gives us to the nearest trading day, then hand it to seekTo.
  */
+/**
+ * Treasury takes the 3:30pm ET quotes and posts the derived curve shortly
+ * after. Measured once, on 4 September 2026: it appeared between 3:47 and
+ * 3:51pm ET. This is the hour past which a missing day means the site has not
+ * rebuilt, rather than that Treasury has not published, so it carries a little
+ * slack over that one observation.
+ */
+const POSTED_BY_ET = 16 * 60;          // 4:00pm New York
+
+/** Wall clock in New York, whatever the reader's own zone is. */
+function easternNow() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York", hourCycle: "h23", weekday: "short",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit",
+  }).formatToParts(new Date());
+  const get = (t) => parts.find((p) => p.type === t).value;
+  return {
+    date: `${get("year")}-${get("month")}-${get("day")}`,
+    minutes: +get("hour") * 60 + +get("minute"),
+    weekend: get("weekday") === "Sat" || get("weekday") === "Sun",
+  };
+}
+
+/**
+ * The date shown is the last trading day in the file, not the moment the file
+ * was built. A build timestamp would be the more literal answer to "when was
+ * this retrieved", and it would change on every run, which would defeat the
+ * pipeline's rule of committing only when the data actually changed.
+ */
+function buildFreshness() {
+  const btn = $("#data-check"), status = $("#data-status");
+  $("#data-through").textContent =
+    `Data through ${longDate(data.manifest.lastDate)}.`;
+
+  const say = (text) => { status.hidden = false; status.textContent = text; };
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    say("Checking.");
+    try {
+      const fresh = await checkForNewer();
+      if (fresh.version !== data.manifest.version) {
+        say(`Newer data, through ${longDate(fresh.lastDate)}. Reloading.`);
+        bustManifestOnce();
+        setTimeout(() => location.reload(), 500);
+        return;                       // stays disabled through the reload
+      }
+      const et = easternNow();
+      if (data.manifest.lastDate >= et.date) say("Up to date.");
+      else if (et.weekend) say("Up to date. Markets are closed today.");
+      else if (et.minutes < POSTED_BY_ET) {
+        say("Up to date. Treasury posts the day's curve just before 4pm New York time.");
+      } else {
+        say("Nothing newer yet. If today was a trading day, Treasury has "
+          + "published it and this site has not rebuilt.");
+      }
+    } catch {
+      say("Could not reach the server to check.");
+    }
+    btn.disabled = false;
+  });
+}
+
 function buildJump() {
   const input = $("#jump-date");
   input.min = data.dates[0];

@@ -134,6 +134,17 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
   letter-spacing:.09em;text-transform:uppercase;transform:translate(0,-50%);
 }
 
+/* Data freshness. The date is the last trading day in the file, not the time
+   the file was written: a build timestamp would change on every run and defeat
+   the pipeline's "commit only when the data changed" rule. */
+.freshness{display:flex;gap:.5em;align-items:baseline;flex-wrap:wrap}
+.freshness button{
+  background:none;border:0;padding:0;font:inherit;color:var(--accent,#c8963c);
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+}
+.freshness button:hover{opacity:.8}
+.freshness button[disabled]{cursor:default;opacity:.5;text-decoration:none}
+
 /* ------------------------------------------------------------- inspector */
 /* Legend keeps the bottom-left corner. The readout sits opposite it, because
    the bottom of the yield axis lands on the left and the panel was covering

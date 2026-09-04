@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Every US Treasury yield curve since 1990, in three dimensions.">
 <meta name="twitter:image" content="https://yieldcurve3d.com/preview.png">
 
-<link rel="stylesheet" href="style.css?v=8a8830f9ab">
+<link rel="stylesheet" href="style.css?v=9654a75436">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
 { "imports": {
@@ -32,16 +32,16 @@
     "three/webgpu": "./vendor/three.module.js",
     "three/tsl": "./vendor/three.module.js",
     "three/addons/": "./vendor/",
-      "./js/app.js": "./js/app.js?v=8a8830f9ab",
-      "./js/colormap.js": "./js/colormap.js?v=8a8830f9ab",
-      "./js/data.js": "./js/data.js?v=8a8830f9ab",
-      "./js/inspector.js": "./js/inspector.js?v=8a8830f9ab",
-      "./js/interpolate.js": "./js/interpolate.js?v=8a8830f9ab",
-      "./js/layers.js": "./js/layers.js?v=8a8830f9ab",
-      "./js/scene.js": "./js/scene.js?v=8a8830f9ab",
-      "./js/snapshot.js": "./js/snapshot.js?v=8a8830f9ab",
-      "./js/theme.js": "./js/theme.js?v=8a8830f9ab",
-      "./js/tour.js": "./js/tour.js?v=8a8830f9ab"
+      "./js/app.js": "./js/app.js?v=9654a75436",
+      "./js/colormap.js": "./js/colormap.js?v=9654a75436",
+      "./js/data.js": "./js/data.js?v=9654a75436",
+      "./js/inspector.js": "./js/inspector.js?v=9654a75436",
+      "./js/interpolate.js": "./js/interpolate.js?v=9654a75436",
+      "./js/layers.js": "./js/layers.js?v=9654a75436",
+      "./js/scene.js": "./js/scene.js?v=9654a75436",
+      "./js/snapshot.js": "./js/snapshot.js?v=9654a75436",
+      "./js/theme.js": "./js/theme.js?v=9654a75436",
+      "./js/tour.js": "./js/tour.js?v=9654a75436"
   } }
 </script>
 </head>
@@ -147,6 +147,12 @@
         <label for="jump-date">Jump to</label>
         <input type="date" id="jump-date">
       </div>
+
+      <p class="note freshness">
+        <span id="data-through"></span>
+        <button type="button" id="data-check">Check for newer</button>
+      </p>
+      <p class="note" id="data-status" role="status" hidden></p>
     </section>
 
     <section class="block" id="height-block">
@@ -281,6 +287,6 @@
 })();
 </script>
 
-<script type="module" src="js/app.js?v=8a8830f9ab"></script>
+<script type="module" src="js/app.js?v=9654a75436"></script>
 </body>
 </html>
