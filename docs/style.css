@@ -137,7 +137,12 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
 /* Data freshness. The date is the last trading day in the file, not the time
    the file was written: a build timestamp would change on every run and defeat
    the pipeline's "commit only when the data changed" rule. */
-.freshness{display:flex;gap:.5em;align-items:baseline;flex-wrap:wrap}
+.freshness{
+  display:flex;gap:.5em;align-items:baseline;flex-wrap:wrap;
+  /* Same hairline the .block rule uses between sections, so the freshness
+     line reads as its own thing rather than as a footnote to Jump to. */
+  border-top:1px solid var(--line);margin-top:.9rem;padding-top:.9rem;
+}
 .freshness button{
   background:none;border:0;padding:0;font:inherit;color:var(--accent,#c8963c);
   cursor:pointer;text-decoration:underline;text-underline-offset:2px;
