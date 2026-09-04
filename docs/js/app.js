@@ -61,31 +61,43 @@ const state = {
 let data, stage, layers, inspector, summary;
 let dirty = true;
 let extraLabels = [];
+let histLabel = null;      // floats off the newest end of the maturity line
+
+/** Everything the scene should letter, including the transient hover label. */
+function allLabels() {
+  return histLabel ? extraLabels.concat([histLabel]) : extraLabels;
+}
 let cursorDay = null;
-let cursorCol = null;      // maturity column under the pointer, for the crosshair
+let cursorTenor = null;    // published tenor under the pointer, for the crosshair
 
 /**
  * The maturity the history line follows when nothing has been pointed at yet,
  * which is what a shared link restores into. The ten-year is the benchmark, so
  * it is the one worth defaulting to.
  */
-let histFallback = null;
-function defaultHistCol() {
-  if (histFallback == null) {
-    const m = data.maturities;
-    let best = 0;
-    for (let i = 1; i < m.length; i++) {
-      if (Math.abs(m[i] - 10) < Math.abs(m[best] - 10)) best = i;
-    }
-    histFallback = best;
-  }
-  return histFallback;
+function defaultHistTenor() {
+  const i = data.manifest.tenorYears.indexOf(10);
+  return { index: i, years: 10,
+           label: data.manifest.tenorLabels[i] };
 }
 
 /** Move both crosshair lines. The maturity line only draws when asked for. */
 function setCursorAt(day) {
-  const col = cursorCol == null ? defaultHistCol() : cursorCol;
-  layers.setCursor(day, state.showHistory ? col : null);
+  const tenor = cursorTenor || defaultHistTenor();
+  const on = state.showHistory;
+  // The readout names the maturity, so a line across the surface is never
+  // ambiguous about which security it is following.
+  inspector.historyTenor = on ? tenor : null;
+  layers.setCursor(day, on ? tenor.years : null);
+
+  // Hang the maturity off the oldest end of the line, pushed back past the far
+  // edge. The newest end is the obvious place and the wrong one: the readout
+  // occupies that corner whenever a day is being read, which is exactly when
+  // this line exists, so a label there sits underneath it.
+  const a = layers.histStart;
+  histLabel = a
+    ? { p: [a[0], a[1] + 4, a[2] - 11], text: tenor.label, cls: "hist-label" }
+    : null;
 }
 // Playing walks a cursor through the window. from/to never move, because
 // changing them rebuilds the mesh and a rebuild per frame stutters.
@@ -183,15 +195,15 @@ async function init() {
   // sit blank until the reader reached it.
   rebuild();
   dirty = false;
-  stage.lastExtraLabels = extraLabels;
-  stage.render(extraLabels);
+  stage.lastExtraLabels = allLabels();
+  stage.render(stage.lastExtraLabels);
 
   // A handle for poking at the scene from the browser console.
   window.yieldCurve = {
     state, stage, layers, data,
     // Synchronous, so it still works from the console when the tab is in the
     // background and animation frames have stopped being scheduled.
-    redraw: () => { rebuild(); dirty = false; stage.render(extraLabels); },
+    redraw: () => { rebuild(); dirty = false; stage.render(allLabels()); },
     play, startPlay, stopPlay, seekTo, advancePlayhead,
     snapshotImage, runSnapshot,
   };
@@ -206,8 +218,8 @@ function frame() {
     rebuild();
     dirty = false;
   }
-  stage.lastExtraLabels = extraLabels;
-  stage.render(extraLabels);
+  stage.lastExtraLabels = allLabels();
+  stage.render(stage.lastExtraLabels);
   requestAnimationFrame(frame);
 }
 
@@ -972,10 +984,11 @@ function buildCursor() {
     const rows = layers.rows;
     const slot = clamp(Math.round((local.z / BOX.D) * (rows.length - 1)), 0, rows.length - 1);
     // local.x was already computed by the raycast and discarded. It is the
-    // maturity axis, mapped the same linear way stage.x maps it forward.
+    // maturity axis. Keep it fractional and let layers snap it to a real
+    // tenor, because the grid columns are resample points, not securities.
     const cols = data.cols;
-    const col = clamp(Math.round((local.x / BOX.W) * (cols - 1)), 0, cols - 1);
-    return { day: rows[slot], col };
+    const frac = clamp((local.x / BOX.W) * (cols - 1), 0, cols - 1);
+    return { day: rows[slot], tenor: layers.snapTenor(frac) };
   };
 
   // Rotating the scene should not also scrub the date, and letting go after a
@@ -1001,11 +1014,13 @@ function buildCursor() {
   canvas.addEventListener("pointermove", (ev) => {
     if (dragging || inspector.pinned != null) return;
     const hit = dateAt(ev);
-    const day = hit && hit.day, col = hit ? hit.col : null;
-    if (day === cursorDay && col === cursorCol) return;
+    const day = hit && hit.day;
+    const tenor = hit ? hit.tenor : null;
+    const sameTenor = (tenor && tenor.index) === (cursorTenor && cursorTenor.index);
+    if (day === cursorDay && sameTenor) return;
     const sameDay = day === cursorDay;
     cursorDay = day == null ? null : day;
-    cursorCol = col;
+    cursorTenor = tenor;
     setCursorAt(cursorDay);
     // Sliding along one row only moves the second line, so leave the readout
     // alone rather than rebuilding identical markup on every mouse move.
@@ -1016,7 +1031,7 @@ function buildCursor() {
   canvas.addEventListener("pointerleave", () => {
     if (inspector.pinned != null) return;
     cursorDay = null;
-    cursorCol = null;
+    cursorTenor = null;
     setCursorAt(null);
     inspector.clear();
   });
@@ -1034,7 +1049,7 @@ function buildCursor() {
       if (!hit || hit.day == null) return;
       inspector.pinned = hit.day;
       cursorDay = hit.day;
-      cursorCol = hit.col;          // pin the maturity too, so the line stays
+      cursorTenor = hit.tenor;      // pin the maturity too, so the line stays
     }
     setCursorAt(cursorDay);
     if (cursorDay != null) inspector.show(cursorDay, state, summary);
@@ -1117,7 +1132,7 @@ function buildKeys() {
       stopPlay();
       inspector.pinned = null;
       cursorDay = null;
-      cursorCol = null;
+      cursorTenor = null;
       setCursorAt(null);
       inspector.clear();
       $("#snap-menu").hidden = true;

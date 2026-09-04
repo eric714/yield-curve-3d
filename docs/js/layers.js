@@ -914,11 +914,11 @@ export class Layers {
 
   /* --------------------------------------------------------- cursor */
   /** Highlight the whole curve for one date, or clear it with null. */
-  setCursor(day, col = null) {
+  setCursor(day, years = null) {
     const show = day != null && this.rows.length > 0;
     this.cursorCurve.visible = show;
     this.cursorFloor.visible = show;
-    this.setHistory(show ? col : null);
+    this.setHistory(show ? years : null);
     if (!show) return;
 
     const { data, stage } = this;
@@ -952,28 +952,67 @@ export class Layers {
   }
 
   /**
-   * The second crosshair line: one maturity column, walked through every drawn
-   * row. Vertices are lifted straight out of the surface buffer, which is
-   * row-major (r * cols + c), so the line cannot disagree with the shape it is
-   * drawn on. Pass null to hide it.
+   * The maturity under a fractional grid column, and the real Treasury nearest
+   * to it. The surface is a 48-point resample, and only 1 Mo and 30 Yr fall on
+   * a grid column, so picking a column alone would follow something like the
+   * 10.35-year, which is not a security anybody quotes. Snap to a published
+   * tenor instead, restricted to the ones currently switched on.
    */
-  setHistory(col) {
+  snapTenor(frac) {
+    const cols = this.data.cols;
+    const a = this.gridX[0], b = this.gridX[cols - 1];
+    const x = a + ((b - a) * frac) / (cols - 1);
+    const years = x ** (1 / this.warp);
+
+    const all = this.data.manifest.tenorYears;
+    const idxs = this.selected || all.map((_, i) => i);
+    let best = idxs[0];
+    for (const i of idxs) {
+      if (Math.abs(all[i] - years) < Math.abs(all[best] - years)) best = i;
+    }
+    return { index: best, years: all[best],
+             label: this.data.manifest.tenorLabels[best] };
+  }
+
+  /**
+   * The second crosshair line: one maturity, walked through every drawn row.
+   *
+   * The maturity is a real tenor, which almost never lands on a grid column,
+   * so each vertex is a blend of the two columns bracketing it. Blending the
+   * surface's own vertices rather than re-reading the data keeps the line on
+   * the shape it is drawn over. Pass null to hide it.
+   */
+  setHistory(years) {
     const nRows = this.rows.length;
     const cols = this.data.cols;
-    const on = col != null && nRows > 1 && col >= 0 && col < cols;
+    const on = years != null && nRows > 1;
     this.cursorHistory.visible = on;
+    this.histEnd = this.histStart = null;
     if (!on) return;
+
+    // The grid is uniform in warped space, so the position is arithmetic
+    // rather than a search.
+    const a = this.gridX[0], b = this.gridX[cols - 1];
+    const t = (years ** this.warp - a) / ((b - a) || 1);
+    const f = Math.max(0, Math.min(1, t)) * (cols - 1);
+    const c0 = Math.min(Math.floor(f), cols - 2), c1 = c0 + 1;
+    const w = f - c0;
 
     const src = this.surfacePos, dst = this.histPos;
     for (let r = 0; r < nRows; r++) {
-      const s = (r * cols + col) * 3;
-      dst[r * 3]     = src[s];
-      dst[r * 3 + 1] = src[s + 1] + 0.5;   // same lift as the day line
-      dst[r * 3 + 2] = src[s + 2];
+      const i0 = (r * cols + c0) * 3, i1 = (r * cols + c1) * 3;
+      dst[r * 3]     = src[i0]     + (src[i1]     - src[i0]) * w;
+      dst[r * 3 + 1] = src[i0 + 1] + (src[i1 + 1] - src[i0 + 1]) * w + 0.5;
+      dst[r * 3 + 2] = src[i0 + 2];       // same row, so z is shared
     }
     this.histGeo.setDrawRange(0, nRows);
     this.histGeo.attributes.position.needsUpdate = true;
     this.histGeo.computeBoundingSphere();
+
+    // Both ends, so a label can be hung off whichever one is clear.
+    const e = (nRows - 1) * 3;
+    this.histEnd = [dst[e], dst[e + 1], dst[e + 2]];
+    this.histStart = [dst[0], dst[1], dst[2]];
   }
 
   /**

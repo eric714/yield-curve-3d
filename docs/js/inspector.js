@@ -49,6 +49,9 @@ export class Inspector {
       </div>`).join("");
 
     const extras = [];
+    if (this.historyTenor) {
+      extras.push(["History line", this.historyTenor.label]);
+    }
     if (funds) extras.push(["Fed funds target", funds]);
     extras.push(["10yr − 2yr", spread(10, 2)]);
     extras.push(["10yr − 3mo", spread(10, 0.25)]);

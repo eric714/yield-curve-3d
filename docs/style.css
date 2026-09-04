@@ -127,6 +127,12 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
   text-transform:uppercase;
 }
 #labels div.era{color:var(--ink-dim);font-family:var(--font);font-size:11px}
+/* Sits at the end of the maturity crosshair line, so it takes the ink color
+   rather than the dimmed one the axis furniture uses. */
+#labels div.hist-label{
+  color:var(--ink);font-family:var(--font);font-size:10.5px;
+  letter-spacing:.09em;text-transform:uppercase;transform:translate(0,-50%);
+}
 
 /* ------------------------------------------------------------- inspector */
 /* Legend keeps the bottom-left corner. The readout sits opposite it, because
