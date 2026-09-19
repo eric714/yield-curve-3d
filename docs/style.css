@@ -149,6 +149,7 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
 }
 .freshness button:hover{opacity:.8}
 .freshness button[disabled]{cursor:default;opacity:.5;text-decoration:none}
+#data-status a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 
 /* ------------------------------------------------------------- inspector */
 /* Legend keeps the bottom-left corner. The readout sits opposite it, because

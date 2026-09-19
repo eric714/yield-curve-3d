@@ -810,6 +810,15 @@ function buildFreshness() {
     `Data through ${longDate(data.manifest.lastDate)}.`;
 
   const say = (text) => { status.hidden = false; status.textContent = text; };
+  const sayWithRun = (text) => {
+    status.hidden = false;
+    status.textContent = text + " ";
+    const a = document.createElement("a");
+    a.href = "https://github.com/eric714/yield-curve-3d/actions/workflows/update-data.yml";
+    a.rel = "noopener"; a.target = "_blank";
+    a.textContent = "Rebuild it now";
+    status.appendChild(a);
+  };
 
   btn.addEventListener("click", async () => {
     btn.disabled = true;
@@ -828,8 +837,11 @@ function buildFreshness() {
       else if (et.minutes < POSTED_BY_ET) {
         say("Up to date. Treasury posts the day's curve just before 4pm New York time.");
       } else {
-        say("Nothing newer yet. If today was a trading day, Treasury has "
-          + "published it and this site has not rebuilt.");
+        // Saying what is wrong without saying what to do about it is the
+        // wrong half of the answer. The link opens the workflow's own page,
+        // where "Run workflow" rebuilds the site in about a minute.
+        sayWithRun("Nothing newer yet. Treasury posts before 4pm New York, so "
+          + "on a trading day this means the site has not rebuilt.");
       }
     } catch {
       say("Could not reach the server to check.");
