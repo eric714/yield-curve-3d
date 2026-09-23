@@ -615,12 +615,20 @@ function syncControls() {
   syncSlider();
   syncTenorPicker();
   syncSummaries();
+  markView();
 }
 
 /**
  * A collapsed section still has to answer "what is this set to". Both
  * summaries carry the current choice, so nothing is hidden by closing them.
  */
+/** Which camera you are in was never shown. With four similar glyphs it is. */
+function markView() {
+  for (const b of document.querySelectorAll(".views button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.view === state.view));
+  }
+}
+
 function syncSummaries() {
   // A link carries dates, not a preset name, so most arrivals have no preset
   // set even when the range is exactly one. Recognise it by its edges.
@@ -953,10 +961,11 @@ function buildJump() {
 
 function buildViews() {
   $(".views").addEventListener("click", (ev) => {
-    const name = ev.target.dataset?.view;
-    if (!name) return;
-    state.view = name;
-    stage.goTo(name);
+    const btn = ev.target.closest("button[data-view]");
+    if (!btn) return;
+    state.view = btn.dataset.view;
+    stage.goTo(state.view);
+    markView();
     writeUrl();
   });
 }

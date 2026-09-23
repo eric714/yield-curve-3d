@@ -50,7 +50,7 @@ const STEPS = [
     body: "Move the pointer across the surface, or tap it on a phone, and the "
         + "panel gives you every rate the Treasury published that day, drawn "
         + "as that day's curve. Click to pin it there, or type a date into "
-        + "Jump to.",
+        + "the box beside the play controls.",
     apply: { preset: "Past five years", view: "default" },
   },
   {
@@ -64,18 +64,6 @@ const STEPS = [
     apply: { preset: "Global financial crisis", view: "default",
              heightMode: "vsFunds", show: { showFedFunds: true } },
     spotlight: "#height-block",
-  },
-  {
-    title: "Something behind the surface",
-    body: "The back wall carries a second series for context. Here it is the "
-        + "Federal Reserve's balance sheet, climbing as it bought bonds. You "
-        + "can swap it for the S&P 500, the NASDAQ, the VIX, the ten-year "
-        + "term premium, expected inflation, the growth rate of the money "
-        + "supply, or the unemployment rate. It starts empty, so nothing is on "
-        + "the wall until you put it there.",
-    apply: { preset: "Everything", view: "default", heightMode: "level",
-             contextSeries: "WALCL" },
-    spotlight: "#wall-block",
   },
   {
     title: "What is marked on it",
@@ -103,6 +91,18 @@ const STEPS = [
     spotlight: "#show-block",
   },
   {
+    title: "Something behind the surface",
+    body: "The back wall carries a second series for context. Here it is the "
+        + "Federal Reserve's balance sheet, climbing as it bought bonds. You "
+        + "can swap it for the S&P 500, the NASDAQ, the VIX, the ten-year "
+        + "term premium, expected inflation, the growth rate of the money "
+        + "supply, or the unemployment rate. It starts empty, so nothing is on "
+        + "the wall until you put it there.",
+    apply: { preset: "Everything", view: "default", heightMode: "level",
+             contextSeries: "WALCL" },
+    spotlight: "#wall-block",
+  },
+  {
     title: "Choose the maturities",
     body: "Switch any of them off and the curve is redrawn through the ones "
         + "left, so the surface stays continuous instead of developing holes. "
@@ -112,9 +112,10 @@ const STEPS = [
   {
     title: "Now go and look",
     body: "These buttons jump to the famous episodes: try the global financial "
-        + "crisis. Drag either end of the date slider to change the range, or "
-        + "the bar between them to move the whole window through history. Then "
-        + "press Play and watch the curve move.",
+        + "crisis. Drag either end of the date slider to change how much you "
+        + "are looking at. Then press Play: the window travels forward through "
+        + "the record, keeping its length, so the whole surface scrolls past "
+        + "you. The turtle and the rabbit set how fast.",
     apply: { preset: "Past five years", view: "default", heightMode: "level",
              contextSeries: "none",
              show: { showRegimes: false, showRecessions: false,
@@ -182,6 +183,10 @@ export class Tour {
     if (step.spotlight) {
       const el = document.querySelector(step.spotlight);
       if (el) {
+        // Two of these sections are collapsed by default now, and pointing at
+        // a closed section highlights a summary line and nothing else.
+        let d = el.tagName === "DETAILS" ? el : el.closest("details");
+        while (d) { d.open = true; d = d.parentElement.closest("details"); }
         el.classList.add("tour-spot");
         this.spotted = el;
         el.scrollIntoView({ behavior: "smooth", block: "center" });
