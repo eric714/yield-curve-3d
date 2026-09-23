@@ -239,24 +239,39 @@ function advancePlayhead() {
   if (steps < 1) return;
   play.carry -= steps;
 
-  const next = Math.min(state.to, (cursorDay == null ? state.from : cursorDay) + steps);
-  cursorDay = next;
-  inspector.pinned = next;                        // so the panel does not blink
-  setCursorAt(next);
-  inspector.show(next, state, summary);
-  if (next >= state.to) stopPlay();
+  // The window travels and keeps its length, so the surface scrolls through
+  // the record rather than a cursor crawling across a fixed picture. The
+  // readout follows the leading edge, which is the day that has just arrived.
+  const span = state.to - state.from;
+  const to = Math.min(data.rows - 1, state.to + steps);
+  state.to = to;
+  state.from = Math.max(0, to - span);
+  clearPreset();
+  syncSlider();
+  cursorDay = state.to;
+  inspector.pinned = cursorDay;
+  dirty = true;                       // rebuild() redraws and re-reads for us
+
+  if (state.to >= data.rows - 1) stopPlay();
 }
 
 function startPlay() {
-  if (state.to - state.from < 1) return;
-  const at = inspector.pinned;
-  cursorDay = at != null && at >= state.from && at < state.to ? at : state.from;
+  const span = state.to - state.from;
+  if (span < 1) return;
+  // Already parked at the end of the record, so wind back to the start. A
+  // play button that does nothing when you press it is a broken play button.
+  if (state.to >= data.rows - 1) {
+    state.from = 0;
+    state.to = Math.min(data.rows - 1, span);
+    clearPreset();
+    syncSlider();
+  }
   play.on = true;
   play.carry = 0;
   play.last = performance.now();
+  cursorDay = state.to;
   inspector.pinned = cursorDay;
-  setCursorAt(cursorDay);
-  inspector.show(cursorDay, state, summary);
+  dirty = true;
   syncPlay();
 }
 
@@ -264,6 +279,7 @@ function startPlay() {
 function stopPlay() {
   if (!play.on) return;
   play.on = false;
+  writeUrl();                    // the range moved, so record where it landed
   syncPlay();
   writeUrl();
 }
@@ -342,7 +358,7 @@ function rebuild() {
   updateEventList(summary.events);
   $("#height-note").textContent = mode.note;
   if (cursorDay != null) inspector.show(cursorDay, state, summary);
-  writeUrl();
+  if (!play.on) writeUrl();      // during a run this would fire 12 times a second
 }
 
 /* ---------------------------------------------------------------- state */
@@ -442,6 +458,7 @@ function applyPreset(index, redraw = true) {
   state.preset = index;
   if (!redraw) return;
   $("#preset-note").textContent = preset.note;
+  syncSummaries();
   markPreset();
   syncSlider();
   dirty = true;
@@ -457,6 +474,7 @@ function clearPreset() {
   if (state.preset === null) return;
   state.preset = null;
   $("#preset-note").textContent = "";
+  if (data) syncSummaries();
   markPreset();
 }
 
@@ -595,6 +613,27 @@ function syncControls() {
   markPreset();
   syncSlider();
   syncTenorPicker();
+  syncSummaries();
+}
+
+/**
+ * A collapsed section still has to answer "what is this set to". Both
+ * summaries carry the current choice, so nothing is hidden by closing them.
+ */
+function syncSummaries() {
+  // A link carries dates, not a preset name, so most arrivals have no preset
+  // set even when the range is exactly one. Recognise it by its edges.
+  let p = state.preset;
+  if (p === null) {
+    p = data.manifest.presets.findIndex(
+      (q) => data.indexOf(q.start) === state.from && data.indexOf(q.end) === state.to);
+    if (p < 0) p = null;
+  }
+  $("#preset-active").textContent =
+    p !== null ? data.manifest.presets[p].name : "custom range";
+  const n = state.tenors ? state.tenors.length : data.tenorCount;
+  $("#tenor-active").textContent =
+    n === data.tenorCount ? "all 14" : `${n} of ${data.tenorCount}`;
 }
 
 function buildToggles() {
@@ -662,6 +701,7 @@ function buildTenorPicker() {
     if (picked.length < 2) return false;
     state.tenors = picked.length === boxes.length ? null : picked;
     all.checked = picked.length === boxes.length;
+    syncSummaries();
     all.indeterminate = picked.length > 0 && picked.length < boxes.length;
     dirty = true;
     return true;

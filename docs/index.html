@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Every US Treasury yield curve since 1990, in three dimensions.">
 <meta name="twitter:image" content="https://yieldcurve3d.com/preview.png">
 
-<link rel="stylesheet" href="style.css?v=224e67e01a">
+<link rel="stylesheet" href="style.css?v=760c4e10c9">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
 { "imports": {
@@ -32,16 +32,16 @@
     "three/webgpu": "./vendor/three.module.js",
     "three/tsl": "./vendor/three.module.js",
     "three/addons/": "./vendor/",
-      "./js/app.js": "./js/app.js?v=224e67e01a",
-      "./js/colormap.js": "./js/colormap.js?v=224e67e01a",
-      "./js/data.js": "./js/data.js?v=224e67e01a",
-      "./js/inspector.js": "./js/inspector.js?v=224e67e01a",
-      "./js/interpolate.js": "./js/interpolate.js?v=224e67e01a",
-      "./js/layers.js": "./js/layers.js?v=224e67e01a",
-      "./js/scene.js": "./js/scene.js?v=224e67e01a",
-      "./js/snapshot.js": "./js/snapshot.js?v=224e67e01a",
-      "./js/theme.js": "./js/theme.js?v=224e67e01a",
-      "./js/tour.js": "./js/tour.js?v=224e67e01a"
+      "./js/app.js": "./js/app.js?v=760c4e10c9",
+      "./js/colormap.js": "./js/colormap.js?v=760c4e10c9",
+      "./js/data.js": "./js/data.js?v=760c4e10c9",
+      "./js/inspector.js": "./js/inspector.js?v=760c4e10c9",
+      "./js/interpolate.js": "./js/interpolate.js?v=760c4e10c9",
+      "./js/layers.js": "./js/layers.js?v=760c4e10c9",
+      "./js/scene.js": "./js/scene.js?v=760c4e10c9",
+      "./js/snapshot.js": "./js/snapshot.js?v=760c4e10c9",
+      "./js/theme.js": "./js/theme.js?v=760c4e10c9",
+      "./js/tour.js": "./js/tour.js?v=760c4e10c9"
   } }
 </script>
 </head>
@@ -114,9 +114,11 @@
 
   <aside id="panel">
     <section class="block">
-      <h2>Periods of interest</h2>
-      <div id="presets" class="presets"></div>
-      <p id="preset-note" class="note"></p>
+      <details id="presets-block">
+        <summary><h2>Periods of interest</h2><span id="preset-active"></span></summary>
+        <div id="presets" class="presets"></div>
+        <p id="preset-note" class="note"></p>
+      </details>
     </section>
 
     <section class="block">
@@ -134,25 +136,26 @@
       </div>
 
       <div id="play-row">
-        <button id="play-toggle" aria-pressed="false" aria-label="Play" title="Play"></button>
+        <button id="play-toggle" aria-pressed="false" aria-label="Play" title="Slide the whole window forward through the record"></button>
         <div class="speeds" id="play-speed" role="group" aria-label="Playback speed">
           <button data-speed="4" aria-label="Slow" title="Slow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 10 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a8 8 0 1 0-16 0v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3l2-4h4Z"/><path d="M4.82 7.9 8 10"/><path d="M15.18 7.9 12 10"/><path d="M16.93 10H20a2 2 0 0 1 0 4H2"/></svg></button>
           <button data-speed="12" aria-pressed="true" aria-label="Normal speed" title="Normal speed">1&#215;</button>
           <button data-speed="40" aria-label="Fast" title="Fast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13 16a3 3 0 0 1 2.24 5"/><path d="M18 12h.01"/><path d="M18 21h-8a4 4 0 0 1-4-4 7 7 0 0 1 7-7h.2L9.6 6.4a1 1 0 1 1 2.8-2.8L15.8 7h.2c3.3 0 6 2.7 6 6v1a2 2 0 0 1-2 2h-1a3 3 0 0 0-3 3"/><path d="M20 8.54V4a2 2 0 1 0-4 0v3"/><path d="M7.612 12.524a3 3 0 1 0-1.6 4.3"/></svg></button>
         </div>
-      </div>
-      <p class="note">Play days in this range.</p>
-
-      <div id="jump-row">
-        <label for="jump-date">Jump to</label>
-        <input type="date" id="jump-date">
+        <input type="date" id="jump-date" aria-label="Jump to a date"
+               title="Jump to a date. The window slides to hold it.">
       </div>
 
-      <p class="note freshness">
-        <span id="data-through"></span>
-        <button type="button" id="data-check">Check for newer</button>
-      </p>
-      <p class="note" id="data-status" role="status" hidden></p>
+    </section>
+
+    <section class="block">
+      <h2>View</h2>
+      <div class="views">
+        <button data-view="default" title="Angled, the default"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 8.5 12 4l9 4.5-9 4.5z"/><path d="M3 8.5v7l9 4.5v-7z"/><path d="M21 8.5v7l-9 4.5"/></svg><span>Angled</span></button>
+        <button data-view="front" title="End-on, one day as a single curve"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 6h18v12H3z"/><path d="M3 15c4-1 6-6 9-6s5 3 9 2"/></svg><span>Curve on</span></button>
+        <button data-view="side" title="From the side, along the time axis"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 6h18v12H3z"/><path d="M3 16c3 1 4-4 6-3s3 5 5 4 4-6 7-5"/></svg><span>Along time</span></button>
+        <button data-view="top" title="Straight down from above"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M8 5v14M13 5v14M18 5v14"/></svg><span>Overhead</span></button>
+      </div>
     </section>
 
     <section class="block" id="height-block">
@@ -163,6 +166,17 @@
         <option value="vs3m">Yield minus 3-month</option>
       </select>
       <p id="height-note" class="note"></p>
+    </section>
+
+    <section class="block" id="show-block">
+      <h2>Show</h2>
+      <label class="check"><input type="checkbox" id="opt-regimes"> <span class="sw sw-qe"></span> QE and QT periods</label>
+      <label class="check"><input type="checkbox" id="opt-recessions"> <span class="sw sw-rec"></span> Recessions</label>
+      <label class="check"><input type="checkbox" id="opt-events"> <span class="sw sw-ev"></span> Event markers</label>
+      <label class="check"><input type="checkbox" id="opt-inflation"> <span class="sw sw-infl"></span> Inflation (CPI) as sea level</label>
+      <label class="check"><input type="checkbox" id="opt-fedfunds"> <span class="sw sw-ff"></span> Fed funds target</label>
+      <label class="check" title="Draws the actual daily curves on top of the surface, so you can see the readings the surface is stretched over. Over long ranges these are sampled; the legend says how often."><input type="checkbox" id="opt-lines"> Individual curve lines</label>
+      <label class="check" title="Adds a second crosshair line running the other way, following one maturity through time, so you can see where the point you are reading sits in its own history."><input type="checkbox" id="opt-history"> Maturity history line</label>
     </section>
 
     <section class="block" id="wall-block">
@@ -181,38 +195,28 @@
       <p id="context-note" class="note"></p>
     </section>
 
-    <section class="block" id="maturities-block">
-      <h2>Maturities on the surface</h2>
+    <section class="block" id="events-block">
+      <h2>Notable days in view <span id="events-count"></span></h2>
+      <div id="events-list"></div>
+    </section>
+
+    <section class="block">
+      <details id="maturities-block">
+        <summary><h2>Maturities on the surface</h2><span id="tenor-active"></span></summary>
+
       <label class="check all"><input type="checkbox" id="tenor-all" checked> Select all</label>
       <div id="tenor-list" class="tenors"></div>
       <p class="note">Switch any off and the curve is re-interpolated through
       the ones that are left, so the surface stays continuous.</p>
+      </details>
     </section>
 
-    <section class="block" id="show-block">
-      <h2>Show</h2>
-      <label class="check"><input type="checkbox" id="opt-regimes"> <span class="sw sw-qe"></span> QE and QT periods</label>
-      <label class="check"><input type="checkbox" id="opt-recessions"> <span class="sw sw-rec"></span> Recessions</label>
-      <label class="check"><input type="checkbox" id="opt-events"> <span class="sw sw-ev"></span> Event markers</label>
-      <label class="check"><input type="checkbox" id="opt-inflation"> <span class="sw sw-infl"></span> Inflation (CPI) as sea level</label>
-      <label class="check"><input type="checkbox" id="opt-fedfunds"> <span class="sw sw-ff"></span> Fed funds target</label>
-      <label class="check" title="Draws the actual daily curves on top of the surface, so you can see the readings the surface is stretched over. Over long ranges these are sampled; the legend says how often."><input type="checkbox" id="opt-lines"> Individual curve lines</label>
-      <label class="check" title="Adds a second crosshair line running the other way, following one maturity through time, so you can see where the point you are reading sits in its own history."><input type="checkbox" id="opt-history"> Maturity history line</label>
-    </section>
-
-    <section class="block">
-      <h2>View</h2>
-      <div class="views">
-        <button data-view="default">Default</button>
-        <button data-view="front">Curve on</button>
-        <button data-view="side">Along time</button>
-        <button data-view="top">Overhead</button>
-      </div>
-    </section>
-
-    <section class="block" id="events-block">
-      <h2>Notable days in view <span id="events-count"></span></h2>
-      <div id="events-list"></div>
+    <section class="block" id="freshness-block">
+      <p class="note freshness">
+        <span id="data-through"></span>
+        <button type="button" id="data-check">Check for newer</button>
+      </p>
+      <p class="note" id="data-status" role="status" hidden></p>
     </section>
 
     <section class="block credits">
@@ -287,6 +291,6 @@
 })();
 </script>
 
-<script type="module" src="js/app.js?v=224e67e01a"></script>
+<script type="module" src="js/app.js?v=760c4e10c9"></script>
 </body>
 </html>
