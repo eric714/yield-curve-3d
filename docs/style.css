@@ -288,6 +288,18 @@ select{
 .viewglyph{width:22px;height:22px;display:block}
 .views button span{line-height:1.1;letter-spacing:.01em}
 
+/* A heading with an affordance on the right. */
+#panel .head{display:flex;align-items:center;gap:.5em}
+#panel .head h2{margin:0}
+.info{
+  margin-left:auto;flex:0 0 auto;width:15px;height:15px;padding:0;
+  font-family:var(--font);font-size:10px;font-style:italic;line-height:13px;
+  background:transparent;border:1px solid var(--line);border-radius:50%;
+  color:var(--ink-faint);cursor:pointer;
+}
+.info:hover{border-color:var(--ink-faint);color:var(--ink-dim)}
+.info[aria-expanded=true]{border-color:var(--accent);color:var(--accent)}
+
 /* Collapsible sections. The summary keeps the heading and adds what is
    currently chosen, so a closed section still answers "where am I". */
 #panel details > summary{
@@ -316,7 +328,7 @@ select{
    of the panel off the bottom. */
 #events-list{
   display:flex;flex-direction:column;gap:2px;
-  max-height:184px;overflow-y:auto;
+  max-height:290px;overflow-y:auto;
 }
 #events-list::-webkit-scrollbar{width:7px}
 #events-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:7px}

@@ -156,6 +156,7 @@ async function init() {
   buildPlay();
   buildJump();
   buildFreshness();
+  buildInfoToggles();
   buildTenorPicker();
   buildLegend();
   buildKeys();
@@ -634,6 +635,23 @@ function syncSummaries() {
   const n = state.tenors ? state.tenors.length : data.tenorCount;
   $("#tenor-active").textContent =
     n === data.tenorCount ? "all 14" : `${n} of ${data.tenorCount}`;
+}
+
+/**
+ * The dropdown notes explain a choice that only changes when you change the
+ * dropdown, so they do not earn four permanent lines of the panel. The button
+ * keeps them one keystroke away instead of gone.
+ */
+function buildInfoToggles() {
+  for (const btn of document.querySelectorAll(".info")) {
+    const note = document.getElementById(btn.getAttribute("aria-controls"));
+    if (!note) continue;
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!open));
+      note.hidden = open;
+    });
+  }
 }
 
 function buildToggles() {

@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Every US Treasury yield curve since 1990, in three dimensions.">
 <meta name="twitter:image" content="https://yieldcurve3d.com/preview.png">
 
-<link rel="stylesheet" href="style.css?v=760c4e10c9">
+<link rel="stylesheet" href="style.css?v=4d4db4e80d">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
 { "imports": {
@@ -32,16 +32,16 @@
     "three/webgpu": "./vendor/three.module.js",
     "three/tsl": "./vendor/three.module.js",
     "three/addons/": "./vendor/",
-      "./js/app.js": "./js/app.js?v=760c4e10c9",
-      "./js/colormap.js": "./js/colormap.js?v=760c4e10c9",
-      "./js/data.js": "./js/data.js?v=760c4e10c9",
-      "./js/inspector.js": "./js/inspector.js?v=760c4e10c9",
-      "./js/interpolate.js": "./js/interpolate.js?v=760c4e10c9",
-      "./js/layers.js": "./js/layers.js?v=760c4e10c9",
-      "./js/scene.js": "./js/scene.js?v=760c4e10c9",
-      "./js/snapshot.js": "./js/snapshot.js?v=760c4e10c9",
-      "./js/theme.js": "./js/theme.js?v=760c4e10c9",
-      "./js/tour.js": "./js/tour.js?v=760c4e10c9"
+      "./js/app.js": "./js/app.js?v=4d4db4e80d",
+      "./js/colormap.js": "./js/colormap.js?v=4d4db4e80d",
+      "./js/data.js": "./js/data.js?v=4d4db4e80d",
+      "./js/inspector.js": "./js/inspector.js?v=4d4db4e80d",
+      "./js/interpolate.js": "./js/interpolate.js?v=4d4db4e80d",
+      "./js/layers.js": "./js/layers.js?v=4d4db4e80d",
+      "./js/scene.js": "./js/scene.js?v=4d4db4e80d",
+      "./js/snapshot.js": "./js/snapshot.js?v=4d4db4e80d",
+      "./js/theme.js": "./js/theme.js?v=4d4db4e80d",
+      "./js/tour.js": "./js/tour.js?v=4d4db4e80d"
   } }
 </script>
 </head>
@@ -159,13 +159,17 @@
     </section>
 
     <section class="block" id="height-block">
-      <h2>Height of the surface</h2>
+      <div class="head">
+        <h2>Height of the surface</h2>
+        <button type="button" class="info" aria-expanded="false"
+                aria-controls="height-note" aria-label="What this means" title="What this means">i</button>
+      </div>
       <select id="height-mode" aria-label="What the height of the surface means">
         <option value="level" selected>Yield</option>
         <option value="vsFunds">Yield minus Fed funds</option>
         <option value="vs3m">Yield minus 3-month</option>
       </select>
-      <p id="height-note" class="note"></p>
+      <p id="height-note" class="note" hidden></p>
     </section>
 
     <section class="block" id="show-block">
@@ -180,7 +184,11 @@
     </section>
 
     <section class="block" id="wall-block">
-      <h2>Behind the surface</h2>
+      <div class="head">
+        <h2>Behind the surface</h2>
+        <button type="button" class="info" aria-expanded="false"
+                aria-controls="context-note" aria-label="What this means" title="What this means">i</button>
+      </div>
       <select id="context-series" aria-label="Series shown on the back wall">
         <option value="WALCL">Federal Reserve balance sheet</option>
         <option value="NASDAQCOM">NASDAQ Composite</option>
@@ -192,7 +200,7 @@
         <option value="UNRATE">Unemployment rate</option>
         <option value="none" selected>Nothing</option>
       </select>
-      <p id="context-note" class="note"></p>
+      <p id="context-note" class="note" hidden></p>
     </section>
 
     <section class="block" id="events-block">
@@ -220,7 +228,8 @@
     </section>
 
     <section class="block credits">
-      <h2>About</h2>
+      <details>
+        <summary><h2>About</h2></summary>
       <p>Height is the annualised yield a US Treasury security of that maturity
       paid on that day. The near edge is short-dated debt, the far edge is the
       30&#8209;year bond. Recessions fall across the surface as shade.</p>
@@ -243,10 +252,12 @@
       target="_blank">github.com/eric714/yield-curve-3d</a>. Corrections are
       welcome &mdash; open an issue there, or find me on X at
       <a href="https://x.com/Eric714" rel="noopener" target="_blank">@Eric714</a>.</p>
+      </details>
     </section>
 
     <section class="block disclaimer">
-      <h2>About the data</h2>
+      <details>
+        <summary><h2>About the data</h2></summary>
       <p>This is an educational visualization of US Treasury yield data. While
       we try to present the data accurately, errors, delays, missing data or
       visualization artifacts may occur. Always verify important information
@@ -256,6 +267,7 @@
       <p><strong>For educational and informational purposes only. Not
       investment advice.</strong> No warranty of any kind is given, express or
       implied, as to accuracy, completeness or fitness for any purpose.</p>
+      </details>
     </section>
   </aside>
 
@@ -291,6 +303,6 @@
 })();
 </script>
 
-<script type="module" src="js/app.js?v=760c4e10c9"></script>
+<script type="module" src="js/app.js?v=4d4db4e80d"></script>
 </body>
 </html>
