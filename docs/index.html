@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Every US Treasury yield curve since 1990, in three dimensions.">
 <meta name="twitter:image" content="https://yieldcurve3d.com/preview.png">
 
-<link rel="stylesheet" href="style.css?v=723cfd7dc5">
+<link rel="stylesheet" href="style.css?v=dba0dda670">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
 { "imports": {
@@ -32,16 +32,16 @@
     "three/webgpu": "./vendor/three.module.js",
     "three/tsl": "./vendor/three.module.js",
     "three/addons/": "./vendor/",
-      "./js/app.js": "./js/app.js?v=723cfd7dc5",
-      "./js/colormap.js": "./js/colormap.js?v=723cfd7dc5",
-      "./js/data.js": "./js/data.js?v=723cfd7dc5",
-      "./js/inspector.js": "./js/inspector.js?v=723cfd7dc5",
-      "./js/interpolate.js": "./js/interpolate.js?v=723cfd7dc5",
-      "./js/layers.js": "./js/layers.js?v=723cfd7dc5",
-      "./js/scene.js": "./js/scene.js?v=723cfd7dc5",
-      "./js/snapshot.js": "./js/snapshot.js?v=723cfd7dc5",
-      "./js/theme.js": "./js/theme.js?v=723cfd7dc5",
-      "./js/tour.js": "./js/tour.js?v=723cfd7dc5"
+      "./js/app.js": "./js/app.js?v=dba0dda670",
+      "./js/colormap.js": "./js/colormap.js?v=dba0dda670",
+      "./js/data.js": "./js/data.js?v=dba0dda670",
+      "./js/inspector.js": "./js/inspector.js?v=dba0dda670",
+      "./js/interpolate.js": "./js/interpolate.js?v=dba0dda670",
+      "./js/layers.js": "./js/layers.js?v=dba0dda670",
+      "./js/scene.js": "./js/scene.js?v=dba0dda670",
+      "./js/snapshot.js": "./js/snapshot.js?v=dba0dda670",
+      "./js/theme.js": "./js/theme.js?v=dba0dda670",
+      "./js/tour.js": "./js/tour.js?v=dba0dda670"
   } }
 </script>
 </head>
@@ -113,6 +113,7 @@
   </div>
 
   <aside id="panel">
+    <p class="group">When</p>
     <section class="block">
       <details id="presets-block">
         <summary><h2>Periods of interest</h2><span id="preset-active"></span></summary>
@@ -120,7 +121,6 @@
         <p id="preset-note" class="note"></p>
       </details>
     </section>
-
     <section class="block">
       <h2>Date range</h2>
       <div id="slider" class="slider">
@@ -147,7 +147,7 @@
       </div>
 
     </section>
-
+    <p class="group">How it is drawn</p>
     <section class="block">
       <h2>View</h2>
       <div class="views">
@@ -157,7 +157,6 @@
         <button data-view="top" title="Straight down from above"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M8 5v14M13 5v14M18 5v14"/></svg><span>Overhead</span></button>
       </div>
     </section>
-
     <section class="block" id="height-block">
       <div class="head">
         <h2>Height of the surface</h2>
@@ -171,7 +170,6 @@
       </select>
       <p id="height-note" class="note" hidden></p>
     </section>
-
     <section class="block" id="show-block">
       <h2>Show</h2>
       <label class="check"><input type="checkbox" id="opt-regimes"> <span class="sw sw-qe"></span> QE and QT periods</label>
@@ -182,7 +180,6 @@
       <label class="check" title="Draws the actual daily curves on top of the surface, so you can see the readings the surface is stretched over. Over long ranges these are sampled; the legend says how often."><input type="checkbox" id="opt-lines"> Individual curve lines</label>
       <label class="check" title="Adds a second crosshair line running the other way, following one maturity through time, so you can see where the point you are reading sits in its own history."><input type="checkbox" id="opt-history"> Maturity history line</label>
     </section>
-
     <section class="block" id="wall-block">
       <div class="head">
         <h2>Behind the surface</h2>
@@ -202,12 +199,6 @@
       </select>
       <p id="context-note" class="note" hidden></p>
     </section>
-
-    <section class="block" id="events-block">
-      <h2>Notable days in view <span id="events-count"></span></h2>
-      <div id="events-list"></div>
-    </section>
-
     <section class="block">
       <details id="maturities-block">
         <summary><h2>Maturities on the surface</h2><span id="tenor-active"></span></summary>
@@ -218,7 +209,12 @@
       the ones that are left, so the surface stays continuous.</p>
       </details>
     </section>
-
+    <p class="group">What is in view</p>
+    <section class="block" id="events-block">
+      <h2>Notable days <span id="events-count"></span></h2>
+      <div id="events-list"></div>
+    </section>
+    <div class="panel-foot">
     <section class="block" id="freshness-block">
       <p class="note freshness">
         <span id="data-through"></span>
@@ -226,10 +222,9 @@
       </p>
       <p class="note" id="data-status" role="status" hidden></p>
     </section>
-
     <section class="block credits">
       <details>
-        <summary><h2>About</h2></summary>
+        <summary><h2>How to read this</h2></summary>
       <p>Height is the annualised yield a US Treasury security of that maturity
       paid on that day. The near edge is short-dated debt, the far edge is the
       30&#8209;year bond. Recessions fall across the surface as shade.</p>
@@ -254,21 +249,15 @@
       <a href="https://x.com/Eric714" rel="noopener" target="_blank">@Eric714</a>.</p>
       </details>
     </section>
-
     <section class="block disclaimer">
-      <details>
-        <summary><h2>About the data</h2></summary>
-      <p>This is an educational visualization of US Treasury yield data. While
-      we try to present the data accurately, errors, delays, missing data or
-      visualization artifacts may occur. Always verify important information
-      with the original data source.</p>
-      <p class="src">This site sets no cookies. It counts page views with
-      GoatCounter, which stores no personal data and cannot identify you.</p>
-      <p><strong>For educational and informational purposes only. Not
-      investment advice.</strong> No warranty of any kind is given, express or
-      implied, as to accuracy, completeness or fitness for any purpose.</p>
-      </details>
+      <h2>About the data</h2>
+      <p>An educational visualization of US Treasury data. Errors, delays and
+      gaps can occur; verify anything that matters against the original source.
+      <strong>Not investment advice.</strong></p>
+      <p class="src">No cookies. Page views are counted with GoatCounter, which
+      stores no personal data and cannot identify you.</p>
     </section>
+    </div>
   </aside>
 
 </main>
@@ -303,6 +292,6 @@
 })();
 </script>
 
-<script type="module" src="js/app.js?v=723cfd7dc5"></script>
+<script type="module" src="js/app.js?v=dba0dda670"></script>
 </body>
 </html>

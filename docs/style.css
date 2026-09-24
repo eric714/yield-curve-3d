@@ -54,7 +54,7 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
 #panel::-webkit-scrollbar{width:9px}
 #panel::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
 
-.block{padding-bottom:1.15rem;margin-bottom:1.15rem;border-bottom:1px solid var(--line)}
+.block{padding-bottom:.9rem;margin-bottom:.9rem;border-bottom:1px solid var(--line)}
 .block:last-child{border:0;margin-bottom:0}
 .block h2{
   font-size:11px;text-transform:uppercase;letter-spacing:.09em;
@@ -291,6 +291,20 @@ select{
 .viewglyph{width:22px;height:22px;display:block}
 .views button span{line-height:1.1;letter-spacing:.01em}
 
+/* Three groups and a footer. The labels are the only new chrome, and they buy
+   a panel you navigate by category rather than by scanning eleven equal rows. */
+.group{
+  font-size:10px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.8rem 0 .4rem;
+}
+.group:first-child{margin-top:0}
+.panel-foot{
+  border-top:2px solid var(--line);margin-top:.9rem;padding-top:.3rem;
+}
+.panel-foot .block:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+/* The disclaimer stays open, so it gets quieter type rather than a drawer. */
+.disclaimer p{font-size:11.5px;color:var(--ink-dim);line-height:1.5;margin:.45rem 0 0}
+
 /* A heading with an affordance on the right. */
 #panel .head{display:flex;align-items:center;gap:.5em}
 #panel .head h2{margin:0}
@@ -331,7 +345,7 @@ select{
    of the panel off the bottom. */
 #events-list{
   display:flex;flex-direction:column;gap:2px;
-  max-height:290px;overflow-y:auto;
+  max-height:196px;overflow-y:auto;
 }
 #events-list::-webkit-scrollbar{width:7px}
 #events-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:7px}
