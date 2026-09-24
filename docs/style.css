@@ -84,6 +84,29 @@ h1,h2{font-weight:600;letter-spacing:-.01em}
   backdrop-filter:blur(6px);transition:.15s;
 }
 #stage-tools button:hover{color:var(--ink);border-color:var(--ink-faint)}
+
+/* Camera angles live with the camera now, not in the panel. They sit in the
+   same cluster as the page tools but fenced off, because they are used far
+   more often and mean something different. */
+#stage-tools .views{display:flex;gap:5px}
+#stage-tools .views button{width:30px;height:30px;align-self:center}
+#stage-tools .views button span{display:none}   /* the glyph is the label */
+#stage-tools .views button[aria-pressed=true]{
+  background:var(--accent);border-color:var(--accent);color:var(--bg-panel);
+}
+.tools-rule{
+  align-self:center;width:1px;height:20px;background:var(--line);margin:0 3px;
+}
+/* Seven buttons and a title do not both fit across a phone, so on narrow
+   screens the cluster drops below the title and wraps to two rows. */
+@media (max-width:820px){
+  #stage-tools{
+    top:96px;right:14px;
+    flex-wrap:wrap;justify-content:flex-end;max-width:152px;
+  }
+  .tools-rule{display:none}
+}
+.viewglyph{width:18px;height:18px;display:block}
 #panel-toggle span{display:block;width:15px;height:1.5px;background:currentColor}
 #app:not(.collapsed) #panel-toggle{display:none}
 [data-theme=light] #theme-toggle svg{transform:rotate(180deg)}
@@ -276,20 +299,7 @@ select{
 .sw-ev{background:var(--accent)}
 .sw-infl{background:#4bd0e0;opacity:.6}
 .sw-ff{background:var(--accent)}
-.views{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
-.views button{
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:.4rem .2rem;font-size:10px;background:transparent;
-  border:1px solid var(--line);border-radius:5px;color:var(--ink-dim);cursor:pointer;
-}
-.views button:hover{border-color:var(--ink-faint);color:var(--ink)}
-.views button[aria-pressed=true]{
-  background:var(--accent);border-color:var(--accent);color:var(--bg-panel);
-}
-/* Each glyph is the chart's own box drawn from that viewpoint, which says
-   what the button does better than any stock icon could. */
-.viewglyph{width:22px;height:22px;display:block}
-.views button span{line-height:1.1;letter-spacing:.01em}
+
 
 /* Three groups and a footer. The labels are the only new chrome, and they buy
    a panel you navigate by category rather than by scanning eleven equal rows. */

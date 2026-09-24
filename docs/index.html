@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Every US Treasury yield curve since 1990, in three dimensions.">
 <meta name="twitter:image" content="https://yieldcurve3d.com/preview.png">
 
-<link rel="stylesheet" href="style.css?v=dba0dda670">
+<link rel="stylesheet" href="style.css?v=a889173e71">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <script type="importmap">
 { "imports": {
@@ -32,16 +32,16 @@
     "three/webgpu": "./vendor/three.module.js",
     "three/tsl": "./vendor/three.module.js",
     "three/addons/": "./vendor/",
-      "./js/app.js": "./js/app.js?v=dba0dda670",
-      "./js/colormap.js": "./js/colormap.js?v=dba0dda670",
-      "./js/data.js": "./js/data.js?v=dba0dda670",
-      "./js/inspector.js": "./js/inspector.js?v=dba0dda670",
-      "./js/interpolate.js": "./js/interpolate.js?v=dba0dda670",
-      "./js/layers.js": "./js/layers.js?v=dba0dda670",
-      "./js/scene.js": "./js/scene.js?v=dba0dda670",
-      "./js/snapshot.js": "./js/snapshot.js?v=dba0dda670",
-      "./js/theme.js": "./js/theme.js?v=dba0dda670",
-      "./js/tour.js": "./js/tour.js?v=dba0dda670"
+      "./js/app.js": "./js/app.js?v=a889173e71",
+      "./js/colormap.js": "./js/colormap.js?v=a889173e71",
+      "./js/data.js": "./js/data.js?v=a889173e71",
+      "./js/inspector.js": "./js/inspector.js?v=a889173e71",
+      "./js/interpolate.js": "./js/interpolate.js?v=a889173e71",
+      "./js/layers.js": "./js/layers.js?v=a889173e71",
+      "./js/scene.js": "./js/scene.js?v=a889173e71",
+      "./js/snapshot.js": "./js/snapshot.js?v=a889173e71",
+      "./js/theme.js": "./js/theme.js?v=a889173e71",
+      "./js/tour.js": "./js/tour.js?v=a889173e71"
   } }
 </script>
 </head>
@@ -61,6 +61,13 @@
     </div>
 
     <div id="stage-tools">
+      <div class="views" role="group" aria-label="Camera angle">
+        <button data-view="default" title="Angled, the default"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 8.5 12 4l9 4.5-9 4.5z"/><path d="M3 8.5v7l9 4.5v-7z"/><path d="M21 8.5v7l-9 4.5"/></svg><span>Angled</span></button>
+        <button data-view="front" title="End-on, one day as a single curve"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 6h18v12H3z"/><path d="M3 15c4-1 6-6 9-6s5 3 9 2"/></svg><span>Curve on</span></button>
+        <button data-view="side" title="From the side, along the time axis"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 6h18v12H3z"/><path d="M3 16c3 1 4-4 6-3s3 5 5 4 4-6 7-5"/></svg><span>Along time</span></button>
+        <button data-view="top" title="Straight down from above"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M8 5v14M13 5v14M18 5v14"/></svg><span>Overhead</span></button>
+      </div>
+      <span class="tools-rule" aria-hidden="true"></span>
       <button id="tour-btn" title="How to read this chart" aria-label="How to read this chart">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9.2 9a2.9 2.9 0 1 1 3.9 2.7c-.7.3-1.1 1-1.1 1.7v.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.1" fill="currentColor"/></svg>
       </button>
@@ -148,15 +155,6 @@
 
     </section>
     <p class="group">How it is drawn</p>
-    <section class="block">
-      <h2>View</h2>
-      <div class="views">
-        <button data-view="default" title="Angled, the default"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 8.5 12 4l9 4.5-9 4.5z"/><path d="M3 8.5v7l9 4.5v-7z"/><path d="M21 8.5v7l-9 4.5"/></svg><span>Angled</span></button>
-        <button data-view="front" title="End-on, one day as a single curve"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 6h18v12H3z"/><path d="M3 15c4-1 6-6 9-6s5 3 9 2"/></svg><span>Curve on</span></button>
-        <button data-view="side" title="From the side, along the time axis"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 6h18v12H3z"/><path d="M3 16c3 1 4-4 6-3s3 5 5 4 4-6 7-5"/></svg><span>Along time</span></button>
-        <button data-view="top" title="Straight down from above"><svg class="viewglyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M8 5v14M13 5v14M18 5v14"/></svg><span>Overhead</span></button>
-      </div>
-    </section>
     <section class="block" id="height-block">
       <div class="head">
         <h2>Height of the surface</h2>
@@ -292,6 +290,6 @@
 })();
 </script>
 
-<script type="module" src="js/app.js?v=dba0dda670"></script>
+<script type="module" src="js/app.js?v=a889173e71"></script>
 </body>
 </html>
