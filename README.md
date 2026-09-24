@@ -7,17 +7,14 @@ programs marked on the floor.
 
 Live at **[yieldcurve3d.com](https://yieldcurve3d.com)**.
 
-![US Treasury yields from 2021 to 2026 drawn as a 3D surface. Time runs left to
-right, maturity recedes from one month at the front edge to thirty years at the
-back, and height is the yield. The near-zero blue trough of 2021 climbs into
-the yellow-green plateau of the hiking cycle and stays there. An orange ribbon
-along the front edge is the Fed funds target, stepping up through 2022 and back
-down from 2024. A pale blue sheet floats through the surface at the rate of
-consumer price inflation, so the stretch of surface below it is where lending
-lost money in real terms. Colored bands on the floor mark COVID-era bond buying
-and the selling that followed. The readout is pinned on 1 July 2024, the day
-the Sahm rule
-triggered.](docs/preview.png)
+![US Treasury yields from January 2025 to September 2026 drawn as a 3D
+surface. Time runs from the upper left down toward the viewer, maturity
+recedes to the right from six months to thirty years, and height is the
+yield. The long end is orange and the short end yellow, so the curve slopes
+upward. A gold ribbon along the front edge is the Fed funds target, stepping
+down through three cuts in late 2025 and back up once in September 2026. The
+control panel is open on the right, with every layer switched off except the
+Fed funds ribbon.](docs/preview.png)
 
 It runs entirely in the browser. Visitors need nothing installed. Hosting costs
 nothing.
