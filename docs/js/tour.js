@@ -119,7 +119,7 @@ const STEPS = [
     apply: { preset: "Past five years", view: "default", heightMode: "level",
              contextSeries: "none",
              show: { showRegimes: false, showRecessions: false,
-                     showEvents: false, showFedFunds: false,
+                     showEvents: false, showFedFunds: true,
                      showLines: false, showInflation: false } },
     spotlight: "#presets",
   },

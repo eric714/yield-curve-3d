@@ -46,12 +46,15 @@ const state = {
   view: "default",
   theme: "dark",
   preset: null,
-  // All off. A first-time visitor should meet one surface and one idea; every
-  // layer after that is a question they chose to ask.
+  // Nearly all off: a first-time visitor should meet one surface and one idea.
+  // Fed funds is the exception, and deliberately. The ribbon along the front
+  // edge is odd enough to make someone ask what it is, and the answer is in
+  // Show, which is where the rest of the layers are. One visible layer is
+  // better advertising for the others than none.
   showRegimes: false,
   showRecessions: false,
   showEvents: false,
-  showFedFunds: false,
+  showFedFunds: true,
   showLines: false,
   showInflation: false,     // a second reading of the chart, not the default
   showHistory: false,       // second crosshair line, along the time axis

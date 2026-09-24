@@ -287,12 +287,17 @@ pattern.
 
 ## What the site opens with
 
-Nothing but the surface. The Fed funds ribbon, the QE and QT bands, the
-recession shading, the event markers, the individual curve lines, the sea level
-sheet and the back wall all start switched off. A first-time visitor meets one
-surface and one idea, and every layer after that is a question they chose to
-ask. The walkthrough switches them on as it explains them, so the chart builds
-up rather than needing to be stripped back.
+The surface, and one thing on it. The QE and QT bands, the recession shading,
+the event markers, the individual curve lines, the sea level sheet and the back
+wall all start switched off, so a first-time visitor meets one idea rather than
+eight.
+
+The Fed funds ribbon is the one exception, and it is there to be asked about. A
+gold staircase running along the front edge is strange enough to want explained,
+and the explanation is a checkbox in **Show**, sitting next to six others. A
+layer nobody can see advertises nothing. The walkthrough switches the rest on as
+it explains them, so the chart builds up rather than needing to be stripped
+back.
 
 The legend lists whatever is currently drawn and nothing that is not, so any
 color on screen is accounted for somewhere.
